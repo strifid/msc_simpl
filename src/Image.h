@@ -27,10 +27,10 @@ public:
 
 	virtual bool init(const std::string& path);
 
-	bool process();
+//	bool process();
 	void setValue(const Pixel & pt, uint8_t val);
 
-	bool hasWrapNull(const Pixel& pxl);
+//	bool hasWrapNull(const Pixel& pxl);
 	Pixels getAllAround(const Pixel& pxl);
 	Pixels getOneConnectedAround(const Pixel& pxl);
 

@@ -30,13 +30,13 @@ aux_source_directory(src/main MAIN_SOURCE)
 aux_source_directory(src/tests TESTS_SOURCE)
 
 
-set(LIBS pthread xml2 mt m opencv_core opencv_highgui  vtkHybrid vtkIO vtkFiltering vtkCommon vtkGraphics vtkImaging vtkRendering) 
+set(LIBS pthread xml2 mt m opencv_core opencv_highgui  vtkHybrid vtkIO vtkFiltering vtkCommon vtkGraphics vtkImaging vtkRendering CCfits cfitsio) 
 
 add_executable (gradient_msc ${BASE_SOURCE} ${MAIN_SOURCE} ${PPAIR_SOURCE})
 target_link_libraries(gradient_msc ${LIBS})
 
 # Compile tests
 
-add_executable (tests ${BASE_SOURCE} ${TESTS_SOURCE})
+add_executable (tests ${BASE_SOURCE} ${TESTS_SOURCE} ${PPAIR_SOURCE})
 target_link_libraries(tests ${LIBS})
 

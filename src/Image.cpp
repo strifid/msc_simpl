@@ -61,6 +61,7 @@ bool Image::init(const std::string & path) {
 	return false;
 }
 
+/*
 bool Image::hasWrapNull(const Pixel& pt) {
 
 	Pixels pts = getAllAround(pt);
@@ -71,6 +72,7 @@ bool Image::hasWrapNull(const Pixel& pt) {
 	return false;
 }
 
+*/
 void Image::mirrorEdges() {
 
 	Mat mirroreImg;
@@ -211,9 +213,11 @@ void Image::setValue(const Pixel & pt, uint8_t val) {
 	m_img.at<uint8_t>(pt) = val;
 }
 
+/*
 bool Image::process() {
 	return false;
 }
+*/
 
 bool Image::isBoundaryPixel(const Pixel & pt) {
 	if (pt.x == 0 || pt.x == m_width - 1)

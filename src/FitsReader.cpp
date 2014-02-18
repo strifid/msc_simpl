@@ -7,25 +7,26 @@
 
 #include "FitsReader.h"
 #include "CCfits/CCfits.h"
+#include "CCfits/PHDU.h"
+#include <iterator>
 
 using namespace CCfits;
 
 FitsReader::FitsReader() {
-
+	m_fits = NULL;
 }
 
 bool FitsReader::init(const std::string& path) {
 
-	CCfits::FITS pInfile(new FITS("atestfil.fit", Read, true));
+	m_fits = new FITS("atestfil.fit", Read, true);
 
-	PHDU& image = pInfile->pHDU();
+	PHDU& image = m_fits->pHDU();
 
 	std::valarray<unsigned long> contents;
 
 	// read all user-specifed, coordinate, and checksum keys in the image
 	image.readAllKeys();
-
-	image.read(contents);
+	image.read<unsigned long>(contents);
 
 	// this doesn't print the data, just header info.
 	std::cout << image << std::endl;
@@ -40,9 +41,9 @@ bool FitsReader::init(const std::string& path) {
 	}
 
 	std::cout << std::endl;
+	return true;
 }
 
 FitsReader::~FitsReader() {
-	// TODO Auto-generated destructor stub
 }
 
