@@ -6,8 +6,7 @@
  */
 
 #include "FitsReader.h"
-#include "CCfits/CCfits.h"
-#include "CCfits/PHDU.h"
+#include "CCfits"
 #include <iterator>
 
 using namespace CCfits;

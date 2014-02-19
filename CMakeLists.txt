@@ -12,15 +12,19 @@ endif()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wno-deprecated")
 
 if(NOT MTLIB_PATH)
-    set(MTLIB_PATH "/ws/mtlib/install")
+    set(MTLIB_PATH "/prjcts/mtlib/install")
 endif()
 
 if(NOT OPENCV_PATH)
-    set(OPENCV_PATH "/ws/opencv/install")
+    set(OPENCV_PATH "/prjcts/opencv/install")
+endif()
+
+if(NOT CCFITS_PATH)
+    set(CCFITS_PATH "/prjcts/CCfits/install")
 endif()
 
 
-include_directories(./ ${OPENCV_PATH}/include ${MTLIB_PATH}/include /usr/include/libxml2 /usr/include/paraview /usr/include/vtk-5.8 ./src)
+include_directories(./ ${CCFITS_PATH}/include/CCfits ${OPENCV_PATH}/include ${MTLIB_PATH}/include /usr/include/libxml2 /usr/include/paraview /usr/include/vtk-5.8 ./src)
 link_directories(${MTLIB_PATH}/lib ${OPENCV_PATH}/lib /usr/lib/paraview/ )
 
 aux_source_directory(src/ BASE_SOURCE)
