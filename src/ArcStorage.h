@@ -107,7 +107,6 @@ public:
 		m_arcsToCriticalMap[arc->m_arcEnd].push_back(arc);
 		m_arcsToSeddleMap[arc->m_arcBegin].push_back(arc);
 
-
 	}
 
 	std::vector<ArcPtr>* seddles(CriticalPtr tr) {
@@ -186,7 +185,8 @@ public:
 
 		typename ArcsToSeddleMap::iterator toSaddleMapIt = m_arcsToSeddleMap.find(arc->m_arcBegin);
 		if (toSaddleMapIt != m_arcsToSeddleMap.end()) {
-			for (typename std::vector<ArcPtr>::iterator arcIt = toSaddleMapIt->second.begin(); arcIt != toSaddleMapIt->second.end(); ++arcIt) {
+			for (typename std::vector<ArcPtr>::iterator arcIt = toSaddleMapIt->second.begin(); arcIt != toSaddleMapIt->second.end();
+					++arcIt) {
 				if (*(arc->m_arcEnd) == *((*arcIt)->m_arcEnd)) {
 					toSaddleMapIt->second.erase(arcIt);
 					break;
@@ -261,7 +261,8 @@ public:
 
 private:
 
-	MsComplex* completeComplex(Arc<FacePtr, FacePtr> * aArc1, DescArcPtr dArc1, std::vector<Arc<FacePtr, FacePtr> *>* aArcs, DescArcs* dArcs);
+	MsComplex* completeComplex(Arc<FacePtr, FacePtr> * aArc1, DescArcPtr dArc1, std::vector<Arc<FacePtr, FacePtr> *>* aArcs,
+			DescArcs* dArcs);
 
 	typedef boost::multi_index_container<MultiMapElement<ArcPtr, CriticalPtr>*,
 			boost::multi_index::indexed_by<
@@ -269,8 +270,8 @@ private:
 							boost::multi_index::mem_fun<MultiMapElement<ArcPtr, CriticalPtr>, CriticalPtr,
 									&MultiMapElement<ArcPtr, CriticalPtr>::critical>, SimplexComparator<CriticalPtr> >,
 					boost::multi_index::ordered_unique<
-							boost::multi_index::mem_fun<MultiMapElement<ArcPtr, CriticalPtr>, EdgePtr, &MultiMapElement<ArcPtr, CriticalPtr>::seddle>,
-							SimplexComparator<EdgePtr> > > > ArcsMap;
+							boost::multi_index::mem_fun<MultiMapElement<ArcPtr, CriticalPtr>, EdgePtr,
+									&MultiMapElement<ArcPtr, CriticalPtr>::seddle>, SimplexComparator<EdgePtr> > > > ArcsMap;
 
 	ArcsMap m_map;
 
