@@ -9,6 +9,10 @@
 #include "CCfits"
 #include <iterator>
 
+#include "opencv2/core/core.hpp"
+
+using cv::Scalar;
+
 using namespace CCfits;
 
 FitsReader::FitsReader() {
@@ -35,6 +39,9 @@ bool FitsReader::init(const std::string& path) {
 }
 
 void FitsReader::fillMat(cv::Mat& m) {
+
+	Mat fitsMat(m_y, m_x, CV_8UC3, Scalar(255, 255, 255));
+
 	for (long j = 0; j < m_y; j += 10) {
 		std::ostream_iterator<short> c(std::cout, "\t");
 		std::copy(&contents[j * m_x], &contents[(j + 1) * m_x - 1], c);
@@ -43,6 +50,7 @@ void FitsReader::fillMat(cv::Mat& m) {
 
 	std::cout << std::endl;
 
+	m = fitsMat;
 }
 
 FitsReader::~FitsReader() {
