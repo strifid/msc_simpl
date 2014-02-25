@@ -1,27 +1,39 @@
 /*
- * CofacedFace.h
+ * CofacedTriangle.h
  *
  *  Created on: Dec 4, 2012
  *      Author: trifid
  */
 
-#ifndef COFACEDFACE_H_
-#define COFACEDFACE_H_
+#ifndef COFACEDTRIANGLE_H_
+#define COFACEDTRIANGLE_H_
 
 #include "Coface.h"
-#include "opencv2/core/core.hpp"
-#include "Vertex.h"
 #include "Edge.h"
+#include "Triangle.h"
+#include "opencv2/core/core.hpp"
+#include "Image.h"
 
-class CofacedEdge: public Coface {
+//template <typename FacePtr>
+class CofacedFace: public Coface {
 public:
-	CofacedEdge(VertexPtr vtx, EdgePtr face);
-	virtual ~CofacedEdge();
-	virtual void draw(Mat& img);
-	VertexPtr m_vertex;
-	EdgePtr m_face;
+	CofacedFace(EdgePtr face, FacePtr tr){
+		m_edge = face;
+		m_face = tr;
+	}
+	virtual ~CofacedFace(){}
+	virtual void draw(Mat& img){
+
+		int thickness = 3;
+		int lineType = 8;
+		Point a = m_edge->centralPoint();
+		Point b = m_face->centralPoint();
+
+		drawArrow(img, a, b);
+
+	}
+	EdgePtr m_edge;
+	FacePtr m_face;
 };
 
-typedef CofacedEdge* CofacedFacePtr;
-
-#endif /* COFACEDFACE_H_ */
+#endif /* COFACEDTRIANGLE_H_ */

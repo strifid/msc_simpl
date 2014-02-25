@@ -22,8 +22,9 @@ int main(int argc, char* argv[]) {
 	std::string inputFile;
 	std::string gradField;
 	std::string outputFile;
+	bool isFits = false;
 
-	while ((c = getopt(argc, argv, "p:f:o:i:")) != -1)
+	while ((c = getopt(argc, argv, "p:f:o:i:s:")) != -1)
 		switch (c) {
 		case 'p':
 			persistence = atoi(optarg);
@@ -36,6 +37,10 @@ int main(int argc, char* argv[]) {
 			break;
 		case 'i':
 			inputFile = optarg;
+			break;
+		case 's':
+			inputFile = optarg;
+			isFits = true;
 			break;
 		default:
 			std::cout << help << std::endl;
@@ -54,7 +59,10 @@ int main(int argc, char* argv[]) {
 	proc->m_persistence = persistence;
 	proc->m_gradFieldFile = gradField;
 	proc->m_outputFile = outputFile;
-	proc->loadImageData(inputFile);
+	if (isFits)
+		proc->loadFitsData(inputFile);
+	else
+		proc->loadImageData(inputFile);
 	proc->run();
 
 	return 0;

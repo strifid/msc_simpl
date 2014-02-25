@@ -5,7 +5,7 @@
 #include "Edge.h"
 #include "opencv2/core/core.hpp"
 #include "CofacedFace.h"
-#include "CofacedTriangle.h"
+#include "CofacedFace.h"
 #include <iosfwd>
 #include <iostream>
 #include <fstream>

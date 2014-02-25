@@ -11,6 +11,8 @@
 #include "opencv2/core/core.hpp"
 #include <iosfwd>
 
+#include "FitsReader.h"
+
 using cv::imread;
 using cv::namedWindow;
 using cv::waitKey;
@@ -31,6 +33,20 @@ Image::~Image() {
 #include <iostream>
 #include <fstream>
 
+bool Image::initFits(const std::string & path) {
+
+	m_imagePath = path;
+
+	FitsReader fr;
+	fr.init(path);
+
+	fr.fillMat(m_img);
+	m_width = fr.getX();
+	m_height = fr.getY();
+
+	return false;
+}
+
 bool Image::init(const std::string & path) {
 	m_imagePath = path;
 	m_img = imread(path.c_str(), 0);
@@ -38,48 +54,26 @@ bool Image::init(const std::string & path) {
 	m_width = m_img.cols;
 	m_height = m_img.rows;
 
-	/*
-	 std::ofstream coordFile;
-	 std::string file = path + "_pt.txt";
-	 coordFile.open(file.c_str() );
-	 coordFile << "x\ty\tz" << std::endl;
-
-	 std::cout << "widht " << m_width << " heig " << m_height << std::endl;
-	 for (size_t x = 0; x < m_width; ++x) {
-	 for (size_t y = 0; y < m_height; ++y) {
-	 Point pt(x, y);
-	 coordFile << x << "\t" << y << "\t" << (uint32_t)m_img.at<uint8_t>(pt)
-	 << std::endl;
-
-	 }
-	 }
-	 coordFile.flush();
-	 coordFile.close();
-	 exit(0);
-	 */
-
 	return false;
 }
 
 /*
-bool Image::hasWrapNull(const Pixel& pt) {
+ bool Image::hasWrapNull(const Pixel& pt) {
 
-	Pixels pts = getAllAround(pt);
-	for (size_t i = 0; i < pts.size(); i++) {
-		if (!comparePixels(pt, pts[i]))
-			return true;
-	}
-	return false;
-}
+ Pixels pts = getAllAround(pt);
+ for (size_t i = 0; i < pts.size(); i++) {
+ if (!comparePixels(pt, pts[i]))
+ return true;
+ }
+ return false;
+ }
 
-*/
+ */
 void Image::mirrorEdges() {
 
 	Mat mirroreImg;
 	cv::hconcat(m_img.row(0), m_img, mirroreImg);
 //	cv::hconcat(m_img.row(0), m_img, mirroreImg);
-
-
 
 }
 
@@ -214,10 +208,10 @@ void Image::setValue(const Pixel & pt, uint8_t val) {
 }
 
 /*
-bool Image::process() {
-	return false;
-}
-*/
+ bool Image::process() {
+ return false;
+ }
+ */
 
 bool Image::isBoundaryPixel(const Pixel & pt) {
 	if (pt.x == 0 || pt.x == m_width - 1)

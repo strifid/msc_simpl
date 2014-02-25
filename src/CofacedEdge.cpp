@@ -5,7 +5,7 @@
  *      Author: trifid
  */
 
-#include "CofacedFace.h"
+#include "CofacedEdge.h"
 #include "opencv2/core/core.hpp"
 #include "Image.h"
 #include <cmath>

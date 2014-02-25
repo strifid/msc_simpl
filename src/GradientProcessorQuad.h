@@ -18,7 +18,7 @@
 #include "Coface.h"
 #include "SimplexStorage.h"
 #include "SimplexRelations.h"
-#include "CofacedTriangle.h"
+#include "CofacedFace.h"
 #include "ArcStorage.h"
 #include "MsComplex.h"
 #include "GradientProcessor.h"
@@ -62,8 +62,8 @@ protected:
 						cantRemove.push_back(lowestPersistentPairAsc);
 					} else {
 						arcsStorageForDel.erase(lowestPersistentPairAsc->m_arcBegin);
-						std::cout << "erase from second arc storage arc begin " << *(lowestPersistentPairAsc->m_arcBegin->maxVertex()) << " end: "
-								<< *(lowestPersistentPairAsc->m_arcEnd->maxVertex()) << std::endl;
+						std::cout << "erase from second arc storage arc begin " << *(lowestPersistentPairAsc->m_arcBegin->maxVertex())
+								<< " end: " << *(lowestPersistentPairAsc->m_arcEnd->maxVertex()) << std::endl;
 					}
 				} else
 					hasTodo = false;
@@ -72,7 +72,8 @@ protected:
 	}
 
 	template<typename Simplex, typename ArcPtr>
-	ArcPtr findPersistentPair(Simplex face, std::vector<ArcPtr> *arcs, uint32_t persistence, std::vector<ArcPtr> &cantRemove, bool asc = true) {
+	ArcPtr findPersistentPair(Simplex face, std::vector<ArcPtr> *arcs, uint32_t persistence, std::vector<ArcPtr> &cantRemove, bool asc =
+			true) {
 		if (arcs == NULL)
 			return NULL;
 		ArcPtr maxPersistPair = NULL;
@@ -112,7 +113,8 @@ protected:
 
 		if (arcStorage.hasCommonSeddle(secondLeg->m_arcEnd, lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
-			std::cout << "has common sedle for end1: " << *(secondLeg->m_arcEnd) << " end2: " << *(lowestPersistentPair->m_arcEnd) << std::endl;
+			std::cout << "has common sedle for end1: " << *(secondLeg->m_arcEnd) << " end2: " << *(lowestPersistentPair->m_arcEnd)
+					<< std::endl;
 			return false;
 		}
 
@@ -131,10 +133,10 @@ protected:
 			for (size_t i = 0; i < arcs->size(); ++i) {
 				ArcPtr arc = arcs->at(i);
 				arc->addFirstLeg(lowestPersistentPair);
-/*
-				if(asc)
-					arc->m_arc.push_back(lowestPersistentPair->m_arcEnd);
-*/
+				/*
+				 if(asc)
+				 arc->m_arc.push_back(lowestPersistentPair->m_arcEnd);
+				 */
 
 				arc->addSecondLeg(secondLeg);
 				arcStorage.registerArcByNewCritical(arc);

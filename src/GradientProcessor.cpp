@@ -1,10 +1,13 @@
 #include "GradientProcessor.h"
-/*
- * GradientProcessor.cpp
- *
- *  Created on: Sep 16, 2013
- *      Author: trifid
- */
+
+#include "mt/utils/StrUtils.h"
+#include "CofacedEdge.h"
+#include "CofacedFace.h"
+#include "opencv2/highgui/highgui_c.h"
+
+#include "opencv2/highgui/highgui.hpp"
+
+using cv::waitKey;
 
 void GradientProcessor::normalizeField() {
 	bool run;
@@ -55,6 +58,13 @@ void GradientProcessor::addFace(FacePtr tr) {
 	m_simplexRelations.push(tr);
 }
 
+bool GradientProcessor::loadFitsData(const std::string & path) {
+
+	m_img.initFits(path);
+	std::cout << "load image: " << m_img.width() << "X" << m_img.height() << std::endl;
+	return true;
+}
+
 bool GradientProcessor::loadImageData(const std::string & path) {
 	m_img.init(path);
 	std::cout << "load image: " << m_img.width() << "X" << m_img.height() << std::endl;
@@ -88,7 +98,7 @@ void GradientProcessor::findMinimums() {
 		} else {
 			m_processedSmplexes.insert(smallestFace->m_seqId);
 			m_processedSmplexes.insert(neibVtx->m_seqId);
-			m_cofacesSimplexes.push_back(new CofacedEdge(neibVtx, smallestFace));
+			m_cofacesSimplexes.push_back((CofacePtr) new CofacedEdge(neibVtx, smallestFace));
 			m_edgeVertexGradientPair[neibVtx] = smallestFace;
 		}
 
@@ -124,7 +134,8 @@ void GradientProcessor::findSeddles() {
 			} else {
 				m_processedSmplexes.insert(smallestTr->m_seqId);
 				m_processedSmplexes.insert(edge->m_seqId);
-				m_cofacesSimplexes.push_back(new CofacedFace<FacePtr>(edge, smallestTr));
+				CofacedFace* cc = new CofacedFace(edge, smallestTr);
+				m_cofacesSimplexes.push_back((CofacePtr) cc);
 				m_edgeFaceGradientPair[smallestTr] = edge;
 			}
 		}
@@ -142,8 +153,8 @@ void GradientProcessor::drawGradientField() {
 				Scalar(0, 0, 0), 1.3);
 	}
 	for (int i = 0; i < m_img.width(); ++i) {
-		putText(drawField, mt::StrUtils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
-				Scalar(0, 0, 0), 1.3);
+		putText(drawField, mt::StrUtils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL,
+				0.7, Scalar(0, 0, 0), 1.3);
 	}
 
 	m_msCmplxStorage.draw(drawField);
@@ -153,29 +164,28 @@ void GradientProcessor::drawGradientField() {
 		edges[i]->draw(drawField);
 	}
 
-/*
-	for (size_t i = 0; i < m_maximums.size(); i++) {
-		circle(
-				drawField,
-				Point(m_maximums[i]->maxVertex()->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
-						m_maximums[i]->maxVertex()->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 6,
-				Scalar(0, 0, 255), 5);
-	}
-*/
-
+	/*
+	 for (size_t i = 0; i < m_maximums.size(); i++) {
+	 circle(
+	 drawField,
+	 Point(m_maximums[i]->maxVertex()->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
+	 m_maximums[i]->maxVertex()->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 6,
+	 Scalar(0, 0, 255), 5);
+	 }
+	 */
 
 	/*for (typename VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); ++it) {
-		circle(drawField,
-				Point((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor, (*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 6,
-				Scalar(255, 255, 0), 5);
-	}
-*/
+	 circle(drawField,
+	 Point((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor, (*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 6,
+	 Scalar(255, 255, 0), 5);
+	 }
+	 */
 
-/*
-	for (size_t i = 0; i < m_seddles.size(); ++i) {
-		m_seddles[i]->draw(drawField, 3, Scalar(0, 255, 0));
-	}
-*/
+	/*
+	 for (size_t i = 0; i < m_seddles.size(); ++i) {
+	 m_seddles[i]->draw(drawField, 3, Scalar(0, 255, 0));
+	 }
+	 */
 
 	for (int i = 0; i < m_cofacesSimplexes.size(); ++i) {
 		m_cofacesSimplexes[i]->draw(drawField);

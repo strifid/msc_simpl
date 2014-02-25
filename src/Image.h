@@ -17,14 +17,12 @@ public:
 
 	static const uint32_t m_enlargeFactor = 60;
 	enum BrushColor {
-		RED,
-		GREEN,
-		BLUE
+		RED, GREEN, BLUE
 	};
 
 	Image();
 	virtual ~Image();
-
+	virtual bool initFits(const std::string & path);
 	virtual bool init(const std::string& path);
 
 //	bool process();

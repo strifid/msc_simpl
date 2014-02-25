@@ -8,31 +8,26 @@
 #ifndef GRADIENTPROCESSOR_H_
 #define GRADIENTPROCESSOR_H_
 
-#include <string>
-#include "opencv2/core/core.hpp"
-#include "Vertex.h"
-#include <set>
-#include "Image.h"
-#include "Edge.h"
-#include "Triangle.h"
-#include "Coface.h"
-#include "SimplexStorage.h"
-#include "SimplexRelations.h"
-#include "CofacedTriangle.h"
-#include "ArcStorage.h"
-#include "MsComplex.h"
-#include "CofacedFace.h"
-#include "opencv2/highgui/highgui.hpp"
-#include <iosfwd>
-#include <iosfwd>
+#include <stddef.h>
+#include <stdint.h>
+#include <sys/types.h>
 #include <iostream>
-#include <fstream>
-#include "mt/utils/StrUtils.h"
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
-using cv::imread;
-using cv::Scalar;
-using cv::waitKey;
-using cv::imwrite;
+#include "Coface.h"
+#include "Edge.h"
+#include "Image.h"
+#include "MsComplexStorage.h"
+#include "Pixel.h"
+#include "SimplexRelations.h"
+#include "SimplexStorage.h"
+#include "Triangle.h"
+#include "Vertex.h"
+#include "opencv2/core/core.hpp"
 
 using cv::Mat;
 
@@ -47,6 +42,8 @@ class GradientProcessor: public mt::Logable {
 public:
 
 	bool loadImageData(const std::string& path);
+	bool loadFitsData(const std::string& path);
+
 	GradientProcessor() :
 			m_seqId(0) {
 	}
@@ -97,7 +94,6 @@ protected:
 			return it->second;
 		return NULL;
 	}
-
 
 	void drawGradientField();
 

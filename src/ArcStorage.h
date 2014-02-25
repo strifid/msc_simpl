@@ -7,24 +7,39 @@
 
 #ifndef ARCSTORAGE_H_
 #define ARCSTORAGE_H_
-#include "Edge.h"
+
+//#include <boost/multi_index/composite_key.hpp>
+#include <boost/multi_index/indexed_by.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+//#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
+#include <opencv2/core/core.hpp>
+#include <stddef.h>
+#include <vtkCellArray.h>
+#include <vtkIdList.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkPolyLine.h>
+#include <vtkSmartPointer.h>
+#include <vtkType.h>
+#include <vtkXMLPolyDataWriter.h>
+#include <stdint.h>
+#include <iostream>
+#include <map>
+#include <ostream>
+#include <string>
+#include <vector>
+
 #include "Arc.h"
-#include "MsComplex.h"
+#include "Edge.h"
+//#include "MsComplex.h"
+//#include "MsComplexStorage.h"
+#include "SimplexStorage.h"
 #include "Triangle.h"
 #include "Vertex.h"
-#include "MsComplexStorage.h"
 
-#include <vtkPolyData.h>
-#include <vtkSmartPointer.h>
-#include <vtkCellArray.h>
-#include <vtkPolyLine.h>
-#include <vtkXMLPolyDataWriter.h>
-
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
-#include <boost/multi_index/member.hpp>
-#include <boost/multi_index/mem_fun.hpp>
-#include <boost/multi_index/composite_key.hpp>
+class MsComplex;
 
 template<typename ArcPtr, typename CriticalPtr>
 class MultiMapElement {
