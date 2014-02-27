@@ -199,12 +199,12 @@ void Image::drawCircle(Point point, cv::Scalar color, uint32_t radius, uint32_t 
 	circle(m_forChanges, point, radius, color, thickness);
 }
 
-uint8_t Image::value(const Pixel & pt) {
-	return m_img.at<uint8_t>(dynamic_cast<const Point&>(pt));
+int32_t Image::value(const Pixel & pt) {
+	return m_img.at<int32_t>(dynamic_cast<const Point&>(pt));
 }
 
-void Image::setValue(const Pixel & pt, uint8_t val) {
-	m_img.at<uint8_t>(pt) = val;
+void Image::setValue(const Pixel & pt, int32_t val) {
+	m_img.at<int32_t>(pt) = val;
 }
 
 /*

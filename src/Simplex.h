@@ -19,13 +19,13 @@ public:
 	bool operator<(const Simplex& vrtx) const;
 	bool operator>(const Simplex& vrtx) const;
 
-	uint32_t m_valueFirst;
-	uint32_t m_valueSecond;
-	uint32_t m_valueThird;
+	int32_t m_valueFirst;
+	int32_t m_valueSecond;
+	int32_t m_valueThird;
 
 	uint32_t m_seqId;
 
-	virtual uint32_t value() = 0;
+	virtual int32_t value() = 0;
 };
 
 //std::ostream & operator <<(std::ostream & out, Simplex vt);

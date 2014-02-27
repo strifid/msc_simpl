@@ -26,7 +26,7 @@ public:
 	virtual bool init(const std::string& path);
 
 //	bool process();
-	void setValue(const Pixel & pt, uint8_t val);
+	void setValue(const Pixel & pt, int32_t val);
 
 //	bool hasWrapNull(const Pixel& pxl);
 	Pixels getAllAround(const Pixel& pxl);
@@ -73,7 +73,7 @@ public:
 	}
 
 	void resetPainting();
-	uint8_t value(const Pixel&);
+	int32_t value(const Pixel&);
 
 	void mirrorEdges();
 

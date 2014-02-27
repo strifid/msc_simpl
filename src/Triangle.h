@@ -30,7 +30,7 @@ public:
 	EdgePtr findCommonEdge(Face* quad);
 
 	VertexPtr maxVertex();
-	virtual uint32_t value() {
+	virtual int32_t value() {
 
 		/*
 		 if (!m_a)

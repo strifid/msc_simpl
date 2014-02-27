@@ -30,7 +30,7 @@ public:
 	VertexPtr getDifferentVertex(Edge* edge);
 	VertexPtr findCommonVertex(Edge* edge);
 
-	virtual uint32_t value() {
+	virtual int32_t value() {
 		if (!m_a)
 			return 0;
 		return m_a->value();

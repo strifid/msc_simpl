@@ -10,7 +10,7 @@
 #include <iterator>
 
 #include "opencv2/core/core.hpp"
-
+#include "Pixel.h"
 using cv::Scalar;
 
 using namespace CCfits;
@@ -40,14 +40,13 @@ bool FitsReader::init(const std::string& path) {
 
 void FitsReader::fillMat(cv::Mat& m) {
 
-	Mat fitsMat(m_y, m_x, CV_8UC3, Scalar(255, 255, 255));
+	Mat fitsMat(m_y, m_x, CV_32S, Scalar(35555, 35555, 35555));
 
-	for (long j = 0; j < m_y; j += 10) {
-		std::ostream_iterator<short> c(std::cout, "\t");
-		std::copy(&contents[j * m_x], &contents[(j + 1) * m_x - 1], c);
-		std::cout << '\n';
+	for (int i = 0; i < m_x; i++) {
+		for (int j = 0; j < m_y; j++) {
+			fitsMat.at<int32_t>(Pixel(i, j)) = contents[i * m_x + j];
+		}
 	}
-
 	std::cout << std::endl;
 
 	m = fitsMat;
