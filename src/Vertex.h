@@ -26,22 +26,14 @@ public:
 	virtual ~Vertex();
 	uint32_t locateSubset(Image& img);
 
-	/*
-	 std::set<Pixel, PixelComparator> &pixels() {
-	 return m_pixels;
-	 }
-	 */
-
 	bool operator==(const Vertex& vrtx) const;
 	bool operator<(const Vertex& vrtx) const;
 
 	int32_t value() {
 		return m_value;
 	}
-	void value(int32_t i) {
-		m_value = i;
-		m_valueFirst = m_value;
-	}
+
+	void value(int32_t i);
 
 	void draw(Mat& img, Scalar color = Scalar(0, 0, 0));
 
@@ -50,7 +42,6 @@ public:
 	}
 
 protected:
-//	std::set<Pixel, PixelComparator> m_pixels;
 	Pixels getAllAround(const Pixel& pt, uint32_t width, uint32_t height);
 	int32_t m_value;
 

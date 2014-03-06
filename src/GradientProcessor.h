@@ -44,11 +44,8 @@ public:
 	bool loadImageData(const std::string& path);
 	bool loadFitsData(const std::string& path);
 
-	GradientProcessor() :
-			m_seqId(0) {
-	}
-	virtual ~GradientProcessor() {
-	}
+	GradientProcessor();
+	virtual ~GradientProcessor();
 
 	int32_t findVertex() {
 		for (int x = 0; x < m_img.width(); x++) {
@@ -73,40 +70,34 @@ public:
 
 protected:
 
-	void findMaximums() {
-		std::vector<FacePtr>& quads = m_faces.vector();
-		for (size_t i = 0; i < quads.size(); i++) {
-			if (m_processedSmplexes.find(quads[i]->m_seqId) == m_processedSmplexes.end()) {
-				m_maximums.push_back(quads[i]);
-			}
-		}
-	}
-
+	void findMaximums();
 	void findSeddles();
 	void findMinimums();
 
 	void addFace(FacePtr tr);
 	void addVertex(VertexPtr vtx);
 	void addEdge(EdgePtr face);
-	VertexPtr findVertexByPixel(const Pixel & pxl) {
-		std::map<Pixel, VertexPtr, PixelComparator>::iterator it = m_pix2vertex.find(pxl);
-		if (it != m_pix2vertex.end())
-			return it->second;
-		return NULL;
-	}
+	VertexPtr findVertexByPixel(const Pixel & pxl);
 
 	void drawGradientField();
 
-	void drawComplexesOnOriginal() {
+	void drawComplexesOnOriginal();
+	void normalizeField();
 
-		if (m_outputFile.empty())
-			return;
+	void getDescendingManifold(Edges& arc, Vertexes& vtxs);
+	bool getAscendingManifold(std::vector<FacePtr>& arc);
+	EdgePtr getGradientPair(FacePtr tr) {
+		typename std::map<FacePtr, EdgePtr, SimplexComparator<FacePtr> >::iterator it = m_edgeFaceGradientPair.find(tr);
+		if (it == m_edgeFaceGradientPair.end())
+			return NULL;
+		return it->second;
+	}
 
-		m_msCmplxStorage.drawOriginal(m_img);
-
-		m_img.saveAs(m_outputFile, true);
-		std::cout << "save file in " << m_outputFile << std::endl;
-
+	EdgePtr getGradientPair(VertexPtr face) {
+		std::map<VertexPtr, EdgePtr>::iterator it = m_edgeVertexGradientPair.find(face);
+		if (it == m_edgeVertexGradientPair.end())
+			return NULL;
+		return it->second;
 	}
 
 	Image m_img;
@@ -127,26 +118,10 @@ protected:
 	Cofaces m_cofacesSimplexes;
 
 	uint32_t m_seqId;
-	void normalizeField();
-
-	void getDescendingManifold(Edges& arc, Vertexes& vtxs);
-	bool getAscendingManifold(std::vector<FacePtr>& arc);
 
 	std::map<FacePtr, EdgePtr, SimplexComparator<FacePtr> > m_edgeFaceGradientPair;
-	EdgePtr getGradientPair(FacePtr tr) {
-		typename std::map<FacePtr, EdgePtr, SimplexComparator<FacePtr> >::iterator it = m_edgeFaceGradientPair.find(tr);
-		if (it == m_edgeFaceGradientPair.end())
-			return NULL;
-		return it->second;
-	}
 
 	std::map<VertexPtr, EdgePtr> m_edgeVertexGradientPair;
-	EdgePtr getGradientPair(VertexPtr face) {
-		std::map<VertexPtr, EdgePtr>::iterator it = m_edgeVertexGradientPair.find(face);
-		if (it == m_edgeVertexGradientPair.end())
-			return NULL;
-		return it->second;
-	}
 
 	Faces m_ascending;
 	Edges m_descending;

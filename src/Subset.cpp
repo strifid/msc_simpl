@@ -111,6 +111,7 @@ bool Subset::isInSubsetAndWraps(const Pixel& pt) {
 }
 
 Pixels& Subset::oneConnectedPixels() {
+
 	m_oneConnectedPixels.clear();
 
 	Pixels contour = getContour();
@@ -125,5 +126,6 @@ Pixels& Subset::oneConnectedPixels() {
 		}
 	}
 	return m_oneConnectedPixels;
+
 }
 

@@ -25,6 +25,7 @@ public:
 
 
 	uint32_t m_id;
+	uint32_t m_dim;
 
 private:
 	static uint32_t pointId;

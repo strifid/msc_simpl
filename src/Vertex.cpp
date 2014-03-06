@@ -58,8 +58,13 @@ bool Vertex::operator <(const Vertex& vrtx) const {
 }
 
 void Vertex::draw(Mat& img, Scalar color) {
-	img.at<cv::Vec3b>(y * Image::m_enlargeFactor , x * Image::m_enlargeFactor )[0] = m_value;
-	putText(img, mt::StrUtils::intToString(value()), Point(x* Image::m_enlargeFactor +Image::m_enlargeFactor ,y* Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7, color, 1.3);
+
+	std::cout << "draw vertex: " << m_value << std::endl;
+
+	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = m_value;
+	putText(img, mt::StrUtils::intToString(value()),
+			Point(x * Image::m_enlargeFactor + Image::m_enlargeFactor, y * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL,
+			0.7, color, 1.3);
 }
 
 Pixels Vertex::getAllAround(const Pixel& pt, uint32_t width, uint32_t height) {
@@ -129,6 +134,16 @@ std::ostream & operator <<(std::ostream & out, const Vertex& vt) {
 
 	out << "x: " << vt.x << ", y: " << vt.y << " ";
 	return out;
+
+}
+
+
+void Vertex::value(int32_t i) {
+
+	std::cout << "set vertex: " << i << std::endl;
+
+	m_value = i;
+	m_valueFirst = i;
 
 }
 

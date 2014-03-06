@@ -25,18 +25,14 @@ public:
 	virtual bool initFits(const std::string & path);
 	virtual bool init(const std::string& path);
 
-//	bool process();
 	void setValue(const Pixel & pt, int32_t val);
 
-//	bool hasWrapNull(const Pixel& pxl);
 	Pixels getAllAround(const Pixel& pxl);
 	Pixels getOneConnectedAround(const Pixel& pxl);
 
 	bool isBoundaryPixel(const Pixel& pt);
 
 	void saveAs(const std::string& path, bool show = false);
-
-	//	void
 
 	std::string& imageName() {
 		return m_imageName;
@@ -48,13 +44,6 @@ public:
 	void drawCircle(Point point, cv::Scalar color, uint32_t radius = 1, uint32_t thickness = 1);
 
 	void paintPixel(Pixel* pxl, BrushColor color = RED);
-	/*
-	 void paintPixels(const Pixels &pxls, BrushColor color = RED);
-	 void paintPixels(PointsMap &points, BrushColor color = RED);
-	 */
-
-	void findSubset(Subset& subset);
-	void locateSubsetAndAllAround(Subset & subset);
 
 	int32_t comparePixels(const Pixel& a, const Pixel& b);
 
@@ -74,8 +63,6 @@ public:
 
 	void resetPainting();
 	int32_t value(const Pixel&);
-
-	void mirrorEdges();
 
 protected:
 

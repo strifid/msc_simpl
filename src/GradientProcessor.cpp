@@ -9,6 +9,41 @@
 
 using cv::waitKey;
 
+GradientProcessor::GradientProcessor() :
+		m_persistence(0), m_seqId(0) {
+}
+GradientProcessor::~GradientProcessor() {
+}
+
+void GradientProcessor::drawComplexesOnOriginal() {
+
+	if (m_outputFile.empty())
+		return;
+
+	m_msCmplxStorage.drawOriginal(m_img);
+
+	m_img.saveAs(m_outputFile, true);
+	std::cout << "save file in " << m_outputFile << std::endl;
+
+}
+
+VertexPtr GradientProcessor::findVertexByPixel(const Pixel & pxl) {
+	std::map<Pixel, VertexPtr, PixelComparator>::iterator it = m_pix2vertex.find(pxl);
+	if (it != m_pix2vertex.end())
+		return it->second;
+	return NULL;
+}
+
+void GradientProcessor::findMaximums() {
+	std::vector<FacePtr>& quads = m_faces.vector();
+	for (size_t i = 0; i < quads.size(); i++) {
+		if (m_processedSmplexes.find(quads[i]->m_seqId) == m_processedSmplexes.end()) {
+			m_maximums.push_back(quads[i]);
+		}
+	}
+}
+
+
 void GradientProcessor::normalizeField() {
 	bool run;
 	uint32_t counter = 0;

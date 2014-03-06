@@ -101,10 +101,18 @@ TEST_GROUP(PPairProcessor) {
 	}
 };
 
+
+TEST(PPairProcessor, testPPairProccc) {
+	CHECK(false);
+}
+
 TEST(PPairProcessor, testPPairProc) {
 
 	PersistPairProcessor proc;
 	initRelations(proc);
 	proc.findPairs();
+
+	CHECK(false);
+	CHECK_EQUAL(3, proc.ppairs.size());
 
 }

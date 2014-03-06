@@ -173,57 +173,9 @@ void GradientProcessorQuad::run() {
 		m_msCmplxStorage.saveCriticalPoints(m_outputFile + ".txt");
 
 	m_msCmplxStorage.drawAll();
-//	drawGradientField();
-//	drawComplexesOnOriginal();
+	drawGradientField();
+	drawComplexesOnOriginal();
 }
-
-/*
-
- if (m_persistence)
- simplify(m_persistence);
- else
- std::cout << "don't simplify" << std::endl;
-
- m_ascArcsStorage.printAll();
- m_descArcsStorage.printAll();
- saveMaxInVtk();
- saveMinInVtk();
- m_ascArcsStorage.saveArcsInVtp("asc.vtp");
- m_descArcsStorage.saveArcsInVtp("desc.vtp");*/
-
-/*
- VtpWriter vtpWriter;
- vtpWriter.saveAsc(m_ascArcsStorage);
- */
-
-/*
- connectArcs();
-
- std::cout << "complexes: " << m_msCmplxStorage.size() << std::endl;
- m_msCmplxStorage.drawAll();
- */
-
-/*
- if (m_persistence) {
- for (size_t maxIndx = 0; maxIndx < m_maximums.size(); ++maxIndx) {
- std::vector<MsComplex*> *msCmpls = m_msCmplxStorage.find(m_maximums[maxIndx]);
- if (msCmpls) {
- for (size_t i = 0; i < msCmpls->size(); i++) {
- //					m_msCmplxStorage.drawComplex(msCmpls->at(i));
- m_editor.process(msCmpls->at(i));
- }
- }
- }
- */
-
-/*
- if (!m_outputFile.empty())
- m_editor.saveEditMap(m_outputFile + ".txt");
- else if (!m_gradFieldFile.empty())
- m_editor.saveEditMap(m_gradFieldFile + ".txt");
- else
- std::cout << "can't generate file with edited data. has no name" << std::endl;
- */
 
 struct FacePtrComparator {
 	bool operator()(FacePtr i, FacePtr j) {
@@ -337,7 +289,8 @@ void GradientProcessorQuad::removeAscArc(int vx, int vy, int sx, int sy) {
 void GradientProcessorQuad::simplify(uint32_t persistence) {
 
 	std::sort(m_maximums.begin(), m_maximums.end(), FacePtrComparator);
-	simplifyArcs<AscArcPtr, FacePtr, VertexPtr, DescArcPtr>(m_maximums, m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl, persistence, true);
+	simplifyArcs<AscArcPtr, FacePtr, VertexPtr, DescArcPtr>(m_maximums, m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl, persistence,
+			true);
 
 	Vertexes mins;
 	for (VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); ++it) {

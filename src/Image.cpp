@@ -57,26 +57,6 @@ bool Image::init(const std::string & path) {
 	return false;
 }
 
-/*
- bool Image::hasWrapNull(const Pixel& pt) {
-
- Pixels pts = getAllAround(pt);
- for (size_t i = 0; i < pts.size(); i++) {
- if (!comparePixels(pt, pts[i]))
- return true;
- }
- return false;
- }
-
- */
-void Image::mirrorEdges() {
-
-	Mat mirroreImg;
-	cv::hconcat(m_img.row(0), m_img, mirroreImg);
-//	cv::hconcat(m_img.row(0), m_img, mirroreImg);
-
-}
-
 Pixels Image::getAllAround(const Pixel& pt) {
 	//todo move in members and return link
 	Pixels pts;
@@ -200,18 +180,12 @@ void Image::drawCircle(Point point, cv::Scalar color, uint32_t radius, uint32_t 
 }
 
 int32_t Image::value(const Pixel & pt) {
-	return m_img.at<int32_t>(dynamic_cast<const Point&>(pt));
+	return m_img.at<uint8_t>(dynamic_cast<const Point&>(pt));
 }
 
 void Image::setValue(const Pixel & pt, int32_t val) {
-	m_img.at<int32_t>(pt) = val;
+	m_img.at<uint8_t>(pt) = val;
 }
-
-/*
- bool Image::process() {
- return false;
- }
- */
 
 bool Image::isBoundaryPixel(const Pixel & pt) {
 	if (pt.x == 0 || pt.x == m_width - 1)
@@ -222,26 +196,6 @@ bool Image::isBoundaryPixel(const Pixel & pt) {
 	return false;
 }
 
-void Image::findSubset(Subset & subset) {
-	bool addPoint = false;
-
-	do {
-		addPoint = false;
-		Pixels pts = subset.getContour();
-
-		for (size_t i = 0; i < pts.size(); i++) {
-			Pixels contourAroundPixels = getAllAround(pts[i]);
-			for (size_t j = 0; j < contourAroundPixels.size(); j++) {
-				if (!comparePixels(contourAroundPixels[j], subset.center()) && !subset.isInSubset(contourAroundPixels[j])) {
-					subset.addPoint(contourAroundPixels[j]);
-					addPoint = true;
-				}
-			}
-
-		}
-	} while (addPoint);
-
-}
 
 int32_t Image::comparePixels(const Pixel& a, const Pixel& b) {
 	int res = ::abs(value(a)) - ::abs(value(b));
@@ -255,40 +209,6 @@ int32_t Image::comparePixels(const Pixel& a, const Pixel& b) {
 	return 1;
 }
 
-void Image::locateSubsetAndAllAround(Subset& subset) {
-
-	bool addPoint = false;
-	while (subset.wrap(Wrap::O).points().size()) {
-
-		Wrap wrap0;
-		for (PointsMap::iterator it = subset.wrap(Wrap::O).points().begin(); it != subset.wrap(Wrap::O).points().end(); it++) {
-			subset.addPoint(it->first);
-			subset.wrap(Wrap::BD).points().erase(it->first);
-
-			Pixels contourAroundPixels = getAllAround(it->first);
-
-			for (size_t j = 0; j < contourAroundPixels.size(); j++) {
-				if (!subset.isInSubsetAndWraps(contourAroundPixels[j])) {
-
-					switch (comparePixels(contourAroundPixels[j], subset.center())) {
-					case 0:
-						wrap0.addPoint(contourAroundPixels[j]);
-						break;
-					case 1:
-						subset.wrap(Wrap::UP_WRAP).addPoint(contourAroundPixels[j]);
-						break;
-					case -1:
-						subset.wrap(Wrap::DOWN).addPoint(contourAroundPixels[j]);
-						break;
-					}
-					subset.wrap(Wrap::BD).addPoint(contourAroundPixels[j]);
-				}
-			}
-		}
-		subset.wrap(Wrap::O) = wrap0;
-
-	}
-}
 
 void Image::resetPainting() {
 

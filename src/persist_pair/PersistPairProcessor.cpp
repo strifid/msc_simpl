@@ -25,29 +25,29 @@ PersistPairProcessor::~PersistPairProcessor() {
 
 bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 
-/*
-	for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
-		MsComplex *cmplx = *it;
-		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex());
-		ppointMax->m_type = PPoint::NEGATIVE;
-		m_points[ppointMax->m_id] = ppointMax;
+	/*
+	 for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
+	 MsComplex *cmplx = *it;
+	 PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex());
+	 ppointMax->m_type = PPoint::NEGATIVE;
+	 m_points[ppointMax->m_id] = ppointMax;
 
-		PPointPtr ppointMin = new PPoint(cmplx->m_min);
-		ppointMin->m_type = PPoint::POSITIVE;
-		m_points[ppointMin->m_id] = ppointMin;
+	 PPointPtr ppointMin = new PPoint(cmplx->m_min);
+	 ppointMin->m_type = PPoint::POSITIVE;
+	 m_points[ppointMin->m_id] = ppointMin;
 
-		for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
-			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex());
-			ppointSeddle->m_type = PPoint::UNIVERSAL;
-			m_points[ppointSeddle->m_id] = ppointSeddle;
-			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
-			m_relations.addPair(ppointMin->m_id, ppointSeddle->m_id);
-		}
+	 for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
+	 PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex());
+	 ppointSeddle->m_type = PPoint::UNIVERSAL;
+	 m_points[ppointSeddle->m_id] = ppointSeddle;
+	 m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
+	 m_relations.addPair(ppointMin->m_id, ppointSeddle->m_id);
+	 }
 
-	}
+	 }
 
 
-*/
+	 */
 	return true;
 }
 
@@ -57,37 +57,30 @@ void PersistPairProcessor::findPairs() {
 	}
 	std::sort(m_sortedPoints.begin(), m_sortedPoints.end(), pPointComparator);
 
-
 	for (size_t i = 0; i < m_sortedPoints.size(); ++i) {
 		uint32_t point = m_sortedPoints[i]->m_id;
 		filtered.insert(point);
-		if(getPoint(point) && getPoint(point)->m_type != PPoint::POSITIVE)
+		if (getPoint(point) && getPoint(point)->m_type != PPoint::POSITIVE)
 			cycleSearch(point);
 	}
 }
 
 void PersistPairProcessor::cycleSearch(uint32_t point) {
 
+	PPointPtr curPp = getPoint(point);
 	std::vector<uint32_t> *neighbs = m_relations.getNeighbs(point);
 	if (neighbs == NULL)
 		return;
 
-	bool bothInCycle = true;
+	std::vector<uint32_t> *curSet = new std::vector<uint32_t>();
 	for (size_t i = 0; i < neighbs->size(); ++i) {
-		if (m_cycles.find(neighbs->at(i)) == m_cycles.end()) {
-			bothInCycle = false;
-			break;
-		}
+		PPointPtr b = getPoint(neighbs->at(i));
+		if (b->m_dim == curPp->m_dim - 1 && b->m_type != curPp->m_type)
+			curSet->push_back(neighbs->at(i));
 	}
 
-	if (bothInCycle)
-		return;
-
-	std::vector<uint32_t> curSet;
-	curSet = *neighbs;
-
-	while (!curSet.empty()) {
-		uint32_t highest = getHighest(curSet);
+	while (!curSet->empty()) {
+		uint32_t highest = getHighest(*curSet);
 		if (m_cycles.find(highest) == m_cycles.end()) {
 			m_cycles[highest] = curSet;
 			m_cycles[point] = curSet;
@@ -100,21 +93,21 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 
 }
 
-void PersistPairProcessor::addInCycle(std::vector<uint32_t>& a, std::vector<uint32_t> b) {
+void PersistPairProcessor::addInCycle(std::vector<uint32_t>* a, std::vector<uint32_t>* b) {
 
-	std::vector<uint32_t> res = a;
-	res.insert(res.end(), b.begin(), b.end());
+	std::vector<uint32_t>* res = new std::vector<uint32_t>(*a);
+	res->insert(res->end(), b->begin(), b->end());
 
 	std::vector<uint32_t> common;
-	for (size_t i = 0; i < a.size(); ++i) {
-		for (size_t j = 0; j < b.size(); ++j) {
+	for (size_t i = 0; i < a->size(); ++i) {
+		for (size_t j = 0; j < b->size(); ++j) {
 			if (a[i] == b[j])
-				common.push_back(a[i]);
+				common.push_back((*a)[i]);
 		}
 	}
 
 	for (size_t i = 0; i < common.size(); ++i) {
-		std::remove(res.begin(), res.end(), common[i]);
+		std::remove(res->begin(), res->end(), common[i]);
 	}
 
 	a = res;
@@ -122,7 +115,7 @@ void PersistPairProcessor::addInCycle(std::vector<uint32_t>& a, std::vector<uint
 
 PPointPtr PersistPairProcessor::getPoint(uint32_t id) {
 	PointsMap::iterator it = m_points.find(id);
-	if(it == m_points.end())
+	if (it == m_points.end())
 		return NULL;
 	return it->second;
 }
