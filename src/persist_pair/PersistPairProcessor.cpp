@@ -25,29 +25,30 @@ PersistPairProcessor::~PersistPairProcessor() {
 
 bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 
-	/*
-	 for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
-	 MsComplex *cmplx = *it;
-	 PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex());
-	 ppointMax->m_type = PPoint::NEGATIVE;
-	 m_points[ppointMax->m_id] = ppointMax;
+	for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
+		MsComplex *cmplx = *it;
+		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex());
+		ppointMax->m_type = PPoint::NEGATIVE;
+		ppointMax->m_dim = 2;
+		m_points[ppointMax->m_id] = ppointMax;
 
-	 PPointPtr ppointMin = new PPoint(cmplx->m_min);
-	 ppointMin->m_type = PPoint::POSITIVE;
-	 m_points[ppointMin->m_id] = ppointMin;
+		PPointPtr ppointMin = new PPoint(cmplx->m_min);
+		ppointMin->m_type = PPoint::POSITIVE;
+		ppointMin->m_dim = 0;
 
-	 for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
-	 PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex());
-	 ppointSeddle->m_type = PPoint::UNIVERSAL;
-	 m_points[ppointSeddle->m_id] = ppointSeddle;
-	 m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
-	 m_relations.addPair(ppointMin->m_id, ppointSeddle->m_id);
-	 }
+		m_points[ppointMin->m_id] = ppointMin;
 
-	 }
+		for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
+			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex());
+			ppointSeddle->m_type = PPoint::UNIVERSAL;
+			ppointSeddle->m_dim = 1;
 
+			m_points[ppointSeddle->m_id] = ppointSeddle;
+			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
+			m_relations.addPair(ppointMin->m_id, ppointSeddle->m_id);
+		}
 
-	 */
+	}
 	return true;
 }
 
@@ -65,18 +66,33 @@ void PersistPairProcessor::findPairs() {
 	}
 }
 
+std::vector<uint32_t> PersistPairProcessor::getNeighbs(uint32_t point) {
+
+	std::vector<uint32_t> ret;
+	std::vector<uint32_t> *neighbs = m_relations.getNeighbs(point);
+	if (neighbs == NULL)
+		return ret;
+
+	for (size_t i = 0; i < neighbs->size(); ++i) {
+		if (filtered.find(neighbs->at(i)) != filtered.end()) {
+			ret.push_back(neighbs->at(i));
+		}
+	}
+
+	return ret;
+
+}
+
 void PersistPairProcessor::cycleSearch(uint32_t point) {
 
 	PPointPtr curPp = getPoint(point);
-	std::vector<uint32_t> *neighbs = m_relations.getNeighbs(point);
-	if (neighbs == NULL)
-		return;
+	std::vector<uint32_t> neighbs = getNeighbs(point);
 
 	std::vector<uint32_t> *curSet = new std::vector<uint32_t>();
-	for (size_t i = 0; i < neighbs->size(); ++i) {
-		PPointPtr b = getPoint(neighbs->at(i));
+	for (size_t i = 0; i < neighbs.size(); ++i) {
+		PPointPtr b = getPoint(neighbs[i]);
 		if (b->m_dim == curPp->m_dim - 1 && b->m_type != curPp->m_type)
-			curSet->push_back(neighbs->at(i));
+			curSet->push_back(neighbs[i]);
 	}
 
 	while (!curSet->empty()) {
@@ -95,22 +111,32 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 
 void PersistPairProcessor::addInCycle(std::vector<uint32_t>* a, std::vector<uint32_t>* b) {
 
-	std::vector<uint32_t>* res = new std::vector<uint32_t>(*a);
-	res->insert(res->end(), b->begin(), b->end());
+	std::vector<uint32_t> res(*a);
+	res.insert(res.end(), b->begin(), b->end());
 
 	std::vector<uint32_t> common;
 	for (size_t i = 0; i < a->size(); ++i) {
 		for (size_t j = 0; j < b->size(); ++j) {
-			if (a[i] == b[j])
+			if ((*a)[i] == (*b)[j])
 				common.push_back((*a)[i]);
 		}
 	}
+	std::vector<uint32_t> mv;
 
-	for (size_t i = 0; i < common.size(); ++i) {
-		std::remove(res->begin(), res->end(), common[i]);
+	for (size_t i = 0; i < res.size(); ++i) {
+		bool hasCommon = false;
+		for (size_t j = 0; j < common.size(); ++j) {
+			if (res[i] == common[j]) {
+				hasCommon = true;
+				break;
+			}
+		}
+		if (!hasCommon)
+			mv.push_back(res[i]);
 	}
 
-	a = res;
+	a->clear();
+	*a = mv;
 }
 
 PPointPtr PersistPairProcessor::getPoint(uint32_t id) {
@@ -123,11 +149,11 @@ PPointPtr PersistPairProcessor::getPoint(uint32_t id) {
 uint32_t PersistPairProcessor::getHighest(std::vector<uint32_t>& v) {
 	MT_EXCEPTION_ASSERT(v.size(), "can't get hiegst becouse v.size = 0")
 
-	uint32_t val = m_points[v[0]]->m_valueFirst, index = v[0];
+	uint32_t val = m_points[v[0]]->value(), index = v[0];
 
 	for (size_t i = 1; i < v.size(); ++i) {
-		if (m_points[v[i]]->m_valueFirst > val) {
-			val = m_points[v[i]]->m_valueFirst;
+		if (m_points[v[i]]->value() > val) {
+			val = m_points[v[i]]->value();
 			index = v[i];
 		}
 	}

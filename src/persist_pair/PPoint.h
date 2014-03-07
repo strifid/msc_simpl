@@ -19,7 +19,7 @@ public:
 	} m_type;
 
 
-	PPoint(int x, int y, int value, Type t);
+	PPoint(int value, Type t, uint32_t dim);
 
 	virtual ~PPoint();
 

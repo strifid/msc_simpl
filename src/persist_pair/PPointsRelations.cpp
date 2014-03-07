@@ -40,6 +40,8 @@ std::vector<uint32_t>* PPointsRelations::getNeighbs(uint32_t id) {
 	RelationsMap::iterator it = m_relations.find(id);
 	if (it == m_relations.end())
 		return NULL;
+
+
 	return &(it->second);
 
 }

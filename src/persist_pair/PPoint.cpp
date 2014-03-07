@@ -9,14 +9,14 @@
 
 uint32_t PPoint::pointId = 1;
 
-PPoint::PPoint(int x, int y, int value, Type t) :
-		Vertex(x, y) {
+PPoint::PPoint(int value, Type t, uint32_t dim) :
+		Vertex(0, 0) {
 
 	m_id = pointId;
 	pointId++;
 	m_value = value;
 	m_type = t;
-	m_dim = 0;
+	m_dim = dim;
 
 }
 

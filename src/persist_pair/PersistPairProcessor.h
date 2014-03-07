@@ -32,6 +32,7 @@ public:
 
 protected:
 
+	std::vector<uint32_t> getNeighbs(uint32_t point);
 	PPointPtr getPoint(uint32_t id);
 
 	void addInCycle(std::vector<uint32_t>* a, std::vector<uint32_t>* b);

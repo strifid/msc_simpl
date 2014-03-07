@@ -55,47 +55,47 @@ TEST_GROUP(PPairProcessor) {
 		proc.m_relations.addPair(9, 21);
 		proc.m_relations.addPair(9, 3);
 
-		PPointPtr p = new PPoint(0,0,1, PPoint::POSITIVE);
+		PPointPtr p = new PPoint(1, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,2, PPoint::POSITIVE);
+		p = new PPoint(2, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,3, PPoint::POSITIVE);
+		p = new PPoint(3, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,4, PPoint::POSITIVE);
+		p = new PPoint(4, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,5, PPoint::POSITIVE);
+		p = new PPoint(5, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,6, PPoint::POSITIVE);
+		p = new PPoint(6, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,7, PPoint::POSITIVE);
+		p = new PPoint(7, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,8, PPoint::UNIVERSAL);
+		p = new PPoint(8, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,9, PPoint::UNIVERSAL);
+		p = new PPoint(9, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,10, PPoint::UNIVERSAL);
+		p = new PPoint(10, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,11, PPoint::POSITIVE);
+		p = new PPoint(11, PPoint::POSITIVE, 0);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,12, PPoint::POSITIVE);
+		p = new PPoint(12, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,13, PPoint::POSITIVE);
+		p = new PPoint(13, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,14, PPoint::POSITIVE);
+		p = new PPoint(14, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,15, PPoint::POSITIVE);
+		p = new PPoint(15, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,16, PPoint::POSITIVE);
+		p = new PPoint(16, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,17, PPoint::POSITIVE);
+		p = new PPoint(17, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,18, PPoint::POSITIVE);
+		p = new PPoint(18, PPoint::UNIVERSAL, 1);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,19, PPoint::NEGATIVE);
+		p = new PPoint(19, PPoint::NEGATIVE, 2);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,20, PPoint::NEGATIVE);
+		p = new PPoint(20, PPoint::NEGATIVE, 2);
 		proc.m_points[p->m_id] = p;
-		p = new PPoint(0,0,21, PPoint::NEGATIVE);
+		p = new PPoint(21, PPoint::NEGATIVE, 2);
 		proc.m_points[p->m_id] = p;
 
 	}
@@ -106,5 +106,13 @@ TEST(PPairProcessor, testPPairProc) {
 	PersistPairProcessor proc;
 	initRelations(proc);
 	proc.findPairs();
+
+
+	for (int i = 0; i < proc.ppairs.size(); ++i) {
+		std::cout << "first: " << proc.ppairs[i].first << " second: " << proc.ppairs[i].second << std::endl;
+
+	}
+
+	CHECK_EQUAL(10, proc.ppairs.size());
 
 }
