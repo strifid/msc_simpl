@@ -30,6 +30,9 @@ public:
 	std::vector<std::pair<uint32_t, uint32_t> > ppairs;
 	std::map<uint32_t, std::vector<uint32_t>* > m_cycles;
 
+	void sort();
+	void printToFile(const std::string& file);
+
 protected:
 
 	std::vector<uint32_t> getNeighbs(uint32_t point);

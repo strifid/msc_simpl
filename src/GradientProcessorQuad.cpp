@@ -1,21 +1,40 @@
 #include "GradientProcessorQuad.h"
-#include "opencv2/highgui/highgui.hpp"
-#include "Pixel.h"
-#include <set>
-#include "Edge.h"
-#include "opencv2/core/core.hpp"
-#include "CofacedFace.h"
-#include "CofacedFace.h"
-#include <iosfwd>
-#include <iostream>
-#include <fstream>
-#include "MsComplexEditor.h"
+
+#include <mt/common/Singleton.h>
+#include <mt/common/SmartPtr.h>
+#include <mt/logger/Logger.h>
+#include <mt/logger/LoggerFactory.h>
+#include <mt/thread/AutoMutex.h>
+#include <mt/thread/Mutex.h>
+#include <stddef.h>
+#include <sys/types.h>
+#include <vtkCellArray.h>
+#include <vtkIdList.h>
+#include <vtkPoints.h>
+#include <vtkPolyData.h>
+#include <vtkSmartPointer.h>
+#include <vtkType.h>
+#include <vtkXMLPolyDataWriter.h>
+//#include "opencv2/core/core.hpp"
+//#include "opencv2/highgui/highgui.hpp"
 #include <algorithm>
-#include "VtpWriter.h"
-using cv::imread;
-using cv::Scalar;
-using cv::waitKey;
-using cv::imwrite;
+#include <stdint.h>
+//#include <fstream>
+//#include <iosfwd>
+#include <iostream>
+#include <map>
+//#include <set>
+#include <utility>
+#include <vector>
+
+#include "Arc.h"
+//#include "CofacedFace.h"
+//#include "Edge.h"
+//#include "MsComplexEditor.h"
+#include "MsComplexStorage.h"
+#include "persist_pair/PersistPairProcessor.h"
+#include "Pixel.h"
+//#include "VtpWriter.h"
 
 std::ostream& operator<<(std::ostream& out, DescArcPtr a) {
 	out << "begin: " << *(a->m_arcBegin) << ", end: " << *(a->m_arcEnd) << " arc: ";
@@ -157,24 +176,33 @@ void GradientProcessorQuad::run() {
 	connectArcs(m_ascArcsStorage, m_descArcsStorage);
 	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
 
-	if (m_persistence) {
-		createArcStorageForSimpl();
-		for (size_t i = 0; i < 10; ++i) {
+	PersistPairProcessor ppProc;
+	ppProc.init(m_msCmplxStorage.complexesSet());
+	ppProc.findPairs();
 
-			simplify(m_persistence);
-			connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
-			createArcStorageForSimpl();
+	/*
+	 if (m_persistence) {
+	 createArcStorageForSimpl();
+	 for (size_t i = 0; i < 10; ++i) {
 
-			std::cout << "after simpl with p= " << m_persistence << " mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
-		}
-	}
+	 simplify(m_persistence);
+	 connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
+	 createArcStorageForSimpl();
+
+	 std::cout << "after simpl with p= " << m_persistence << " mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+	 }
+	 }
+	 */
 
 	if (!m_outputFile.empty())
 		m_msCmplxStorage.saveCriticalPoints(m_outputFile + ".txt");
 
 	m_msCmplxStorage.drawAll();
+	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
+
 	drawGradientField();
 	drawComplexesOnOriginal();
+
 }
 
 struct FacePtrComparator {

@@ -6,7 +6,22 @@
  */
 
 #include "PersistPairProcessor.h"
-#include "../MsComplex.h"
+
+#include <mt/common/Exception.h>
+#include <stddef.h>
+#include <algorithm>
+#include <cstdint>
+#include <iostream>
+#include <map>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "../Edge.h"
+//#include "../MsComplex.h"
+#include "../Triangle.h"
+#include "../Vertex.h"
 
 struct PPointComparator {
 	bool operator()(const PPointPtr a, const PPointPtr b) const {
@@ -27,21 +42,15 @@ bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 
 	for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
 		MsComplex *cmplx = *it;
-		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex());
-		ppointMax->m_type = PPoint::NEGATIVE;
-		ppointMax->m_dim = 2;
+		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex()->value(), PPoint::NEGATIVE, (uint32_t) 2);
 		m_points[ppointMax->m_id] = ppointMax;
 
-		PPointPtr ppointMin = new PPoint(cmplx->m_min);
-		ppointMin->m_type = PPoint::POSITIVE;
-		ppointMin->m_dim = 0;
+		PPointPtr ppointMin = new PPoint(cmplx->m_min->value(), PPoint::POSITIVE, 0);
 
 		m_points[ppointMin->m_id] = ppointMin;
 
 		for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
-			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex());
-			ppointSeddle->m_type = PPoint::UNIVERSAL;
-			ppointSeddle->m_dim = 1;
+			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex()->value(), PPoint::UNIVERSAL, 1);
 
 			m_points[ppointSeddle->m_id] = ppointSeddle;
 			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
@@ -95,8 +104,12 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 			curSet->push_back(neighbs[i]);
 	}
 
+	uint32_t prev = 0;
 	while (!curSet->empty()) {
 		uint32_t highest = getHighest(*curSet);
+		if (prev == highest)
+			break;
+		prev = highest;
 		if (m_cycles.find(highest) == m_cycles.end()) {
 			m_cycles[highest] = curSet;
 			m_cycles[point] = curSet;
@@ -161,6 +174,33 @@ uint32_t PersistPairProcessor::getHighest(std::vector<uint32_t>& v) {
 	return index;
 }
 
+struct VertexPtrComparator {
+	bool operator()(const VertexPtr a, const VertexPtr b) const {
+		return *a < *b;
+	}
+};
+
+class PPairComparator {
+public:
+	bool operator()(const std::pair<uint32_t, uint32_t> &a, const std::pair<uint32_t, uint32_t> &b) {
+		uint32_t maxA = a.first > a.second ? a.first : a.second;
+		uint32_t minA = a.first > a.second ? a.second : a.first;
+
+		uint32_t maxB = b.first > b.second ? b.first : b.second;
+		uint32_t minB = b.first > b.second ? b.second : b.first;
+
+		return (maxA - minA) > (maxB - minB);
+	}
+
+};
+
+void PersistPairProcessor::sort() {
+
+	std::sort(ppairs.begin(), ppairs.end(), PPairComparator());
+}
+
+void PersistPairProcessor::printToFile(const std::string& file) {
+}
 /*
 
  void PersistPairProcessor::findPairs() {
