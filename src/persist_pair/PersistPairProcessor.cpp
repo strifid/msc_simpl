@@ -9,17 +9,17 @@
 
 #include <mt/common/Exception.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <algorithm>
-#include <cstdint>
 #include <iostream>
 #include <map>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
+#include <fstream>
 
 #include "../Edge.h"
-//#include "../MsComplex.h"
 #include "../Triangle.h"
 #include "../Vertex.h"
 
@@ -30,12 +30,10 @@ struct PPointComparator {
 } pPointComparator;
 
 PersistPairProcessor::PersistPairProcessor() {
-	// TODO Auto-generated constructor stub
 
 }
 
 PersistPairProcessor::~PersistPairProcessor() {
-	// TODO Auto-generated destructor stub
 }
 
 bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
@@ -43,14 +41,21 @@ bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 	for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
 		MsComplex *cmplx = *it;
 		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex()->value(), PPoint::NEGATIVE, (uint32_t) 2);
+		ppointMax->x = cmplx->m_max->maxVertex()->x;
+		ppointMax->y = cmplx->m_max->maxVertex()->y;
+
 		m_points[ppointMax->m_id] = ppointMax;
 
 		PPointPtr ppointMin = new PPoint(cmplx->m_min->value(), PPoint::POSITIVE, 0);
+		ppointMin->x = cmplx->m_min->x;
+		ppointMin->y = cmplx->m_min->y;
 
 		m_points[ppointMin->m_id] = ppointMin;
 
 		for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
 			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex()->value(), PPoint::UNIVERSAL, 1);
+			ppointSeddle->x = cmplx->m_seddles[i]->maxVertex()->x;
+			ppointSeddle->y = cmplx->m_seddles[i]->maxVertex()->y;
 
 			m_points[ppointSeddle->m_id] = ppointSeddle;
 			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
@@ -73,6 +78,68 @@ void PersistPairProcessor::findPairs() {
 		if (getPoint(point) && getPoint(point)->m_type != PPoint::POSITIVE)
 			cycleSearch(point);
 	}
+}
+
+struct PPairComparatorByPersistence {
+public:
+	bool operator()(const std::pair<PPointPtr, PPointPtr> &aPair, const std::pair<PPointPtr, PPointPtr> &bPair) {
+		int32_t maxValA = aPair.first->value() >= aPair.second->value() ? aPair.first->value() : aPair.second->value();
+		int32_t minValA = aPair.first->value() < aPair.second->value() ? aPair.first->value() : aPair.second->value();
+
+//		std::cout << "maxValA " << maxValA << " minValA " << minValA << std::endl;
+
+		int32_t maxValB = bPair.first->value() >= bPair.second->value() ? bPair.first->value() : bPair.second->value();
+		int32_t minValB = bPair.first->value() < bPair.second->value() ? bPair.first->value() : bPair.second->value();
+
+		//	std::cout << "maxValB " << maxValB << " minValB " << minValB << std::endl;
+
+		return (maxValA - minValA) > (maxValB - minValB);
+	}
+
+};
+
+void PersistPairProcessor::filter(uint32_t persistence) {
+
+	for (size_t i = 0; i < ppairs.size(); ++i) {
+		PPointPtr pA = getPoint(ppairs[i].first);
+		PPointPtr pB = getPoint(ppairs[i].second);
+		if (pA != NULL && pB != NULL) {
+			ppairsPoint.push_back(std::make_pair(pA, pB));
+
+		}
+	}
+
+	std::sort(ppairsPoint.begin(), ppairsPoint.end(), PPairComparatorByPersistence());
+
+	/*
+	 for (size_t i = 0; i < ppairsPoint.size(); ++i) {
+	 std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
+	 }
+	 */
+
+	size_t i = 0;
+	for (i = 0; i < ppairsPoint.size(); ++i) {
+		int32_t maxValA =
+				ppairsPoint[i].first->value() >= ppairsPoint[i].second->value() ? ppairsPoint[i].first->value() : ppairsPoint[i].second->value();
+		int32_t minValA =
+				ppairsPoint[i].first->value() < ppairsPoint[i].second->value() ? ppairsPoint[i].first->value() : ppairsPoint[i].second->value();
+//		std::cout << "max :  " << maxValA << " min " << minValA << " pers " << persistence << std::endl;
+
+		if (maxValA - minValA < persistence)
+			break;
+	}
+
+	if (i < ppairsPoint.size() - 1)
+		ppairsPoint.erase(ppairsPoint.begin() + i, ppairsPoint.end());
+
+	/*
+	 std::cout << "i:  " << i << std::endl;
+
+	 for (i = 0; i < ppairsPoint.size(); ++i) {
+	 std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
+	 }
+	 */
+
 }
 
 std::vector<uint32_t> PersistPairProcessor::getNeighbs(uint32_t point) {
@@ -159,6 +226,23 @@ PPointPtr PersistPairProcessor::getPoint(uint32_t id) {
 	return it->second;
 }
 
+void PersistPairProcessor::printToFile(const std::string& path) {
+	std::ofstream coordFile;
+	coordFile.open(path.c_str());
+	coordFile << "x\ty\tz" << std::endl;
+
+	if (!ppairsPoint.size())
+		filter(0);
+
+	for (size_t i = 0; i < ppairsPoint.size(); ++i) {
+		coordFile << ppairsPoint[i].first->x << "\t" << ppairsPoint[i].first->y << "\t" << ppairsPoint[i].first->value() << std::endl;
+		coordFile << ppairsPoint[i].second->x << "\t" << ppairsPoint[i].second->y << "\t" << ppairsPoint[i].second->value() << std::endl;
+
+	}
+	coordFile.close();
+
+}
+
 uint32_t PersistPairProcessor::getHighest(std::vector<uint32_t>& v) {
 	MT_EXCEPTION_ASSERT(v.size(), "can't get hiegst becouse v.size = 0")
 
@@ -173,12 +257,6 @@ uint32_t PersistPairProcessor::getHighest(std::vector<uint32_t>& v) {
 
 	return index;
 }
-
-struct VertexPtrComparator {
-	bool operator()(const VertexPtr a, const VertexPtr b) const {
-		return *a < *b;
-	}
-};
 
 class PPairComparator {
 public:
@@ -199,56 +277,3 @@ void PersistPairProcessor::sort() {
 	std::sort(ppairs.begin(), ppairs.end(), PPairComparator());
 }
 
-void PersistPairProcessor::printToFile(const std::string& file) {
-}
-/*
-
- void PersistPairProcessor::findPairs() {
-
- std::set<uint32_t> filtered;
- std::set<uint32_t> paired;
- std::set<std::pair<uint32_t, uint32_t> > paires;
-
- for (size_t i = 0; i < m_points.size(); ++i) {
- PPointPtr ppoint = m_points[i];
- if (ppoint->m_type == PPoint::POSITIVE) {
- filtered.insert(ppoint->m_id);
- } else if (ppoint->m_type == PPoint::UNIVERSAL) {
- std::vector<uint32_t> *neighbs = m_relations.getNeighbs(ppoint->m_id);
- MT_EXCEPTION_ASSERT(neighbs!=NULL, "getNeighbs return NULL for id " << ppoint->m_id);
- uint32_t nearest = getNearest(neighbs);
- if(isInComponent(nearest)){
- PComponentPtr component = getComponent(nearest);
- }else{
- PComponentPtr component = new PComponent();
- component->addPoint((*neighbs)[i]);
- }
-
-
- } else {
-
- }
-
- }
-
- }
- */
-
-/*
- bool PersistPairProcessor::isInComponent(uint32_t id) {
- return m_components.find(id) != m_components.end();
- }
-
- void PersistPairProcessor::addComponent(uint32_t id, PComponentPtr cmp) {
- m_components[id] = cmp;
- }
-
- PComponentPtr PersistPairProcessor::getComponent(uint32_t id) {
- std::map<uint32_t, PComponentPtr>::iterator it = m_components.find(id);
- if (it == m_components.end())
- return NULL;
- return it->second;
-
- }
-
- */

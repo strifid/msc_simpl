@@ -6,7 +6,9 @@
 #include <mt/logger/LoggerFactory.h>
 #include <mt/thread/AutoMutex.h>
 #include <mt/thread/Mutex.h>
+#include <mt/utils/StrUtils.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <sys/types.h>
 #include <vtkCellArray.h>
 #include <vtkIdList.h>
@@ -15,25 +17,18 @@
 #include <vtkSmartPointer.h>
 #include <vtkType.h>
 #include <vtkXMLPolyDataWriter.h>
-//#include "opencv2/core/core.hpp"
-//#include "opencv2/highgui/highgui.hpp"
 #include <algorithm>
-#include <stdint.h>
-//#include <fstream>
-//#include <iosfwd>
+#include <iosfwd>
 #include <iostream>
 #include <map>
-//#include <set>
 #include <utility>
 #include <vector>
 
 #include "Arc.h"
-//#include "CofacedFace.h"
-//#include "Edge.h"
-//#include "MsComplexEditor.h"
 #include "MsComplexStorage.h"
 #include "persist_pair/PersistPairProcessor.h"
 #include "Pixel.h"
+
 //#include "VtpWriter.h"
 
 std::ostream& operator<<(std::ostream& out, DescArcPtr a) {
@@ -179,7 +174,8 @@ void GradientProcessorQuad::run() {
 	PersistPairProcessor ppProc;
 	ppProc.init(m_msCmplxStorage.complexesSet());
 	ppProc.findPairs();
-
+	ppProc.filter(m_persistence);
+	ppProc.printToFile("ppairs_p" + mt::StrUtils::intToString(m_persistence) + ".txt");
 	/*
 	 if (m_persistence) {
 	 createArcStorageForSimpl();
@@ -317,8 +313,7 @@ void GradientProcessorQuad::removeAscArc(int vx, int vy, int sx, int sy) {
 void GradientProcessorQuad::simplify(uint32_t persistence) {
 
 	std::sort(m_maximums.begin(), m_maximums.end(), FacePtrComparator);
-	simplifyArcs<AscArcPtr, FacePtr, VertexPtr, DescArcPtr>(m_maximums, m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl, persistence,
-			true);
+	simplifyArcs<AscArcPtr, FacePtr, VertexPtr, DescArcPtr>(m_maximums, m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl, persistence, true);
 
 	Vertexes mins;
 	for (VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); ++it) {

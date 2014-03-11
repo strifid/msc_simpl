@@ -101,7 +101,6 @@ public:
 	}
 
 	void saveCriticalPoints(const std::string& path) {
-		std::ofstream coordFile;
 
 		VertexesSet vtxs;
 		for (MsComplexesSet::iterator it = m_complexesSet.begin(); it != m_complexesSet.end(); it++) {
@@ -111,6 +110,8 @@ public:
 				vtxs.insert((*it)->m_seddles[i]->maxVertex());
 			}
 		}
+		std::ofstream coordFile;
+
 		coordFile.open(path.c_str());
 		coordFile << "x\ty\tz" << std::endl;
 		for (VertexesSet::iterator it = vtxs.begin(); it != vtxs.end(); it++) {
