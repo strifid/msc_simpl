@@ -14,7 +14,7 @@
 #include <iosfwd>
 #include <fstream>
 
-class MsComplexStorage {
+class MsComplexStorage : public Drawer {
 public:
 	MsComplexStorage() {
 	}
@@ -53,18 +53,11 @@ public:
 	void drawComplex(MsComplex* cmplx) {
 		m_msComplexesForDrawing.push_back(cmplx);
 	}
+
+	std::vector<MsComplex*>& getComplxesForDrawing(){
+		return m_msComplexesForDrawing;
+	}
 	void drawAll() {
-
-/*
-		size_t i = 0;
-		for (MsComplexesSet::iterator it = m_complexesSet.begin(); it != m_complexesSet.end(); it++) {
-			if (i == 3)
-				m_msComplexesForDrawing.push_back(*it);
-
-			i++;
-		}
-*/
-
 		m_msComplexesForDrawing.insert(m_msComplexesForDrawing.begin(), m_complexesSet.begin(), m_complexesSet.end());
 	}
 
@@ -120,7 +113,7 @@ public:
 		coordFile.close();
 	}
 
-	void draw(Mat & mat) {
+	virtual void draw(Mat & mat) {
 		for (size_t i = 0; i < m_msComplexesForDrawing.size(); i++) {
 			m_msComplexesForDrawing[i]->draw(mat);
 		}

@@ -34,7 +34,7 @@ public:
 
 	void sort();
 	void printToFile(const std::string& file);
-	void filter(uint32_t persistence);
+	std::vector<std::pair<PPointPtr, PPointPtr> >& filter(uint32_t persistence);
 
 	std::vector<std::pair<PPointPtr, PPointPtr> >& createPpairVector();
 

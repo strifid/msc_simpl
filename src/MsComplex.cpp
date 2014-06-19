@@ -1,14 +1,25 @@
 #include "MsComplex.h"
+#include "opencv2/core/core.hpp"
+
+#include "Edge.h"
+using cv::line;
 
 void MsComplex::draw(Mat &img) {
 
 //	if (m_max->maxVertex()->x == 6 && m_max->maxVertex()->y == 10 && m_min->x == 14) {
 	for (size_t i = 0; i < m_aArcs.size(); i++) {
-		m_aArcs[i]->m_arcEnd->draw(img, 200);
 
-		for (size_t z = 0; z < m_aArcs[i]->m_arc.size(); z++) {
-			m_aArcs[i]->m_arc[z]->draw(img, 200);
+		for (size_t z = 0; z < m_aArcs[i]->m_arc.size() - 1; z++) {
+
+//			Face
+//			m_aArcs[i]->m_arc[z]->draw(img, 200);
+			line(img, m_aArcs[i]->m_arc[z]->centralPoint(), m_aArcs[i]->m_arc[z+1]->centralPoint(), Scalar(0, 100, 255), 5, 8);
+
 		}
+
+		line(img, m_aArcs[i]->m_arc.front()->centralPoint(), m_aArcs[i]->m_arcBegin->centralPoint(), Scalar(0, 100, 255), 5, 8);
+
+		m_aArcs[i]->m_arcEnd->draw(img, 200);
 
 	}
 
@@ -49,9 +60,3 @@ void MsComplex::drawOriginal(Image & img) {
 	img.paintPixel(m_max->maxVertex(), Image::RED);
 }
 
-bool MsComplex::isPersistent(uint32_t persistent) {
-
-	if (m_max->m_valueFirst > m_min->m_valueFirst + persistent)
-		return true;
-	return false;
-}

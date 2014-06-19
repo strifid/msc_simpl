@@ -183,9 +183,8 @@ void GradientProcessor::findSeddles() {
 	}
 }
 
-void GradientProcessor::drawGradientField() {
-	if (m_gradFieldFile.empty())
-		return;
+void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool show ) {
+
 	Mat drawField(m_img.height() * Image::m_enlargeFactor + Image::m_enlargeFactor * 2,
 			m_img.width() * Image::m_enlargeFactor + 2 * Image::m_enlargeFactor, CV_8UC3, Scalar(255, 255, 255));
 
@@ -197,36 +196,12 @@ void GradientProcessor::drawGradientField() {
 		putText(drawField, mt::StrUtils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
 				Scalar(0, 0, 0), 1.3);
 	}
-
-	m_msCmplxStorage.draw(drawField);
-
+	drawer->draw(drawField);
+	//		m_msCmplxStorage.draw(drawField);
 	Edges& edges = m_edges.vector();
 	for (size_t i = 0; i < edges.size(); i++) {
 		edges[i]->draw(drawField);
 	}
-
-	/*
-	 for (size_t i = 0; i < m_maximums.size(); i++) {
-	 circle(
-	 drawField,
-	 Point(m_maximums[i]->maxVertex()->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
-	 m_maximums[i]->maxVertex()->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 6,
-	 Scalar(0, 0, 255), 5);
-	 }
-	 */
-
-	/*for (typename VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); ++it) {
-	 circle(drawField,
-	 Point((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor, (*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 6,
-	 Scalar(255, 255, 0), 5);
-	 }
-	 */
-
-	/*
-	 for (size_t i = 0; i < m_seddles.size(); ++i) {
-	 m_seddles[i]->draw(drawField, 3, Scalar(0, 255, 0));
-	 }
-	 */
 
 	for (int i = 0; i < m_cofacesSimplexes.size(); ++i) {
 		m_cofacesSimplexes[i]->draw(drawField);
@@ -236,9 +211,25 @@ void GradientProcessor::drawGradientField() {
 		m_vertexes.vector().at(i)->draw(drawField);
 	}
 
-	imshow(m_img.imageName().c_str(), drawField);
-	imwrite(m_gradFieldFile.c_str(), drawField);
-	waitKey(0);
+	if (show) {
+		imshow(path.c_str(), drawField);
+		waitKey(0);
+	}
+	imwrite(path.c_str(), drawField);
+}
+
+void GradientProcessor::drawGradientField() {
+	if (m_gradFieldFile.empty())
+		return;
+
+	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
+
+	for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
+		drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
+	}
+
+	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, true);
+
 }
 
 bool GradientProcessor::getAscendingManifold(std::vector<FacePtr>& arc) {
@@ -292,3 +283,4 @@ void GradientProcessor::getDescendingManifold(Edges& arc, Vertexes& vtxs) {
 	getDescendingManifold(arc, vtxs);
 
 }
+

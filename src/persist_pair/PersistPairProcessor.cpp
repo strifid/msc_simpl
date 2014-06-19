@@ -96,7 +96,7 @@ public:
 
 		//	std::cout << "maxValB " << maxValB << " minValB " << minValB << std::endl;
 
-		return (maxValA - minValA) > (maxValB - minValB);
+		return (maxValA - minValA) < (maxValB - minValB);
 	}
 
 };
@@ -114,7 +114,7 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::createPpair
 	return ppairsPoint;
 }
 
-void PersistPairProcessor::filter(uint32_t persistence) {
+std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint32_t persistence) {
 
 	createPpairVector();
 	/*
@@ -131,7 +131,7 @@ void PersistPairProcessor::filter(uint32_t persistence) {
 				ppairsPoint[i].first->value() < ppairsPoint[i].second->value() ? ppairsPoint[i].first->value() : ppairsPoint[i].second->value();
 //		std::cout << "max :  " << maxValA << " min " << minValA << " pers " << persistence << std::endl;
 
-		if (maxValA - minValA < persistence)
+		if (maxValA - minValA > persistence)
 			break;
 	}
 
@@ -139,6 +139,8 @@ void PersistPairProcessor::filter(uint32_t persistence) {
 		ppairsPoint.erase(ppairsPoint.begin() + i, ppairsPoint.end());
 
 	std::cout << "ppairs:  " << ppairsPoint.size() << std::endl;
+
+	return ppairsPoint;
 
 	/*
 	 std::cout << "i:  " << i << std::endl;

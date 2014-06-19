@@ -47,9 +47,27 @@ bool Image::initFits(const std::string & path) {
 	return false;
 }
 
+void Image::mirrorEdges(Mat& img) {
+
+	Mat mirrorEdgesMat = Mat(img.rows + 2, img.cols + 2, img.type());
+	mirrorEdgesMat.setTo(Scalar(0, 0, 0));
+
+	img.copyTo(mirrorEdgesMat(cv::Rect(Point(1, 1), img.size())));
+	mirrorEdgesMat.col(2).copyTo(mirrorEdgesMat(cv::Rect(Point(0, 0), mirrorEdgesMat.col(2).size())));
+	mirrorEdgesMat.col(mirrorEdgesMat.cols - 3).copyTo(
+			mirrorEdgesMat(cv::Rect(Point(mirrorEdgesMat.cols - 1, 0), mirrorEdgesMat.col(mirrorEdgesMat.cols - 3).size())));
+
+	mirrorEdgesMat.row(2).copyTo(mirrorEdgesMat(cv::Rect(Point(0, 0), mirrorEdgesMat.row(2).size())));
+	mirrorEdgesMat.row(mirrorEdgesMat.rows - 3).copyTo(
+			mirrorEdgesMat(cv::Rect(Point(0, mirrorEdgesMat.rows - 1), mirrorEdgesMat.row(mirrorEdgesMat.rows - 3).size())));
+	img = mirrorEdgesMat;
+}
+
 bool Image::init(const std::string & path) {
 	m_imagePath = path;
+
 	m_img = imread(path.c_str(), 0);
+//	mirrorEdges(m_img);
 	m_forChanges = imread(path.c_str(), 1);
 	m_width = m_img.cols;
 	m_height = m_img.rows;
@@ -197,7 +215,6 @@ bool Image::isBoundaryPixel(const Pixel & pt) {
 	return false;
 }
 
-
 int32_t Image::comparePixels(const Pixel& a, const Pixel& b) {
 	int res = ::abs(value(a)) - ::abs(value(b));
 
@@ -209,7 +226,6 @@ int32_t Image::comparePixels(const Pixel& a, const Pixel& b) {
 
 	return 1;
 }
-
 
 void Image::resetPainting() {
 

@@ -128,6 +128,8 @@ protected:
 	Vertexes m_descendingVtxs;
 
 	MsComplexStorage m_msCmplxStorage;
+
+	void drawCmplx(const std::string& path, Drawer* drawer, bool show = false);
 };
 
 #endif /* GRADIENTPROCESSOR_H_ */

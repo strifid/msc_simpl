@@ -37,7 +37,7 @@ public:
 	}
 
 	VertexPtr maxVertex(){
-		return m_a;
+		return m_a->value() > m_b->value() ? m_a : m_b;
 	}
 protected:
 };

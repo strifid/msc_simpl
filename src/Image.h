@@ -65,7 +65,7 @@ public:
 	int32_t value(const Pixel&);
 
 protected:
-
+	void mirrorEdges(Mat&);
 	uint32_t m_sensivity;
 
 	void paint(Mat&);

@@ -60,8 +60,6 @@ protected:
 						cantRemove.push_back(lowestPersistentPairAsc);
 					} else {
 						arcsStorageForDel.erase(lowestPersistentPairAsc->m_arcBegin);
-						std::cout << "erase from second arc storage arc begin " << *(lowestPersistentPairAsc->m_arcBegin->maxVertex())
-								<< " end: " << *(lowestPersistentPairAsc->m_arcEnd->maxVertex()) << std::endl;
 					}
 				} else
 					hasTodo = false;
@@ -70,8 +68,7 @@ protected:
 	}
 
 	template<typename Simplex, typename ArcPtr>
-	ArcPtr findPersistentPair(Simplex face, std::vector<ArcPtr> *arcs, uint32_t persistence, std::vector<ArcPtr> &cantRemove, bool asc =
-			true) {
+	ArcPtr findPersistentPair(Simplex face, std::vector<ArcPtr> *arcs, uint32_t persistence, std::vector<ArcPtr> &cantRemove, bool asc = true) {
 		if (arcs == NULL)
 			return NULL;
 		ArcPtr maxPersistPair = NULL;
@@ -105,15 +102,12 @@ protected:
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
 		if (!secondLeg || *(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
-			std::cout << "second leg end == pp end" << std::endl;
 			return false;
 		}
 		//	std::cout << "find second leg beg: " << *(secondLeg->m_arcBegin) << " end: " << *(secondLeg->m_arcEnd) << std::endl;
 
 		if (arcStorage.hasCommonSeddle(secondLeg->m_arcEnd, lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
-			std::cout << "has common sedle for end1: " << *(secondLeg->m_arcEnd) << " end2: " << *(lowestPersistentPair->m_arcEnd)
-					<< std::endl;
 			return false;
 		}
 
@@ -122,9 +116,6 @@ protected:
 			for (size_t i = 0; i < arcs->size(); ++i) {
 				ArcPtr arc = arcs->at(i);
 				if (lowestPersistentPair->hasCommon(arc->m_arc)) {
-					std::cout << "1 can't remove ppair. has common points " << lowestPersistentPair << std::endl;
-					std::cout << "2 can't remove ppair. has common points " << arc << std::endl << std::endl;
-
 					arcStorage.addArc(lowestPersistentPair);
 					return false;
 				}
