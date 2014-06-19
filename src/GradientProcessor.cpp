@@ -43,7 +43,6 @@ void GradientProcessor::findMaximums() {
 	}
 }
 
-
 void GradientProcessor::normalizeField() {
 	bool run;
 	uint32_t counter = 0;
@@ -80,8 +79,10 @@ void GradientProcessor::addVertex(VertexPtr vtx) {
 
 void GradientProcessor::addEdge(EdgePtr face) {
 
-	if ((face->m_a->value()) == (face->m_b->value()))
-		return;
+	/*
+	 if ((face->m_a->value()) == (face->m_b->value()))
+	 return;
+	 */
 	face->m_seqId = m_seqId++;
 	m_edges.push(face);
 	m_simplexRelations.push(face);
@@ -113,28 +114,33 @@ void GradientProcessor::findMinimums() {
 	for (size_t i = vtxs.size() - 1; i > 0; i--) {
 		//std::cout << "val: " << vtxs[i]->value() << std::endl;
 
-		EdgePtr smallestFace = NULL;
+		EdgePtr smallestEdge = NULL;
 		VertexPtr neibVtx = vtxs.at(i);
-		Edges *faces = m_simplexRelations.edges(neibVtx);
-		for (size_t j = 0; j < faces->size(); ++j) {
-			EdgePtr neibFace = faces->at(j);
-			if (m_processedSmplexes.find(neibFace->m_seqId) == m_processedSmplexes.end()) {
-				if (neibFace->m_valueFirst == neibVtx->m_valueFirst) {
-					if (smallestFace == NULL)
-						smallestFace = neibFace;
-					else if (smallestFace->m_valueSecond > neibFace->m_valueSecond)
-						smallestFace = neibFace;
+		Edges *edges = m_simplexRelations.edges(neibVtx);
+		for (size_t j = 0; j < edges->size(); ++j) {
+
+			EdgePtr neibEdge = edges->at(j);
+//			std::cout << "vtx: " << neibVtx->toString() << " edge: " << *neibEdge << " edge seqId " << neibEdge->m_seqId << std::endl;
+
+			if (m_processedSmplexes.find(neibEdge->m_seqId) == m_processedSmplexes.end()) {
+				if (neibEdge->m_valueFirst == neibVtx->m_valueFirst) {
+					if (smallestEdge == NULL)
+						smallestEdge = neibEdge;
+					else if (smallestEdge->m_valueSecond > neibEdge->m_valueSecond)
+						smallestEdge = neibEdge;
 				}
 			}
 		}
 
-		if (smallestFace == NULL) {
+		if (smallestEdge == NULL) {
 			m_minimums.insert(neibVtx);
 		} else {
-			m_processedSmplexes.insert(smallestFace->m_seqId);
+//			std::cout << "find grad pair: " << neibVtx->toString() << " edge: " << *smallestEdge << " edge seqId " << smallestEdge->m_seqId << std::endl;
+
+			m_processedSmplexes.insert(smallestEdge->m_seqId);
 			m_processedSmplexes.insert(neibVtx->m_seqId);
-			m_cofacesSimplexes.push_back((CofacePtr) new CofacedEdge(neibVtx, smallestFace));
-			m_edgeVertexGradientPair[neibVtx] = smallestFace;
+			m_cofacesSimplexes.push_back((CofacePtr) new CofacedEdge(neibVtx, smallestEdge));
+			m_edgeVertexGradientPair[neibVtx] = smallestEdge;
 		}
 
 	}
@@ -188,8 +194,8 @@ void GradientProcessor::drawGradientField() {
 				Scalar(0, 0, 0), 1.3);
 	}
 	for (int i = 0; i < m_img.width(); ++i) {
-		putText(drawField, mt::StrUtils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL,
-				0.7, Scalar(0, 0, 0), 1.3);
+		putText(drawField, mt::StrUtils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
+				Scalar(0, 0, 0), 1.3);
 	}
 
 	m_msCmplxStorage.draw(drawField);
@@ -272,6 +278,11 @@ void GradientProcessor::getDescendingManifold(Edges& arc, Vertexes& vtxs) {
 	if (gradPair == NULL)
 		return;
 
+	if (gradPair->m_a == NULL || gradPair->m_b == NULL) {
+		std::cout << "ERROR: grad pair vtx NULL" << std::endl;
+		return;
+	}
+
 	VertexPtr nextVtx = gradPair->m_a;
 	if (*vtx == *(gradPair->m_a))
 		nextVtx = gradPair->m_b;
@@ -279,4 +290,5 @@ void GradientProcessor::getDescendingManifold(Edges& arc, Vertexes& vtxs) {
 	arc.push_back(gradPair);
 	vtxs.push_back(nextVtx);
 	getDescendingManifold(arc, vtxs);
+
 }

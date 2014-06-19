@@ -39,6 +39,9 @@ set(LIBS pthread xml2 mt m opencv_core opencv_highgui  vtkHybrid vtkIO vtkFilter
 add_executable (gradient_msc ${BASE_SOURCE} ${MAIN_SOURCE} ${PPAIR_SOURCE})
 target_link_libraries(gradient_msc ${LIBS})
 
+add_executable (create_test src/utils/generate_image.cpp)
+target_link_libraries(create_test ${LIBS})
+
 # Compile tests
 
 add_executable (tests ${BASE_SOURCE} ${TESTS_SOURCE} ${PPAIR_SOURCE})

@@ -59,6 +59,10 @@ int32_t GradientProcessorQuad::findEdges() {
 	std::vector<VertexPtr>& vertexes = m_vertexes.vector();
 	for (size_t i = 0; i < vertexes.size(); i++) {
 		Pixels pxls = m_img.getOneConnectedAround(dynamic_cast<Pixel&>(*vertexes[i]));
+
+		if (pxls.size() > 4) {
+			std::cout << "ERROR: vtx: " << vertexes[i]->toString() << " has one connected " << pxls.size() << std::endl;
+		}
 		for (size_t z = 0; z < pxls.size(); z++) {
 			VertexPtr vertexB = findVertexByPixel(pxls[z]);
 			if (vertexB == NULL)
@@ -130,17 +134,16 @@ void GradientProcessorQuad::addDescArc(VertexPtr vtx, EdgePtr seddle) {
 
 }
 
-void GradientProcessorQuad::run() {
-	normalizeField();
+void GradientProcessorQuad::printInfo() {
+	std::cout << "vertexes: " << m_vertexes.vector().size() << std::endl;
+	std::cout << "faces: " << m_edges.vector().size() << std::endl;
+	std::cout << "faces: " << m_faces.vector().size() << std::endl;
+	std::cout << "critical points:" << std::endl << "minimums: " << m_minimums.size() << std::endl;
+	std::cout << "saddles: " << m_seddles.size() << std::endl;
+	std::cout << "maximums: " << m_maximums.size() << std::endl;
+}
 
-	findVertex();
-	findEdges();
-	findFaces();
-
-	findMinimums();
-	findSeddles();
-	findMaximums();
-
+void GradientProcessorQuad::findAscArcs() {
 	for (size_t i = 0; i < m_seddles.size(); i++) {
 		Faces *tr = m_simplexRelations.face(m_seddles[i]);
 		if (tr == NULL)
@@ -154,50 +157,138 @@ void GradientProcessorQuad::run() {
 			}
 		}
 	}
+}
 
+void GradientProcessorQuad::findDescArcs() {
 	for (size_t i = 0; i < m_seddles.size(); i++) {
 		addDescArc(m_seddles[i]->m_a, m_seddles[i]);
 		addDescArc(m_seddles[i]->m_b, m_seddles[i]);
 	}
+}
 
-	std::cout << "vertexes: " << m_vertexes.vector().size() << std::endl;
-	std::cout << "faces: " << m_edges.vector().size() << std::endl;
-	std::cout << "faces: " << m_faces.vector().size() << std::endl;
+void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPointPtr> >& pps) {
+	createArcStorageForSimpl();
 
-	std::cout << "critical points:" << std::endl << "minimums: " << m_minimums.size() << std::endl;
-	std::cout << "saddles: " << m_seddles.size() << std::endl;
-	std::cout << "maximums: " << m_maximums.size() << std::endl;
+	for (size_t i = 0; i < pps.size(); ++i) {
+		if (pps[i].first->m_smplx == NULL || pps[i].second->m_smplx == NULL) {
+			std::cout << "ERROR: smplx in ppair is NULL" << std::endl;
+			exit(0);
+		}
 
+		if (pps[i].first->m_dim == PPoint::NEGATIVE || pps[i].second->m_dim == PPoint::NEGATIVE) {
+			FacePtr face = NULL;
+			EdgePtr edge = NULL;
+			if (pps[i].first->m_dim == PPoint::NEGATIVE) {
+				face = static_cast<FacePtr>(pps[i].first->m_smplx);
+			} else if (pps[i].first->m_dim == PPoint::UNIVERSAL) {
+				edge = static_cast<EdgePtr>(pps[i].first->m_smplx);
+			}
+			if (pps[i].second->m_dim == PPoint::NEGATIVE) {
+				face = static_cast<FacePtr>(pps[i].second->m_smplx);
+			} else if (pps[i].second->m_dim == PPoint::UNIVERSAL) {
+				edge = static_cast<EdgePtr>(pps[i].second->m_smplx);
+			}
+			if (face == NULL || edge == NULL) {
+				std::cout << "ERROR. can't find simplex for ppair" << std::endl;
+				continue;
+			}
+			AscArcPtr arc = m_ascArcsStorage.getArc(edge, face);
+			if (arc == NULL) {
+				std::cout << "can't find arc for ppair" << std::endl;
+				continue;
+			}
+
+			if (removePersistentPair<AscArcPtr, FacePtr, FacePtr>(arc, m_ascArcsStorageForSimpl, true)) {
+				m_descArcsStorageForSimpl.erase(arc->m_arcBegin);
+				std::cout << "erase from second arc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: "
+						<< *(arc->m_arcEnd->maxVertex()) << std::endl;
+			}
+		} else if (pps[i].first->m_dim == PPoint::POSITIVE || pps[i].second->m_dim == PPoint::POSITIVE) {
+			VertexPtr vtx = NULL;
+			EdgePtr edge = NULL;
+			if (pps[i].first->m_dim == PPoint::POSITIVE) {
+				vtx = static_cast<VertexPtr>(pps[i].first->m_smplx);
+			} else if (pps[i].first->m_dim == PPoint::UNIVERSAL) {
+				edge = static_cast<EdgePtr>(pps[i].first->m_smplx);
+			}
+			if (pps[i].second->m_dim == PPoint::POSITIVE) {
+				vtx = static_cast<VertexPtr>(pps[i].second->m_smplx);
+			} else if (pps[i].second->m_dim == PPoint::UNIVERSAL) {
+				edge = static_cast<EdgePtr>(pps[i].second->m_smplx);
+			}
+			if (vtx == NULL || edge == NULL) {
+				std::cout << "ERROR. can't find simplex for ppair" << std::endl;
+				continue;
+			}
+			DescArcPtr arc = m_descArcsStorage.getArc(edge, vtx);
+			if (arc == NULL) {
+				std::cout << "can't find arc for ppair" << std::endl;
+				continue;
+			}
+
+			if (removePersistentPair<DescArcPtr, VertexPtr, FacePtr>(arc, m_descArcsStorageForSimpl, true)) {
+				m_ascArcsStorageForSimpl.erase(arc->m_arcBegin);
+				std::cout << "erase from second arc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: "
+						<< *(arc->m_arcEnd->maxVertex()) << std::endl;
+			}
+		} else {
+			std::cout << "ERROR: can't identify asc or desc " << std::endl;
+		}
+
+	}
+}
+
+void GradientProcessorQuad::run() {
+//	normalizeField();
+
+	findVertex();
+	findEdges();
+	findFaces();
+
+	findMinimums();
+	findSeddles();
+	findMaximums();
+
+	findAscArcs();
+	findDescArcs();
+
+	printInfo();
 	connectArcs(m_ascArcsStorage, m_descArcsStorage);
-	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+	size_t cmplxN;
+	size_t iii = 0;
+	do {
+		iii++;
+		cmplxN = m_msCmplxStorage.complexesSet().size();
 
-	PersistPairProcessor ppProc;
-	ppProc.init(m_msCmplxStorage.complexesSet());
-	ppProc.findPairs();
-	ppProc.filter(m_persistence);
-	ppProc.printToFile("ppairs_p" + mt::StrUtils::intToString(m_persistence) + ".txt");
-	/*
-	 if (m_persistence) {
-	 createArcStorageForSimpl();
-	 for (size_t i = 0; i < 10; ++i) {
+		std::cout << "mscs: " << cmplxN << std::endl;
 
-	 simplify(m_persistence);
-	 connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
-	 createArcStorageForSimpl();
+		PersistPairProcessor ppProc;
+		ppProc.init(m_msCmplxStorage.complexesSet());
+		ppProc.findPairs();
+		std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.createPpairVector();
 
-	 std::cout << "after simpl with p= " << m_persistence << " mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
-	 }
-	 }
-	 */
+		simplifyPpairs(pps);
 
-	if (!m_outputFile.empty())
-		m_msCmplxStorage.saveCriticalPoints(m_outputFile + ".txt");
+//	ppProc.filter(m_persistence);
+//	ppProc.printToFile("ppairs_p" + mt::StrUtils::intToString(m_persistence) + ".txt");
+
+		/*
+		 if (!m_outputFile.empty())
+		 m_msCmplxStorage.saveCriticalPoints(m_outputFile + ".txt");
+		 */
+
+		connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
+	} while (cmplxN != m_msCmplxStorage.complexesSet().size());
+
+	std::cout << "try: " << iii << std::endl;
 
 	m_msCmplxStorage.drawAll();
-	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
+//	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
+
+//drawComplexesOnOriginal();
 
 	drawGradientField();
-	drawComplexesOnOriginal();
+	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
 
 }
 
@@ -212,103 +303,6 @@ struct VertexPtrComparatorForSort {
 		return (i->value() > j->value());
 	}
 } vertexPtrComparator;
-
-void GradientProcessorQuad::removeDescArc(int vx, int vy, int sx, int sy) {
-
-	VertexPtr vtx = new Vertex(vx, vy);
-
-	std::vector<DescArcPtr> *v = m_descArcsStorageForSimpl.seddles(vtx);
-	if (v == NULL) {
-		std::cout << "err can't find x2 y0 min" << std::endl;
-		return;
-	}
-
-	DescArcPtr sm;
-	for (size_t i = 0; i < v->size(); ++i) {
-		if (v->at(i)->m_arcBegin->m_a->x == sx && v->at(i)->m_arcBegin->m_a->y == sy) {
-			sm = v->at(i);
-		}
-	}
-	if (!sm) {
-		std::cout << "can't find desc arc for min(" << vx << ", " << vy << ") seddle_max " << sx << ", " << sy << std::endl;
-		return;
-	}
-
-	if (!removePersistentPair<DescArcPtr, VertexPtr, FacePtr>(sm, m_descArcsStorageForSimpl, false)) {
-		std::cout << "can't remove desc arc" << std::endl;
-	}
-
-}
-
-void GradientProcessorQuad::removeAscArc(int vx, int vy, int sx, int sy) {
-
-	VertexPtr ta = new Vertex(vx, vy);
-	VertexPtr tb = new Vertex(vx + 1, vy);
-	VertexPtr tc = new Vertex(vx, vy + 1);
-	VertexPtr td = new Vertex(vx + 1, vy + 1);
-
-	VertexPtr a = m_vertexes.getSimplex(ta);
-	VertexPtr b = m_vertexes.getSimplex(tb);
-	VertexPtr c = m_vertexes.getSimplex(tc);
-	VertexPtr d = m_vertexes.getSimplex(td);
-
-	Edge tmpEdgeBD(b, d);
-	EdgePtr edgeBD = m_edges.getSimplex(&tmpEdgeBD);
-	if (edgeBD == NULL) {
-		std::cout << "WARNING: can't find edges bd" << std::endl;
-		return;
-	}
-
-	Edge tmpEdgeCD(c, d);
-	EdgePtr edgeCD = m_edges.getSimplex(&tmpEdgeCD);
-	if (edgeCD == NULL) {
-		std::cout << "WARNING: can't find edges cd" << std::endl;
-		return;
-	}
-
-	Edge tmpEdgeAB(b, a);
-	EdgePtr edgeAB = m_edges.getSimplex(&tmpEdgeAB);
-	if (edgeAB == NULL) {
-		std::cout << "WARNING: can't find edges ab " << tmpEdgeAB << std::endl;
-		return;
-	}
-
-	Edge tmpEdgeAC(c, a);
-	EdgePtr edgeAC = m_edges.getSimplex(&tmpEdgeAC);
-	if (edgeAC == NULL) {
-		std::cout << "WARNING: can't find edges ac" << std::endl;
-		return;
-	}
-
-	FacePtr max = new Face();
-	max->addEdge(edgeAB);
-	max->addEdge(edgeAC);
-	max->addEdge(edgeBD);
-	max->addEdge(edgeCD);
-
-	std::vector<AscArcPtr> *v = m_ascArcsStorageForSimpl.seddles(max);
-	if (v == NULL) {
-		std::cout << "err can't find anything for max " << *max << std::endl;
-		return;
-	}
-
-	AscArcPtr sm = NULL;
-	std::cout << "ssdfsdfsd" << std::endl;
-	for (size_t i = 0; i < v->size(); ++i) {
-		std::cout << "sx " << v->at(i)->m_arcBegin->m_a->x << " sy " << v->at(i)->m_arcBegin->m_a->y << std::endl;
-
-		if (v->at(i)->m_arcBegin->m_a->x == sx && v->at(i)->m_arcBegin->m_a->y == sy) {
-			sm = v->at(i);
-		}
-	}
-	if (!sm) {
-		std::cout << "can't find asc arc for max(" << vx << ", " << vy << ") seddle_max " << sx << ", " << sy << std::endl;
-		return;
-	}
-
-	removePersistentPair<AscArcPtr, FacePtr, FacePtr>(sm, m_ascArcsStorageForSimpl, true);
-
-}
 
 void GradientProcessorQuad::simplify(uint32_t persistence) {
 

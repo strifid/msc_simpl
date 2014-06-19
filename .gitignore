@@ -9,3 +9,7 @@ core
 *.jpg
 
 *.txt
+/test_data
+/output
+/bulk
+/data

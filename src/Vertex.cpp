@@ -138,7 +138,7 @@ std::ostream & operator <<(std::ostream & out, const Vertex& vt) {
 
 void Vertex::value(int32_t i) {
 
-	std::cout << "set vertex: " << i << std::endl;
+//	std::cout << "set vertex " << i << std::endl;
 
 	m_value = i;
 	m_valueFirst = i;

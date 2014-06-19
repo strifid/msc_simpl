@@ -2,7 +2,7 @@
 
 mkdir build
 cd build
-cmake -DMTLIB_PATH=".." -DCMAKE_BUILD_TYPE=Debug -DQUAD=yes -DOPENCV_PATH=".." ../
-make -j 2
+cmake -DCMAKE_BUILD_TYPE=Debug -DQUAD=yes ../
+make VERBOSE=1 -j 2
 
 

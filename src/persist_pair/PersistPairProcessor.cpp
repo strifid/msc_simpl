@@ -43,12 +43,14 @@ bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex()->value(), PPoint::NEGATIVE, (uint32_t) 2);
 		ppointMax->x = cmplx->m_max->maxVertex()->x;
 		ppointMax->y = cmplx->m_max->maxVertex()->y;
+		ppointMax->m_smplx = cmplx->m_max;
 
 		m_points[ppointMax->m_id] = ppointMax;
 
 		PPointPtr ppointMin = new PPoint(cmplx->m_min->value(), PPoint::POSITIVE, 0);
 		ppointMin->x = cmplx->m_min->x;
 		ppointMin->y = cmplx->m_min->y;
+		ppointMin->m_smplx = cmplx->m_min;
 
 		m_points[ppointMin->m_id] = ppointMin;
 
@@ -56,6 +58,7 @@ bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex()->value(), PPoint::UNIVERSAL, 1);
 			ppointSeddle->x = cmplx->m_seddles[i]->maxVertex()->x;
 			ppointSeddle->y = cmplx->m_seddles[i]->maxVertex()->y;
+			ppointSeddle->m_smplx = cmplx->m_seddles[i];
 
 			m_points[ppointSeddle->m_id] = ppointSeddle;
 			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
@@ -98,19 +101,22 @@ public:
 
 };
 
-void PersistPairProcessor::filter(uint32_t persistence) {
-
+std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::createPpairVector() {
+	ppairsPoint.clear();
 	for (size_t i = 0; i < ppairs.size(); ++i) {
 		PPointPtr pA = getPoint(ppairs[i].first);
 		PPointPtr pB = getPoint(ppairs[i].second);
 		if (pA != NULL && pB != NULL) {
 			ppairsPoint.push_back(std::make_pair(pA, pB));
-
 		}
 	}
-
 	std::sort(ppairsPoint.begin(), ppairsPoint.end(), PPairComparatorByPersistence());
+	return ppairsPoint;
+}
 
+void PersistPairProcessor::filter(uint32_t persistence) {
+
+	createPpairVector();
 	/*
 	 for (size_t i = 0; i < ppairsPoint.size(); ++i) {
 	 std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
@@ -131,6 +137,8 @@ void PersistPairProcessor::filter(uint32_t persistence) {
 
 	if (i < ppairsPoint.size() - 1)
 		ppairsPoint.erase(ppairsPoint.begin() + i, ppairsPoint.end());
+
+	std::cout << "ppairs:  " << ppairsPoint.size() << std::endl;
 
 	/*
 	 std::cout << "i:  " << i << std::endl;
@@ -173,9 +181,15 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 
 	uint32_t prev = 0;
 	while (!curSet->empty()) {
+
 		uint32_t highest = getHighest(*curSet);
+		if (prev == 6579)
+			std::cout << "";
+
 		if (prev == highest)
 			break;
+//		std::cout << "cycle here. highest " << highest << " prev " << prev << std::endl;
+
 		prev = highest;
 		if (m_cycles.find(highest) == m_cycles.end()) {
 			m_cycles[highest] = curSet;
@@ -191,6 +205,8 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 
 void PersistPairProcessor::addInCycle(std::vector<uint32_t>* a, std::vector<uint32_t>* b) {
 
+	if (b->size() != 2)
+		return;
 	std::vector<uint32_t> res(*a);
 	res.insert(res.end(), b->begin(), b->end());
 
@@ -234,9 +250,18 @@ void PersistPairProcessor::printToFile(const std::string& path) {
 	if (!ppairsPoint.size())
 		filter(0);
 
+	std::set<std::pair<uint32_t, uint32_t> > processed;
+
 	for (size_t i = 0; i < ppairsPoint.size(); ++i) {
-		coordFile << ppairsPoint[i].first->x << "\t" << ppairsPoint[i].first->y << "\t" << ppairsPoint[i].first->value() << std::endl;
-		coordFile << ppairsPoint[i].second->x << "\t" << ppairsPoint[i].second->y << "\t" << ppairsPoint[i].second->value() << std::endl;
+		if (processed.find(std::make_pair(ppairsPoint[i].first->x, ppairsPoint[i].first->y)) == processed.end()) {
+			coordFile << ppairsPoint[i].first->x << "\t" << ppairsPoint[i].first->y << "\t" << ppairsPoint[i].first->value() << std::endl;
+			processed.insert(std::make_pair(ppairsPoint[i].first->x, ppairsPoint[i].first->y));
+		}
+
+		if (processed.find(std::make_pair(ppairsPoint[i].second->x, ppairsPoint[i].second->y)) == processed.end()) {
+			coordFile << ppairsPoint[i].second->x << "\t" << ppairsPoint[i].second->y << "\t" << ppairsPoint[i].second->value() << std::endl;
+			processed.insert(std::make_pair(ppairsPoint[i].second->x, ppairsPoint[i].second->y));
+		}
 
 	}
 	coordFile.close();

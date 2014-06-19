@@ -24,6 +24,7 @@
 #include "GradientProcessor.h"
 #include "Quad.h"
 #include "MsComplexEditor.h"
+#include "persist_pair/PPoint.h"
 #include "Utils.h"
 using cv::Mat;
 
@@ -40,9 +41,6 @@ public:
 
 protected:
 
-	void removeDescArc(int vx, int vy, int sx, int sy);
-
-	void removeAscArc(int vx, int vy, int sx, int sy);
 	MsComplexEditor m_editor;
 
 	void simplify(uint32_t persistence);
@@ -98,6 +96,7 @@ protected:
 		return maxPersistPair;
 	}
 
+	//todo remove faceptr type from template
 	template<typename ArcPtr, typename CriticalPtr, typename FacePtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
 
@@ -186,6 +185,11 @@ protected:
 
 	void createArcStorageForSimpl();
 
+private:
+	void printInfo();
+	void findAscArcs();
+	void findDescArcs();
+	void simplifyPpairs(std::vector<std::pair<PPointPtr, PPointPtr> >& pps);
 }
 ;
 

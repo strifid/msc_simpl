@@ -36,6 +36,7 @@ public:
 	void printToFile(const std::string& file);
 	void filter(uint32_t persistence);
 
+	std::vector<std::pair<PPointPtr, PPointPtr> >& createPpairVector();
 
 protected:
 
@@ -46,7 +47,6 @@ protected:
 	void cycleSearch(uint32_t point);
 
 	uint32_t getHighest(std::vector<uint32_t>& v);
-
 
 };
 

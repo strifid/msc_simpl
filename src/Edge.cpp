@@ -20,12 +20,14 @@ Edge::~Edge() {
 
 Edge::Edge(VertexPtr a, VertexPtr b) {
 
-	if (*a > *b) {
-		m_a = a;
-		m_b = b;
-	} else {
+	if (*a < *b) {
 		m_a = b;
 		m_b = a;
+
+	} else {
+		m_a = a;
+		m_b = b;
+
 	}
 
 	if (m_a->value() > m_b->value()) {

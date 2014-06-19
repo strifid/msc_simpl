@@ -13,20 +13,16 @@
 class PPoint: public Vertex {
 public:
 	enum Type {
-		POSITIVE,
-		NEGATIVE,
-		UNIVERSAL
+		POSITIVE, UNIVERSAL, NEGATIVE
 	} m_type;
-
 
 	PPoint(int value, Type t, uint32_t dim);
 
 	virtual ~PPoint();
 
-
 	uint32_t m_id;
 	uint32_t m_dim;
-
+	Simplex* m_smplx;
 private:
 	static uint32_t pointId;
 };

@@ -22,7 +22,7 @@ public:
 	}
 	Arc(EdgePtr saddle, std::vector<SimplesAPtr> &arcs, SimplesBPtr end) {
 
-		std::cout << "create arc " << *end << " begin " << *saddle << std::endl;
+//		std::cout << "create arc " << *end << " begin " << *saddle << std::endl;
 
 		m_arcBegin = saddle;
 		m_arc = arcs;
