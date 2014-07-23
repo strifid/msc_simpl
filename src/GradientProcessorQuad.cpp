@@ -171,7 +171,7 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 
 	for (size_t i = 0; i < pps.size(); ++i) {
 
-		std::cout << "ppair: a=" << pps[i].first->value() << " b=" <<pps[i].second->value() << std::endl;
+		std::cout << "ppair: a=" << pps[i].first->value() << " b=" << pps[i].second->value() << std::endl;
 
 		if (pps[i].first->m_smplx == NULL || pps[i].second->m_smplx == NULL) {
 			std::cout << "ERROR: smplx in ppair is NULL" << std::endl;
@@ -202,13 +202,13 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 
 			if (removePersistentPair<AscArcPtr, FacePtr, FacePtr>(arc, m_ascArcsStorageForSimpl, true)) {
 				m_descArcsStorageForSimpl.erase(arc->m_arcBegin);
-				std::cout << "erase from AscArc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: "
-						<< *(arc->m_arcEnd->maxVertex()) << std::endl;
+				std::cout << "erase from AscArc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: " << *(arc->m_arcEnd->maxVertex())
+						<< std::endl;
 
-/*
-				std::cout << "sedle is " << *(arc->m_arcBegin) << " vertex val is : a=" <<arc->m_arcBegin->m_a->value() <<  " vertex val is : b=" <<arc->m_arcBegin->m_b->value()
-						<< "max vertex val is "<< arc->m_arcBegin->maxVertex()->value() << std::endl;
-*/
+				/*
+				 std::cout << "sedle is " << *(arc->m_arcBegin) << " vertex val is : a=" <<arc->m_arcBegin->m_a->value() <<  " vertex val is : b=" <<arc->m_arcBegin->m_b->value()
+				 << "max vertex val is "<< arc->m_arcBegin->maxVertex()->value() << std::endl;
+				 */
 
 			}
 		} else if (pps[i].first->m_dim == PPoint::POSITIVE || pps[i].second->m_dim == PPoint::POSITIVE) {
@@ -234,8 +234,8 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 			}
 
 			if (removePersistentPair<DescArcPtr, VertexPtr, FacePtr>(arc, m_descArcsStorageForSimpl, false)) {
-				std::cout << "erase from DescArc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: "
-						<< *(arc->m_arcEnd->maxVertex()) << std::endl;
+				std::cout << "erase from DescArc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: " << *(arc->m_arcEnd->maxVertex())
+						<< std::endl;
 				m_ascArcsStorageForSimpl.erase(arc->m_arcBegin);
 
 			}
@@ -277,17 +277,6 @@ void GradientProcessorQuad::run() {
 		std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.filter(m_persistence);
 
 		simplifyPpairs(pps);
-/*
-
-		ppProc.filter(m_persistence);
-		ppProc.printToFile("ppairs_p" + mt::StrUtils::intToString(m_persistence) + ".txt");
-*/
-
-		/*
-		 if (!m_outputFile.empty())
-		 m_msCmplxStorage.saveCriticalPoints(m_outputFile + ".txt");
-		 */
-
 		connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
 
 	} while (cmplxN != m_msCmplxStorage.complexesSet().size());

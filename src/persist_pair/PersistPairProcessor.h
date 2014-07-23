@@ -28,9 +28,8 @@ public:
 
 	std::set<uint32_t> filtered;
 	std::vector<std::pair<uint32_t, uint32_t> > ppairs;
-	std::map<uint32_t, std::vector<uint32_t>* > m_cycles;
+	std::map<uint32_t, std::vector<uint32_t>*> m_cycles;
 	std::vector<std::pair<PPointPtr, PPointPtr> > ppairsPoint;
-
 
 	void sort();
 	void printToFile(const std::string& file);
@@ -39,6 +38,7 @@ public:
 	std::vector<std::pair<PPointPtr, PPointPtr> >& createPpairVector();
 
 protected:
+
 
 	std::vector<uint32_t> getNeighbs(uint32_t point);
 	PPointPtr getPoint(uint32_t id);
@@ -50,5 +50,10 @@ protected:
 
 };
 
+struct PPointComparator {
+	bool operator()(const PPointPtr a, const PPointPtr b) const {
+		return a->value() < b->value();
+	}
+};
 
 #endif /* PERSISTPAIRPROCESSOR_H_ */

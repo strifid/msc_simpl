@@ -23,11 +23,6 @@
 #include "../Triangle.h"
 #include "../Vertex.h"
 
-struct PPointComparator {
-	bool operator()(const PPointPtr a, const PPointPtr b) const {
-		return a->value() < b->value();
-	}
-} pPointComparator;
 
 PersistPairProcessor::PersistPairProcessor() {
 
@@ -73,7 +68,7 @@ void PersistPairProcessor::findPairs() {
 	for (PointsMap::iterator it = m_points.begin(); it != m_points.end(); ++it) {
 		m_sortedPoints.push_back(it->second);
 	}
-	std::sort(m_sortedPoints.begin(), m_sortedPoints.end(), pPointComparator);
+	std::sort(m_sortedPoints.begin(), m_sortedPoints.end(), PPointComparator());
 
 	for (size_t i = 0; i < m_sortedPoints.size(); ++i) {
 		uint32_t point = m_sortedPoints[i]->m_id;
@@ -185,12 +180,9 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 	while (!curSet->empty()) {
 
 		uint32_t highest = getHighest(*curSet);
-		if (prev == 6579)
-			std::cout << "";
 
 		if (prev == highest)
 			break;
-//		std::cout << "cycle here. highest " << highest << " prev " << prev << std::endl;
 
 		prev = highest;
 		if (m_cycles.find(highest) == m_cycles.end()) {
