@@ -22,6 +22,7 @@ using cv::Scalar;
 class Vertex: public Subset, public Pixel, public Simplex {
 public:
 	Vertex(int x, int y);
+	Vertex(int x, int y, int value);
 
 	virtual ~Vertex();
 	uint32_t locateSubset(Image& img);

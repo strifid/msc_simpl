@@ -62,8 +62,6 @@ public:
 	virtual int32_t findEdges() = 0;
 	virtual int32_t findFaces() = 0;
 
-	void run();
-
 	std::string m_gradFieldFile;
 	std::string m_outputFile;
 	uint32_t m_persistence;

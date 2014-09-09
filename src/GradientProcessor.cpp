@@ -1,11 +1,13 @@
 #include "GradientProcessor.h"
 
-#include "mt/utils/StrUtils.h"
+#include <mt/utils/StrUtils.h>
+#include <opencv2/core/types_c.h>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/highgui/highgui_c.h>
+
 #include "CofacedEdge.h"
 #include "CofacedFace.h"
-#include "opencv2/highgui/highgui_c.h"
-
-#include "opencv2/highgui/highgui.hpp"
+#include "MsComplex.h"
 
 using cv::waitKey;
 
@@ -183,7 +185,7 @@ void GradientProcessor::findSeddles() {
 	}
 }
 
-void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool show ) {
+void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool show) {
 
 	Mat drawField(m_img.height() * Image::m_enlargeFactor + Image::m_enlargeFactor * 2,
 			m_img.width() * Image::m_enlargeFactor + 2 * Image::m_enlargeFactor, CV_8UC3, Scalar(255, 255, 255));
@@ -224,11 +226,15 @@ void GradientProcessor::drawGradientField() {
 
 	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
 
-	for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
-		drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
-	}
 
-	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, true);
+
+/*
+	 for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
+	 drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
+	 }
+*/
+
+	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
 
 }
 
@@ -237,9 +243,15 @@ bool GradientProcessor::getAscendingManifold(std::vector<FacePtr>& arc) {
 	if (arc.empty())
 		return false;
 
-	FacePtr triangle = arc.back();
+	FacePtr faceMax = arc.back();
+	for (size_t i = 0; i < arc.size() - 1; ++i) {
+		if (!(*(arc.at(i)) != *faceMax)) {
+			std::cout << "warning: find loop in ascending manifolds. loop point: " << *faceMax << std::endl;
+			return false;
+		}
+	}
 
-	EdgePtr gradPair = getGradientPair(triangle);
+	EdgePtr gradPair = getGradientPair(faceMax);
 	if (gradPair == NULL)
 		return true;
 
@@ -251,7 +263,7 @@ bool GradientProcessor::getAscendingManifold(std::vector<FacePtr>& arc) {
 	bool retVal = false;
 
 	for (size_t i = 0; i < cofacets->size(); ++i) {
-		if (*(cofacets->at(i)) != *triangle) {
+		if (*(cofacets->at(i)) != *faceMax) {
 			arc.push_back(cofacets->at(i));
 			retVal = getAscendingManifold(arc);
 		}
@@ -264,6 +276,13 @@ void GradientProcessor::getDescendingManifold(Edges& arc, Vertexes& vtxs) {
 		return;
 
 	VertexPtr vtx = vtxs.back();
+
+	for (size_t i = 0; i < vtxs.size() - 1; ++i) {
+		if (*(vtxs.at(i)) == *vtx) {
+			std::cout << "warning: find loop in descending manifolds. loop point: " << *vtx << std::endl;
+			return;
+		}
+	}
 
 	EdgePtr gradPair = getGradientPair(vtx);
 	if (gradPair == NULL)

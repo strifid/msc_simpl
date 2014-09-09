@@ -18,9 +18,16 @@ Vertex::~Vertex() {
 }
 
 Vertex::Vertex(int xx, int yy) {
-//	m_pixels.insert(pxl);
 	x = xx;
 	y = yy;
+	m_value = 0;
+}
+
+Vertex::Vertex(int xx, int yy, int val) {
+	x = xx;
+	y = yy;
+	m_value = val;
+
 }
 
 uint32_t Vertex::locateSubset(Image& img) {
@@ -61,8 +68,8 @@ void Vertex::draw(Mat& img, Scalar color) {
 
 	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = m_value;
 	putText(img, mt::StrUtils::intToString(value()),
-			Point(x * Image::m_enlargeFactor + Image::m_enlargeFactor, y * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL,
-			0.7, color, 1.3);
+			Point(x * Image::m_enlargeFactor + Image::m_enlargeFactor, y * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7,
+			color, 1.3);
 }
 
 Pixels Vertex::getAllAround(const Pixel& pt, uint32_t width, uint32_t height) {
@@ -134,7 +141,6 @@ std::ostream & operator <<(std::ostream & out, const Vertex& vt) {
 	return out;
 
 }
-
 
 void Vertex::value(int32_t i) {
 

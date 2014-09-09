@@ -26,6 +26,7 @@
 
 #include "Arc.h"
 #include "MsComplexStorage.h"
+#include "persist_pair/BarCodeProcessor.h"
 #include "persist_pair/PersistPairProcessor.h"
 #include "Pixel.h"
 
@@ -171,8 +172,6 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 
 	for (size_t i = 0; i < pps.size(); ++i) {
 
-		std::cout << "ppair: a=" << pps[i].first->value() << " b=" << pps[i].second->value() << std::endl;
-
 		if (pps[i].first->m_smplx == NULL || pps[i].second->m_smplx == NULL) {
 			std::cout << "ERROR: smplx in ppair is NULL" << std::endl;
 			exit(0);
@@ -202,8 +201,10 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 
 			if (removePersistentPair<AscArcPtr, FacePtr, FacePtr>(arc, m_ascArcsStorageForSimpl, true)) {
 				m_descArcsStorageForSimpl.erase(arc->m_arcBegin);
+/*
 				std::cout << "erase from AscArc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: " << *(arc->m_arcEnd->maxVertex())
 						<< std::endl;
+*/
 
 				/*
 				 std::cout << "sedle is " << *(arc->m_arcBegin) << " vertex val is : a=" <<arc->m_arcBegin->m_a->value() <<  " vertex val is : b=" <<arc->m_arcBegin->m_b->value()
@@ -234,8 +235,10 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 			}
 
 			if (removePersistentPair<DescArcPtr, VertexPtr, FacePtr>(arc, m_descArcsStorageForSimpl, false)) {
+/*
 				std::cout << "erase from DescArc storage arc begin " << *(arc->m_arcBegin->maxVertex()) << " end: " << *(arc->m_arcEnd->maxVertex())
 						<< std::endl;
+*/
 				m_ascArcsStorageForSimpl.erase(arc->m_arcBegin);
 
 			}
@@ -269,7 +272,7 @@ void GradientProcessorQuad::run() {
 		iii++;
 		cmplxN = m_msCmplxStorage.complexesSet().size();
 
-		std::cout << "mscs: " << cmplxN << std::endl;
+		std::cout << "		mscs: " << cmplxN << std::endl;
 
 		PersistPairProcessor ppProc;
 		ppProc.init(m_msCmplxStorage.complexesSet());
@@ -286,10 +289,14 @@ void GradientProcessorQuad::run() {
 	m_msCmplxStorage.drawAll();
 //	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
 
-//drawComplexesOnOriginal();
+	//drawComplexesOnOriginal();
 
 	drawGradientField();
 	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+
+	BarCodeProcessor proc;
+	proc.init(m_msCmplxStorage.complexesSet());
+	proc.computeBarCodes();
 
 }
 

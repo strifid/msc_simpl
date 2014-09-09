@@ -23,7 +23,6 @@
 #include "../Triangle.h"
 #include "../Vertex.h"
 
-
 PersistPairProcessor::PersistPairProcessor() {
 
 }
@@ -33,34 +32,31 @@ PersistPairProcessor::~PersistPairProcessor() {
 
 bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 
+	PPoint::pointId = 1;
+	PPoint::m_vrtx2Id.clear();
+
 	for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
 		MsComplex *cmplx = *it;
-		PPoint *ppointMax = new PPoint(cmplx->m_max->maxVertex()->value(), PPoint::NEGATIVE, (uint32_t) 2);
-		ppointMax->x = cmplx->m_max->maxVertex()->x;
-		ppointMax->y = cmplx->m_max->maxVertex()->y;
+		PPoint *ppointMax = new PPoint(*(cmplx->m_max->maxVertex()), PPoint::NEGATIVE, (uint32_t) 2);
 		ppointMax->m_smplx = cmplx->m_max;
-
 		m_points[ppointMax->m_id] = ppointMax;
 
-		PPointPtr ppointMin = new PPoint(cmplx->m_min->value(), PPoint::POSITIVE, 0);
-		ppointMin->x = cmplx->m_min->x;
-		ppointMin->y = cmplx->m_min->y;
+		PPointPtr ppointMin = new PPoint(*(cmplx->m_min), PPoint::POSITIVE, 0);
 		ppointMin->m_smplx = cmplx->m_min;
-
 		m_points[ppointMin->m_id] = ppointMin;
 
 		for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
-			PPointPtr ppointSeddle = new PPoint(cmplx->m_seddles[i]->maxVertex()->value(), PPoint::UNIVERSAL, 1);
-			ppointSeddle->x = cmplx->m_seddles[i]->maxVertex()->x;
-			ppointSeddle->y = cmplx->m_seddles[i]->maxVertex()->y;
+			PPointPtr ppointSeddle = new PPoint(*(cmplx->m_seddles[i]->maxVertex()), PPoint::UNIVERSAL, 1);
 			ppointSeddle->m_smplx = cmplx->m_seddles[i];
 
 			m_points[ppointSeddle->m_id] = ppointSeddle;
 			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
 			m_relations.addPair(ppointMin->m_id, ppointSeddle->m_id);
 		}
-
 	}
+
+	std::cout << " point add " << 	PPoint::pointId << std::endl;
+
 	return true;
 }
 
@@ -117,7 +113,6 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint
 	 std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
 	 }
 	 */
-
 	size_t i = 0;
 	for (i = 0; i < ppairsPoint.size(); ++i) {
 		int32_t maxValA =
@@ -135,15 +130,12 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint
 
 	std::cout << "ppairs:  " << ppairsPoint.size() << std::endl;
 
+	std::cout << "i:  " << i << std::endl;
+
+	for (i = 0; i < ppairsPoint.size(); ++i) {
+		std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
+	}
 	return ppairsPoint;
-
-	/*
-	 std::cout << "i:  " << i << std::endl;
-
-	 for (i = 0; i < ppairsPoint.size(); ++i) {
-	 std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
-	 }
-	 */
 
 }
 

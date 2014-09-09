@@ -47,6 +47,7 @@ protected:
 	void barCode(uint32_t point, uint32_t step);
 
 	std::map<uint32_t, BarCode*> m_barCodes;
+	void stopBarCode(uint32_t id, uint32_t step);
 	BarCodePtr findBarCode(uint32_t id) {
 		std::map<uint32_t, BarCode*>::iterator it = m_barCodes.find(id);
 		if (it == m_barCodes.end())

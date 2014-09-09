@@ -16,15 +16,19 @@ public:
 		POSITIVE, UNIVERSAL, NEGATIVE
 	} m_type;
 
-	PPoint(int value, Type t, uint32_t dim);
+	PPoint(Vertex &vtx, Type t, uint32_t dim);
+	PPoint(int, Type t, uint32_t dim);
 
 	virtual ~PPoint();
 
 	uint32_t m_id;
 	uint32_t m_dim;
 	Simplex* m_smplx;
-private:
 	static uint32_t pointId;
+	static std::map<VertexPtr, uint32_t, VertexPtrComparator> m_vrtx2Id;
+
+	static uint32_t getId(VertexPtr vtx);
+private:
 };
 
 typedef PPoint* PPointPtr;
