@@ -7,9 +7,11 @@ core
 *.log
 
 *.jpg
-
+*.zip
 *.txt
 /test_data
 /output
 /bulk
 /data
+/matlab_test
+/bmp
