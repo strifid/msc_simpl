@@ -122,11 +122,13 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint
 
 	std::cout << "ppairs:  " << ppairsPoint.size() << std::endl;
 
+/*
 	std::cout << "i:  " << i << std::endl;
 
 	for (i = 0; i < ppairsPoint.size(); ++i) {
 		std::cout << "a: " << ppairsPoint[i].first->m_id << " b: " << ppairsPoint[i].second->m_id << std::endl;
 	}
+*/
 	return ppairsPoint;
 
 }

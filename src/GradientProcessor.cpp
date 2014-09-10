@@ -57,8 +57,10 @@ void GradientProcessor::normalizeField() {
 					if (m_img.value(pxls[i]) == m_img.value(Pixel(x, y))) {
 						m_img.setValue(Pixel(x, y), m_img.value(Pixel(x, y)) + 1);
 						run = true;
+/*
 						if (counter > 10)
 							return;
+*/
 					}
 				}
 			}
