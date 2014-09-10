@@ -52,11 +52,11 @@ void MsComplex::drawOriginal(Image & img) {
 
 	for (size_t i = 0; i < m_dArcs.size(); i++) {
 		for (size_t z = 0; z < m_dArcs[i]->m_arc.size(); z++) {
-			img.paintPixel(m_dArcs[i]->m_arc[z]->m_a, Image::BLUE);
-			img.paintPixel(m_dArcs[i]->m_arc[z]->m_b, Image::BLUE);
+			img.paintPixel(m_dArcs[i]->m_arc[z]->m_a, Image::RED);
+			img.paintPixel(m_dArcs[i]->m_arc[z]->m_b, Image::RED);
 		}
 	}
 	img.paintPixel(m_min, Image::GREEN);
-	img.paintPixel(m_max->maxVertex(), Image::RED);
+	img.paintPixel(m_max->maxVertex(), Image::GREEN);
 }
 

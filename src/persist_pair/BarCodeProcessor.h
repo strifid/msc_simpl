@@ -41,7 +41,7 @@ public:
 
 	BarCodeProcessor();
 	virtual ~BarCodeProcessor();
-	void computeBarCodes();
+	void computeBarCodes(const std::string& path);
 
 protected:
 	void barCode(uint32_t point, uint32_t step);
@@ -57,6 +57,9 @@ protected:
 	}
 
 	std::vector<PPointPtr> getPpoints(std::vector<uint32_t> &ppIds);
+
+private:
+	void writeInFile(const std::string& path);
 };
 
 #endif /* BARCODEPROCESSOR_H_ */

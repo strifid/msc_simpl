@@ -277,7 +277,7 @@ void GradientProcessorQuad::run() {
 		iii++;
 		cmplxN = m_msCmplxStorage.complexesSet().size();
 
-		std::cout << "		mscs: " << cmplxN << std::endl;
+		std::cout << "mscs: " << cmplxN << std::endl;
 
 		PersistPairProcessor ppProc;
 		ppProc.init(m_msCmplxStorage.complexesSet());
@@ -293,15 +293,14 @@ void GradientProcessorQuad::run() {
 
 	m_msCmplxStorage.drawAll();
 //	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
-
-//drawComplexesOnOriginal();
+	drawComplexesOnOriginal();
 
 	drawGradientField();
 	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
 
 	BarCodeProcessor proc;
 	proc.init(m_msCmplxStorage.complexesSet());
-	proc.computeBarCodes();
+	proc.computeBarCodes(m_gradFieldFile);
 
 }
 
@@ -455,23 +454,23 @@ void GradientProcessorQuad::connectArcs(AscArcStorage& ascArc, DescArcStorage& d
 
 void GradientProcessorQuad::saveMaxInVtk() {
 
-	vtkSmartPointer < vtkPoints > points = vtkSmartPointer < vtkPoints > ::New();
-	vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer < vtkCellArray > ::New();
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 
 	for (size_t i = 0; i < m_maximums.size(); i++) {
 		VertexPtr max = m_maximums[i]->maxVertex();
 		vtkIdType id = points->InsertNextPoint(max->x, m_img.height() - max->y - 1, 0);
-		vtkSmartPointer < vtkPolyVertex > polyVtx = vtkSmartPointer < vtkPolyVertex > ::New();
+		vtkSmartPointer<vtkPolyVertex> polyVtx = vtkSmartPointer<vtkPolyVertex>::New();
 		polyVtx->GetPointIds()->SetNumberOfIds(1);
 		polyVtx->GetPointIds()->SetId(0, id);
 		cells->InsertNextCell(polyVtx);
 	}
 
-	vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer < vtkPolyData > ::New();
+	vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
 	polyData->SetPoints(points);
 
 	polyData->SetVerts(cells);
-	vtkSmartPointer < vtkXMLPolyDataWriter > writer = vtkSmartPointer < vtkXMLPolyDataWriter > ::New();
+	vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 	writer->SetFileName("max.vtp");
 	writer->SetInput(polyData);
 	writer->SetDataModeToAscii();
@@ -481,23 +480,23 @@ void GradientProcessorQuad::saveMaxInVtk() {
 
 void GradientProcessorQuad::saveMinInVtk() {
 
-	vtkSmartPointer < vtkPoints > points = vtkSmartPointer < vtkPoints > ::New();
-	vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer < vtkCellArray > ::New();
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+	vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 
 	for (VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); it++) {
 		VertexPtr max = *it;
 		vtkIdType id = points->InsertNextPoint(max->x, m_img.height() - max->y - 1, 0);
-		vtkSmartPointer < vtkPolyVertex > polyVtx = vtkSmartPointer < vtkPolyVertex > ::New();
+		vtkSmartPointer<vtkPolyVertex> polyVtx = vtkSmartPointer<vtkPolyVertex>::New();
 		polyVtx->GetPointIds()->SetNumberOfIds(1);
 		polyVtx->GetPointIds()->SetId(0, id);
 		cells->InsertNextCell(polyVtx);
 	}
 
-	vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer < vtkPolyData > ::New();
+	vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
 	polyData->SetPoints(points);
 
 	polyData->SetVerts(cells);
-	vtkSmartPointer < vtkXMLPolyDataWriter > writer = vtkSmartPointer < vtkXMLPolyDataWriter > ::New();
+	vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 	writer->SetFileName("min.vtp");
 	writer->SetInput(polyData);
 	writer->SetDataModeToAscii();

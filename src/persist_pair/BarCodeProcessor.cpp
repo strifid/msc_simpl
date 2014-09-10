@@ -27,16 +27,40 @@ BarCodeProcessor::~BarCodeProcessor() {
 	// TODO Auto-generated destructor stub
 }
 
-void BarCodeProcessor::computeBarCodes() {
+void BarCodeProcessor::writeInFile(const std::string& path) {
+	std::ofstream b0File;
+	b0File.open((path + "_b0.txt").c_str());
+	std::ofstream b1File;
+	b1File.open((path + "_b1.txt").c_str());
+	for (std::map<uint32_t, BarCode*>::iterator it = m_barCodes.begin(); it != m_barCodes.end(); it++) {
+		if (it->second->m_stop) {
+			if (it->second->m_dim == 0) {
+				b0File << it->second->m_start << " " << it->second->m_stop << std::endl;
+			} else {
+				b1File << it->second->m_start << " " << it->second->m_stop << std::endl;
+			}
+		}
+	}
+	b0File.close();
+	b1File.close();
+}
+
+void BarCodeProcessor::computeBarCodes(const std::string& path) {
 	for (PointsMap::iterator it = m_points.begin(); it != m_points.end(); ++it) {
 		m_sortedPoints.push_back(it->second);
 	}
 	std::sort(m_sortedPoints.begin(), m_sortedPoints.end(), PPointComparator());
 	uint32_t lastValue = 0, step = 0;
+	std::ofstream levelFile;
+	levelFile.open((path + "_level.txt").c_str());
+	levelFile << "level value\tb0\tb1"<< std::endl;
+
+	bool levelChanged = false;
 	for (size_t i = 0; i < m_sortedPoints.size(); ++i) {
 		if (lastValue != m_sortedPoints[i]->value()) {
 			lastValue = m_sortedPoints[i]->value();
 			step++;
+			levelChanged = true;
 		}
 
 		uint32_t point = m_sortedPoints[i]->m_id;
@@ -47,26 +71,29 @@ void BarCodeProcessor::computeBarCodes() {
 			BarCodePtr barCode = new BarCode(getPoint(point), step);
 			m_barCodes[point] = barCode;
 		}
-	}
 
-	std::ofstream b0File;
-	b0File.open("b0.txt");
-	std::ofstream b1File;
-	b1File.open("b1.txt");
+		if (levelChanged) {
+			std::map<uint32_t, BarCode*>::iterator it = m_barCodes.begin();
+			uint32_t levelB0 = 0, levelB1 = 0;
+			while (it != m_barCodes.end()) {
 
-	for (std::map<uint32_t, BarCode*>::iterator it = m_barCodes.begin(); it != m_barCodes.end(); it++) {
-		if (it->second->m_stop) {
-			if (it->second->m_dim == 0) {
-				b0File << it->second->m_start << " " << it->second->m_stop << std::endl;
-			} else {
-				b1File << it->second->m_start << " " << it->second->m_stop << std::endl;
+				if (it->second->m_stop == 0) {
+					if (it->second->m_dim == 0)
+						levelB0++;
+					else
+						levelB1++;
+				}
+
+				it++;
 			}
+
+			levelFile << lastValue << " " << levelB0 << " " << levelB1 << std::endl;
+			levelChanged = false;
 		}
+
 	}
 
-	b0File.close();
-	b1File.close();
-
+	writeInFile(path);
 }
 
 void BarCodeProcessor::barCode(uint32_t point, uint32_t step) {
@@ -140,16 +167,11 @@ void BarCodeProcessor::stopBarCode(uint32_t id, uint32_t step) {
 std::vector<PPointPtr> BarCodeProcessor::getPpoints(std::vector<uint32_t>& ppIds) {
 	std::vector<PPointPtr> pps;
 	for (size_t i = 0; i < ppIds.size(); ++i) {
-		PPointPtr p = getPoint(ppIds[i]);
-		if (p == NULL) {
-			std::cout << "impossible error " << std::endl;
-			return pps;
-		}
-
-		pps.push_back(p);
+		pps.push_back(getPoint(ppIds[i]));
 	}
 
 	std::sort(pps.begin(), pps.end(), PPointComparator());
+	return pps;
 	/*
 	 std::cout << "sorted ppoint: " << std::endl;
 	 for (size_t i = 0; i < pps.size(); ++i) {

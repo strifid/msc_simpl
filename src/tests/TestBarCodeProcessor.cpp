@@ -105,7 +105,7 @@ TEST(BarCodeProcessor, testBarCodeProc) {
 
 	BarCodeProcessor proc;
 	initRelations(proc);
-	proc.computeBarCodes();
+	proc.computeBarCodes("test");
 
 
 //	CHECK_EQUAL(5, proc.ppairs.size());
