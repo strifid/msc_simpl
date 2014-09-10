@@ -37,25 +37,17 @@ bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 
 	for (MsComplexesSet::iterator it = msCmplxSet.begin(); it != msCmplxSet.end(); it++) {
 		MsComplex *cmplx = *it;
-		PPoint *ppointMax = new PPoint(*(cmplx->m_max->maxVertex()), PPoint::NEGATIVE, (uint32_t) 2);
-		ppointMax->m_smplx = cmplx->m_max;
-		m_points[ppointMax->m_id] = ppointMax;
-
-		PPointPtr ppointMin = new PPoint(*(cmplx->m_min), PPoint::POSITIVE, 0);
-		ppointMin->m_smplx = cmplx->m_min;
-		m_points[ppointMin->m_id] = ppointMin;
+		uint32_t maxPointId = PPoint::createPPoint<FacePtr>(cmplx->m_max, m_points, PPoint::NEGATIVE, 2);
+		uint32_t minPointId = PPoint::createPPoint<VertexPtr>(cmplx->m_min, m_points, PPoint::POSITIVE, 0);
 
 		for (size_t i = 0; i < cmplx->m_seddles.size(); ++i) {
-			PPointPtr ppointSeddle = new PPoint(*(cmplx->m_seddles[i]->maxVertex()), PPoint::UNIVERSAL, 1);
-			ppointSeddle->m_smplx = cmplx->m_seddles[i];
-
-			m_points[ppointSeddle->m_id] = ppointSeddle;
-			m_relations.addPair(ppointMax->m_id, ppointSeddle->m_id);
-			m_relations.addPair(ppointMin->m_id, ppointSeddle->m_id);
+			uint32_t seddlePointId = PPoint::createPPoint<EdgePtr>(cmplx->m_seddles[i], m_points, PPoint::UNIVERSAL, 1);
+			m_relations.addPair(maxPointId, seddlePointId );
+			m_relations.addPair(minPointId, seddlePointId);
 		}
 	}
 
-	std::cout << " point add " << 	PPoint::pointId << std::endl;
+	std::cout << " point add " << PPoint::pointId << std::endl;
 
 	return true;
 }

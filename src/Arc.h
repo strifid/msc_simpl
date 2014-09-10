@@ -71,12 +71,11 @@ typedef Arc<EdgePtr, VertexPtr> DescArc;
 typedef DescArc* DescArcPtr;
 typedef std::vector<DescArcPtr> DescArcs;
 
-#ifdef QUAD
+
 typedef Arc<FacePtr, FacePtr> AscArc;
 typedef AscArc* AscArcPtr;
 typedef std::vector<AscArcPtr> AscArcs;
 
 
-#endif
 
 #endif /* ARC_H_ */

@@ -96,30 +96,55 @@ protected:
 	//todo remove faceptr type from template
 	template<typename ArcPtr, typename CriticalPtr, typename FacePtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
+		if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
+			std::cout << "start delete" << std::endl;
+		}
 
 		arcStorage.eraseArc(lowestPersistentPair);
 		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
 		if (!secondLeg || *(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
+
+			if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
+				std::cout << "no second leg" << std::endl;
+			}
 			return false;
 		}
-		//	std::cout << "find second leg beg: " << *(secondLeg->m_arcBegin) << " end: " << *(secondLeg->m_arcEnd) << std::endl;
 
+		if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
+			std::cout << "sec leg ok" << std::endl;
+		}
+
+//			std::cout << "find second leg beg: " << *(secondLeg->m_arcBegin) << " end: " << *(secondLeg->m_arcEnd) << std::endl;
+
+/*
 		if (arcStorage.hasCommonSeddle(secondLeg->m_arcEnd, lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
+//			std::cout << "find second leg beg: " << *(secondLeg->m_arcBegin) << " end: " << *(secondLeg->m_arcEnd) << std::endl;
+			if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
+				std::cout << "has common seddle" << std::endl;
+			}
+
 			return false;
 		}
+*/
 
 		if (arcs != NULL) {
 
+/*
 			for (size_t i = 0; i < arcs->size(); ++i) {
 				ArcPtr arc = arcs->at(i);
 				if (lowestPersistentPair->hasCommon(arc->m_arc)) {
 					arcStorage.addArc(lowestPersistentPair);
+					if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
+						std::cout << "11111" << std::endl;
+					}
+
 					return false;
 				}
 			}
+*/
 			for (size_t i = 0; i < arcs->size(); ++i) {
 				ArcPtr arc = arcs->at(i);
 				arc->addFirstLeg(lowestPersistentPair);
@@ -144,6 +169,10 @@ protected:
 				 */
 			}
 			arcStorage.eraseArc(secondLeg);
+		}else{
+			if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
+				std::cout << "no arc" << std::endl;
+			}
 		}
 
 		//	std::cout << std::endl;

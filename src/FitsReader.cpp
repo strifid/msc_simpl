@@ -6,7 +6,7 @@
  */
 
 #include "FitsReader.h"
-#include "CCfits"
+#include "CCfits/PHDU.h"
 #include <iterator>
 
 #include "opencv2/core/core.hpp"
@@ -27,7 +27,7 @@ bool FitsReader::init(const std::string& path) {
 
 	// read all user-specifed, coordinate, and checksum keys in the image
 	image.readAllKeys();
-	image.read<unsigned long>(contents);
+//	image.read<unsigned long>(contents);
 
 	// this doesn't print the data, just header info.
 	std::cout << image << std::endl;
