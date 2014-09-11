@@ -247,7 +247,7 @@ void GradientProcessor::drawGradientField() {
 */
 
 
-	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
+	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, true);
 
 }
 

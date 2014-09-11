@@ -77,6 +77,20 @@ int32_t GradientProcessorQuad::findEdges() {
 
 			addEdge(face);
 		}
+
+		VertexPtr a = findVertexByPixel(Pixel(vertexes[i]->x, vertexes[i]->y + 1));
+
+		VertexPtr b = findVertexByPixel(Pixel(vertexes[i]->x + 1, vertexes[i]->y));
+		if (a != NULL && b != NULL) {
+			EdgePtr face = new Edge(a, b);
+			if (m_edges.exist(face)) {
+				delete face;
+				continue;
+			}
+
+			addEdge(face);
+		}
+
 	}
 
 	return 0;
@@ -273,42 +287,46 @@ void GradientProcessorQuad::run() {
 	findDescArcs();
 
 	printInfo();
-	connectArcs(m_ascArcsStorage, m_descArcsStorage);
+	/*
+	 connectArcs(m_ascArcsStorage, m_descArcsStorage);
 
-	size_t cmplxN;
-	size_t iii = 0;
+	 size_t cmplxN;
+	 size_t iii = 0;
 
-	if (m_persistence) {
-		do {
-			iii++;
-			cmplxN = m_msCmplxStorage.complexesSet().size();
+	 if (m_persistence) {
+	 do {
+	 iii++;
+	 cmplxN = m_msCmplxStorage.complexesSet().size();
 
-			std::cout << "mscs: " << cmplxN << std::endl;
+	 std::cout << "mscs: " << cmplxN << std::endl;
 
-			PersistPairProcessor ppProc;
-			ppProc.init(m_msCmplxStorage.complexesSet());
-			ppProc.findPairs();
-			std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.filter(m_persistence);
+	 PersistPairProcessor ppProc;
+	 ppProc.init(m_msCmplxStorage.complexesSet());
+	 ppProc.findPairs();
+	 std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.filter(m_persistence);
 
-			simplifyPpairs(pps);
-			connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
+	 simplifyPpairs(pps);
+	 connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
 
-		} while (cmplxN != m_msCmplxStorage.complexesSet().size());
-	}
+	 } while (cmplxN != m_msCmplxStorage.complexesSet().size());
+	 }
 
-	std::cout << "try: " << iii << std::endl;
+	 std::cout << "try: " << iii << std::endl;
 
-	m_msCmplxStorage.drawAll();
-//	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
-	drawComplexesOnOriginal();
+	 m_msCmplxStorage.drawAll();
+	 //	cout << "find ppairs: " << ppProc.ppairs.size() << std::endl;
+	 drawComplexesOnOriginal();
+	 */
 
 	drawGradientField();
 
-	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+	/*
+	 std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
 
-	BarCodeProcessor proc;
-	proc.init(m_msCmplxStorage.complexesSet());
-	proc.computeBarCodes(m_gradFieldFile);
+	 BarCodeProcessor proc;
+	 proc.init(m_msCmplxStorage.complexesSet());
+	 proc.computeBarCodes(m_gradFieldFile);
+	 */
 
 }
 
