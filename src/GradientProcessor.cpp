@@ -199,7 +199,6 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 				Scalar(0, 0, 0), 1.3);
 	}
 
-
 	drawer->draw(drawField);
 	//		m_msCmplxStorage.draw(drawField);
 	Edges& edges = m_edges.vector();
@@ -219,14 +218,14 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 		imshow(path.c_str(), drawField);
 		waitKey(0);
 	}
-/*
-	VtxDimToPPidMap::iterator it = PPoint::m_vrtx2Id.begin();
-	while (it != PPoint::m_vrtx2Id.end()) {
-		putText(drawField, mt::StrUtils::intToString(it->second),
-				Point(it->first.first->x * Image::m_enlargeFactor + Image::m_enlargeFactor, it->first.first->y * Image::m_enlargeFactor + Image::m_enlargeFactor),
-				CV_FONT_NORMAL, 0.7, Scalar(0, 0, 0), 1.3);
-		it++;
-	}*/
+	/*
+	 VtxDimToPPidMap::iterator it = PPoint::m_vrtx2Id.begin();
+	 while (it != PPoint::m_vrtx2Id.end()) {
+	 putText(drawField, mt::StrUtils::intToString(it->second),
+	 Point(it->first.first->x * Image::m_enlargeFactor + Image::m_enlargeFactor, it->first.first->y * Image::m_enlargeFactor + Image::m_enlargeFactor),
+	 CV_FONT_NORMAL, 0.7, Scalar(0, 0, 0), 1.3);
+	 it++;
+	 }*/
 
 	imwrite(path.c_str(), drawField);
 }
@@ -237,13 +236,9 @@ void GradientProcessor::drawGradientField() {
 
 	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
 
-
-/*
-	 for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
-	 drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
-	 }
-*/
-
+	for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
+		drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
+	}
 
 	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
 
