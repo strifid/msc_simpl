@@ -22,7 +22,9 @@ struct PixelComparator {
 		return a.x < b.x;
 	}
 };
-typedef std::map<Pixel, bool, PixelComparator> StdPointsMap;
+//typedef std::map<Pixel, bool, PixelComparator> StdPointsMap;
+/*
+
 
 class PointsMap: public StdPointsMap {
 public:
@@ -57,5 +59,7 @@ public:
 		return strOut;
 	}
 };
+*/
+
 
 #endif /* DISCRETEMORSEPIXEL_H_ */

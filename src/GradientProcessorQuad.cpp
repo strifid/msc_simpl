@@ -59,10 +59,10 @@ int32_t GradientProcessorQuad::findEdges() {
 
 	std::vector<VertexPtr>& vertexes = m_vertexes.vector();
 	for (size_t i = 0; i < vertexes.size(); i++) {
-		Pixels pxls = m_img.getOneConnectedAround(dynamic_cast<Pixel&>(*vertexes[i]));
+		Pixels pxls = m_img.getOneConnectedAround(vertexes[i]->x, vertexes[i]->y);
 
 		if (pxls.size() > 4) {
-			std::cout << "ERROR: vtx: " << vertexes[i]->toString() << " has one connected " << pxls.size() << std::endl;
+			std::cout << "ERROR: vtx: " << *(vertexes[i]) << " has one connected " << pxls.size() << std::endl;
 		}
 		for (size_t z = 0; z < pxls.size(); z++) {
 			VertexPtr vertexB = findVertexByPixel(pxls[z]);

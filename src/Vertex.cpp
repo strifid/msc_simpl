@@ -20,19 +20,21 @@ Vertex::~Vertex() {
 Vertex::Vertex(int xx, int yy) {
 	x = xx;
 	y = yy;
-	m_value = 0;
+//	m_value = 0;
 }
 
 Vertex::Vertex(int xx, int yy, int val) {
 	x = xx;
 	y = yy;
-	m_value = val;
+//	m_value = val;
 
 }
 
+/*
 uint32_t Vertex::locateSubset(Image& img) {
 
 	bool addPointFlag = false;
+
 
 	do {
 		addPointFlag = false;
@@ -49,8 +51,10 @@ uint32_t Vertex::locateSubset(Image& img) {
 		}
 	} while (addPointFlag);
 
+
 	return 0;
 }
+*/
 
 bool Vertex::operator ==(const Vertex& vrtx) const {
 	if (x == vrtx.x)
@@ -66,12 +70,16 @@ bool Vertex::operator <(const Vertex& vrtx) const {
 
 void Vertex::draw(Mat& img, Scalar color) {
 
-	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = m_value;
+	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = value();
 
 	putText(img, mt::StrUtils::intToString(value()),
 			Point(x * Image::m_enlargeFactor + Image::m_enlargeFactor, y * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7,
 			color, 1.3);
 
+}
+
+bool Vertex::operator !=(const Vertex& vrtx) const {
+	return !operator==(vrtx);
 }
 
 Pixels Vertex::getAllAround(const Pixel& pt, uint32_t width, uint32_t height) {
@@ -144,6 +152,7 @@ std::ostream & operator <<(std::ostream & out, const Vertex& vt) {
 
 }
 
+/*
 void Vertex::value(int32_t i) {
 
 //	std::cout << "set vertex " << i << std::endl;
@@ -153,3 +162,4 @@ void Vertex::value(int32_t i) {
 
 }
 
+*/

@@ -9,7 +9,7 @@
 #include <iosfwd>
 
 Simplex::Simplex() :
-		m_valueFirst(0), m_valueSecond(0), m_valueThird(0), m_seqId(0) {
+		m_seqId(0) {
 }
 
 Simplex::~Simplex() {
@@ -41,21 +41,28 @@ bool Simplex::operator >(const Simplex & vrtx) const {
 
 }
 
+int32_t Simplex::value() {
+	return m_valueFirst.getInt();
+}
+
+
+void Simplex::value(int32_t i) {
+	m_valueFirst = i;
+}
 
 #include <vector>
 #include "opencv2/core/core.hpp"
 #include "Pixel.h"
 #include <set>
-#include "Subset.h"
 #include <map>
 #include "Simplex.h"
 
 /*
-std::ostream & operator <<(std::ostream & out, Simplex vt) {
+ std::ostream & operator <<(std::ostream & out, Simplex vt) {
 
-	out << "value: " << vt.m_valueFirst << "+ e*" << vt.m_valueSecond << "+ e^2*" << vt.m_valueThird;
-	return out;
+ out << "value: " << vt.m_valueFirst << "+ e*" << vt.m_valueSecond << "+ e^2*" << vt.m_valueThird;
+ return out;
 
-}
-*/
+ }
+ */
 

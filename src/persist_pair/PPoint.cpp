@@ -15,7 +15,7 @@ PPoint::PPoint(Vertex &vtx, Type t, uint32_t dim) :
 
 	m_id = pointId;
 	pointId++;
-	m_value = vtx.value();
+	m_valueFirst = vtx.value();
 	m_type = t;
 	m_dim = dim;
 	x = vtx.x;
@@ -28,7 +28,7 @@ PPoint::PPoint(int vtx, Type t, uint32_t dim) :
 
 	m_id = pointId;
 	pointId++;
-	m_value = vtx;
+	m_valueFirst = vtx;
 	m_type = t;
 	m_dim = dim;
 	x = 0;

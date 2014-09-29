@@ -9,6 +9,7 @@
 #define SIMPLEX_H_
 #include <stdint.h>
 #include <iosfwd>
+#include "BigDecimal.h"
 
 class Simplex {
 public:
@@ -19,13 +20,15 @@ public:
 	bool operator<(const Simplex& vrtx) const;
 	bool operator>(const Simplex& vrtx) const;
 
-	int32_t m_valueFirst;
-	int32_t m_valueSecond;
-	int32_t m_valueThird;
+	BigDecimal m_valueFirst;
+	BigDecimal m_valueSecond;
+	BigDecimal m_valueThird;
 
 	uint32_t m_seqId;
 
-	virtual int32_t value() = 0;
+	int32_t value();
+	void value(int32_t i);
+
 };
 
 //std::ostream & operator <<(std::ostream & out, Simplex vt);

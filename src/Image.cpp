@@ -138,12 +138,9 @@ Pixels Image::getAllAround(const Pixel& pt) {
 	return pts;
 }
 
-Pixels Image::getOneConnectedAround(const Pixel& pt) {
+Pixels Image::getOneConnectedAround(int x, int y) {
 	//todo move in members and return link
 	Pixels pts;
-
-	uint32_t x = pt.x;
-	uint32_t y = pt.y;
 
 	if (x == 0) {
 		pts.push_back(Pixel(x + 1, y));
@@ -257,7 +254,7 @@ void Image::paint(Mat& forChanges) {
 
 }
 
-void Image::paintPixel(Pixel *pxl, BrushColor color) {
+void Image::paintPixel(Vertex *pxl, BrushColor color) {
 	switch (color) {
 	case RED:
 		m_forChanges.at<cv::Vec3b>(pxl->y, pxl->x)[0] = 0x00;

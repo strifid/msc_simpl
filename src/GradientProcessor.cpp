@@ -30,9 +30,10 @@ void GradientProcessor::drawComplexesOnOriginal() {
 }
 
 VertexPtr GradientProcessor::findVertexByPixel(const Pixel & pxl) {
-	std::map<Pixel, VertexPtr, PixelComparator>::iterator it = m_pix2vertex.find(pxl);
+	Vertex vtx(pxl.x, pxl.y);
+	std::set<VertexPtr, PixelComparator>::iterator it = m_pix2vertex.find(&vtx);
 	if (it != m_pix2vertex.end())
-		return it->second;
+		return *it;
 	return NULL;
 }
 
@@ -76,7 +77,7 @@ void GradientProcessor::addVertex(VertexPtr vtx) {
 
 	vtx->m_seqId = m_seqId++;
 	m_vertexes.push(vtx);
-	m_pix2vertex[*(dynamic_cast<Pixel*>(vtx))] = vtx;
+	m_pix2vertex.insert(vtx);
 	m_simplexRelations.push(vtx);
 
 }

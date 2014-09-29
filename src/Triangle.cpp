@@ -30,7 +30,7 @@ void Face::addEdge(EdgePtr edge) {
 
 	m_valueThird = 0;
 	for (VertexesSet::iterator it = m_vertexes.begin(); it != m_vertexes.end(); it++)
-		m_valueThird += (*it)->value();
+		m_valueThird += (*it)->m_valueFirst;
 
 }
 

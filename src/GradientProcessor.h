@@ -99,8 +99,8 @@ protected:
 	}
 
 	Image m_img;
-	std::set<Pixel, PixelComparator> m_processedPixels;
-	std::map<Pixel, VertexPtr, PixelComparator> m_pix2vertex;
+//	std::set<Pixel, PixelComparator> m_processedPixels;
+	std::set<VertexPtr, VertexPtrComparator> m_pix2vertex;
 
 	SimplexStorage<VertexPtr> m_vertexes;
 	SimplexStorage<EdgePtr> m_edges;

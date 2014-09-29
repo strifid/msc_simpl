@@ -8,8 +8,8 @@
 #ifndef IMAGE_H_
 #define IMAGE_H_
 #include "opencv2/core/core.hpp"
-#include "Subset.h"
-#include "Pixel.h"
+#include "Vertex.h"
+#include "mt/logger/Logable.h"
 using cv::Mat;
 
 class Image: public mt::Logable {
@@ -28,7 +28,7 @@ public:
 	void setValue(const Pixel & pt, int32_t val);
 
 	Pixels getAllAround(const Pixel& pxl);
-	Pixels getOneConnectedAround(const Pixel& pxl);
+	Pixels getOneConnectedAround(int x, int y);
 
 	bool isBoundaryPixel(const Pixel& pt);
 
@@ -43,7 +43,7 @@ public:
 
 	void drawCircle(Point point, cv::Scalar color, uint32_t radius = 1, uint32_t thickness = 1);
 
-	void paintPixel(Pixel* pxl, BrushColor color = RED);
+	void paintPixel(Vertex* pxl, BrushColor color = RED);
 
 	int32_t comparePixels(const Pixel& a, const Pixel& b);
 
@@ -78,7 +78,6 @@ protected:
 
 	Mat m_img;
 	Mat m_forChanges;
-	PointsMap m_analysedPointsMap;
 
 	uint32_t m_height;
 	uint32_t m_width;
