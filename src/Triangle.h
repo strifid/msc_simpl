@@ -51,6 +51,6 @@ std::ostream & operator <<(std::ostream & out, Face& vt);
 
 typedef Face* FacePtr;
 typedef std::vector<FacePtr> Faces;
-typedef std::set<FacePtr> FacesSet;
+//typedef std::set<FacePtr> FacesSet;
 
 #endif /* TRIANGLE_H_ */

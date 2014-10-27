@@ -77,26 +77,28 @@ public:
 	virtual ~ArcStorage() {
 	}
 
-	void printAll() {
+	void printAll(const std::string& prefix) {
 
 		uint32_t totalArcs = 0;
 		for (typename ArcsToSeddleMap::iterator it = m_arcsToSeddleMap.begin(); it != m_arcsToSeddleMap.end(); it++) {
 			totalArcs += it->second.size();
 			if (it->second.size() > 2) {
-				std::cout << "incorrect arcs for seddle " << *(it->first) << " arcs: " << it->second.size() << std::endl;
+				std::cout << prefix << " incorrect arcs for seddle " << *(it->first) << " arcs: " << it->second.size() << std::endl;
 			}
 		}
-		std::cout << "total asc arcs by seddle: " << totalArcs << std::endl;
+		std::cout << "total " << prefix << " arcs by seddle: " << totalArcs << std::endl;
 
 		uint32_t totalArcsByMax = 0;
 		for (typename ArcsToCriticalMap::iterator it = m_arcsToCriticalMap.begin(); it != m_arcsToCriticalMap.end(); it++) {
 			totalArcsByMax += it->second.size();
-			std::vector<ArcPtr>& arcs = it->second;
-			for (size_t i = 0; i < arcs.size(); i++) {
-				std::cout << "arc begin: " << *(arcs[i]->m_arcBegin) << " end: " << *(arcs[i]->m_arcEnd->maxVertex()) << std::endl;
-			}
+			/*
+			 std::vector<ArcPtr>& arcs = it->second;
+			 for (size_t i = 0; i < arcs.size(); i++) {
+			 std::cout << "arc begin: " << *(arcs[i]->m_arcBegin) << " end: " << *(arcs[i]->m_arcEnd->maxVertex()) << std::endl;
+			 }
+			 */
 		}
-		std::cout << "total asc arcs by critical: " << totalArcsByMax << std::endl;
+		std::cout << "total " << prefix << " arcs by critical: " << totalArcsByMax << std::endl;
 
 	}
 
@@ -242,14 +244,14 @@ public:
 
 	void saveArcsInVtp(const std::string& path) {
 
-		vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
-		vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+		vtkSmartPointer < vtkPoints > points = vtkSmartPointer < vtkPoints > ::New();
+		vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer < vtkCellArray > ::New();
 
 		for (typename ArcsToSeddleMap::iterator it = m_arcsToSeddleMap.begin(); it != m_arcsToSeddleMap.end(); it++) {
 			std::vector<ArcPtr> &arcs = it->second;
 			for (size_t i = 0; i < arcs.size(); ++i) {
 				ArcPtr arc = arcs[i];
-				vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
+				vtkSmartPointer < vtkPolyLine > polyLine = vtkSmartPointer < vtkPolyLine > ::New();
 				polyLine->GetPointIds()->SetNumberOfIds(arc->m_arc.size() + 2);
 
 				vtkIdType id = points->InsertNextPoint(arc->m_arcBegin->maxVertex()->x, arc->m_arcBegin->maxVertex()->y, 0);
@@ -267,11 +269,11 @@ public:
 				cells->InsertNextCell(polyLine);
 			}
 		}
-		vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+		vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer < vtkPolyData > ::New();
 		polyData->SetPoints(points);
 
 		polyData->SetLines(cells);
-		vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
+		vtkSmartPointer < vtkXMLPolyDataWriter > writer = vtkSmartPointer < vtkXMLPolyDataWriter > ::New();
 		writer->SetFileName(path.c_str());
 		writer->SetInput(polyData);
 		writer->SetDataModeToAscii();

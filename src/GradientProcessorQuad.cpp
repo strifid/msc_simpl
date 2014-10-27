@@ -147,17 +147,21 @@ void GradientProcessorQuad::printInfo() {
 void GradientProcessorQuad::findAscArcs() {
 	for (size_t i = 0; i < m_seddles.size(); i++) {
 		Faces *tr = m_simplexRelations.face(m_seddles[i]);
-		if (tr == NULL)
+		if (tr == NULL) {
+			std::cout << "ERROR. have no any cofaced faces to seddle" << std::endl;
 			continue;
+		}
 		for (size_t z = 0; z < tr->size(); z++) {
 			Faces arc;
 			arc.push_back(tr->at(z));
 			if (getAscendingManifold(arc)) {
 				AscArcPtr ascArc = new Arc<FacePtr, FacePtr>(m_seddles[i], arc, arc.back());
 				m_ascArcsStorage.addArc(ascArc);
-			}
+			} else
+				std::cout << "WARNING can't find asc manifold for " << *(tr->at(z)) << std::endl;
 		}
 	}
+	m_ascArcsStorage.printAll("asc");
 }
 
 void GradientProcessorQuad::findDescArcs() {
@@ -165,6 +169,9 @@ void GradientProcessorQuad::findDescArcs() {
 		addDescArc(m_seddles[i]->m_a, m_seddles[i]);
 		addDescArc(m_seddles[i]->m_b, m_seddles[i]);
 	}
+
+	m_descArcsStorage.printAll("desc");
+
 }
 
 void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPointPtr> >& pps) {
@@ -324,21 +331,6 @@ struct VertexPtrComparatorForSort {
 	}
 } vertexPtrComparator;
 
-void GradientProcessorQuad::simplify(uint32_t persistence) {
-
-	std::sort(m_maximums.begin(), m_maximums.end(), FacePtrComparator);
-	simplifyArcs<AscArcPtr, FacePtr, VertexPtr, DescArcPtr>(m_maximums, m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl, persistence, true);
-
-	Vertexes mins;
-	for (VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); ++it) {
-		mins.push_back(*it);
-	}
-	std::sort(mins.begin(), mins.end(), vertexPtrComparator);
-	simplifyArcs<DescArcPtr, VertexPtr, FacePtr, AscArcPtr>(mins, m_descArcsStorageForSimpl, m_ascArcsStorageForSimpl, persistence, false);
-
-	std::cout << "\tsimplification done. persistance " << persistence << std::endl;
-
-}
 
 MsComplex* GradientProcessorQuad::completeComplex(AscArcPtr aArc1, DescArcPtr dArc1, AscArcs *aArcs, DescArcs *dArcs) {
 
@@ -419,6 +411,7 @@ void GradientProcessorQuad::createArcStorageForSimpl() {
 
 }
 
+/*
 void GradientProcessorQuad::connectArcs(AscArcStorage& ascArc, DescArcStorage& descArc) {
 
 	m_msCmplxStorage.clear();
@@ -457,58 +450,44 @@ void GradientProcessorQuad::connectArcs(AscArcStorage& ascArc, DescArcStorage& d
 	}
 
 }
+*/
 
-#include <vtkPolyVertex.h>
+void GradientProcessorQuad::connectArcs(AscArcStorage& ascArc, DescArcStorage& descArc) {
 
-void GradientProcessorQuad::saveMaxInVtk() {
+	m_msCmplxStorage.clear();
+	DescArcStorage::ArcsToSeddleMap &arcsToSeddleMap = descArc.arcsToSeddleMap();
 
-	vtkSmartPointer < vtkPoints > points = vtkSmartPointer < vtkPoints > ::New();
-	vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer < vtkCellArray > ::New();
+	for (typename DescArcStorage::ArcsToSeddleMap::iterator it = arcsToSeddleMap.begin(); it != arcsToSeddleMap.end(); it++) {
 
-	for (size_t i = 0; i < m_maximums.size(); i++) {
-		VertexPtr max = m_maximums[i]->maxVertex();
-		vtkIdType id = points->InsertNextPoint(max->x, m_img.height() - max->y - 1, 0);
-		vtkSmartPointer < vtkPolyVertex > polyVtx = vtkSmartPointer < vtkPolyVertex > ::New();
-		polyVtx->GetPointIds()->SetNumberOfIds(1);
-		polyVtx->GetPointIds()->SetId(0, id);
-		cells->InsertNextCell(polyVtx);
+		DescArcs* descArcs = &(it->second);
+		AscArcs* ascArcs = ascArc.critical(it->first);
+		if (!ascArcs)
+			continue;
+
+		for (size_t i = 0; i < ascArcs->size(); i++) {
+			FacePtr max = ascArcs->at(i)->m_arcEnd;
+			AscArcs* aArcs = ascArc.seddles(max);
+
+			for (size_t z = 0; z < descArcs->size(); z++) {
+				//todo somthing strange
+				VertexPtr min = descArcs->at(z)->m_arcEnd;
+
+				if (max->m_valueFirst < min->m_valueFirst)
+					continue;
+
+				MsComplex *msComplex = completeComplex(ascArcs->at(i), descArcs->at(z), aArcs, descArc.seddles(min));
+				if (msComplex) {
+					msComplex->m_max = max;
+					msComplex->m_min = min;
+					msComplex->m_seddles.push_back(it->first);
+					if (m_msCmplxStorage.isExist(msComplex))
+						delete msComplex;
+					else
+						m_msCmplxStorage.addComplex(msComplex);
+				}
+			}
+		}
 	}
 
-	vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer < vtkPolyData > ::New();
-	polyData->SetPoints(points);
-
-	polyData->SetVerts(cells);
-	vtkSmartPointer < vtkXMLPolyDataWriter > writer = vtkSmartPointer < vtkXMLPolyDataWriter > ::New();
-	writer->SetFileName("max.vtp");
-	writer->SetInput(polyData);
-	writer->SetDataModeToAscii();
-	writer->Write();
-
+	m_msCmplxStorage.printInfo(m_maximums);
 }
-
-void GradientProcessorQuad::saveMinInVtk() {
-
-	vtkSmartPointer < vtkPoints > points = vtkSmartPointer < vtkPoints > ::New();
-	vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer < vtkCellArray > ::New();
-
-	for (VertexesSet::iterator it = m_minimums.begin(); it != m_minimums.end(); it++) {
-		VertexPtr max = *it;
-		vtkIdType id = points->InsertNextPoint(max->x, m_img.height() - max->y - 1, 0);
-		vtkSmartPointer < vtkPolyVertex > polyVtx = vtkSmartPointer < vtkPolyVertex > ::New();
-		polyVtx->GetPointIds()->SetNumberOfIds(1);
-		polyVtx->GetPointIds()->SetId(0, id);
-		cells->InsertNextCell(polyVtx);
-	}
-
-	vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer < vtkPolyData > ::New();
-	polyData->SetPoints(points);
-
-	polyData->SetVerts(cells);
-	vtkSmartPointer < vtkXMLPolyDataWriter > writer = vtkSmartPointer < vtkXMLPolyDataWriter > ::New();
-	writer->SetFileName("min.vtp");
-	writer->SetInput(polyData);
-	writer->SetDataModeToAscii();
-	writer->Write();
-
-}
-
