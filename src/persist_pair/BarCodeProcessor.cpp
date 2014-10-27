@@ -57,8 +57,8 @@ void BarCodeProcessor::computeBarCodes(const std::string& path) {
 
 	bool levelChanged = false;
 	for (size_t i = 0; i < m_sortedPoints.size(); ++i) {
-		if (lastValue != m_sortedPoints[i]->value()) {
-			lastValue = m_sortedPoints[i]->value();
+		if (lastValue != m_sortedPoints[i]->value().getInt()) {
+			lastValue = m_sortedPoints[i]->value().getInt();
 			step++;
 			levelChanged = true;
 		}

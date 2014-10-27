@@ -76,9 +76,9 @@ protected:
 			ArcPtr arc = arcs->at(i);
 			bool isPerPair = false;
 			if (asc)
-				isPerPair = arc->m_arcBegin->maxVertex()->value() + persistence > face->value();
+				isPerPair = arc->m_arcBegin->maxVertex()->value().getInt() + persistence > face->maxVertex()->value().getInt();
 			else
-				isPerPair = arc->m_arcBegin->maxVertex()->value() < face->value() + persistence;
+				isPerPair = arc->m_arcBegin->maxVertex()->value().getInt() < face->maxVertex()->value().getInt() + persistence;
 
 			if (isPerPair) {
 				if (Utils::hasInVectorPtr<ArcPtr>(cantRemove, arcs->at(i)))

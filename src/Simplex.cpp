@@ -41,13 +41,13 @@ bool Simplex::operator >(const Simplex & vrtx) const {
 
 }
 
-int32_t Simplex::value() {
-	return m_valueFirst.getInt();
+BigDecimal& Simplex::value() {
+	return m_valueFirst;
 }
 
 
-void Simplex::value(int32_t i) {
-	m_valueFirst = i;
+void Simplex::value(int32_t i, uint32_t e) {
+	m_valueFirst.set(i, e);
 }
 
 #include <vector>

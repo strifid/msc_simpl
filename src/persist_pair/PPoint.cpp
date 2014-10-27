@@ -28,7 +28,7 @@ PPoint::PPoint(int vtx, Type t, uint32_t dim) :
 
 	m_id = pointId;
 	pointId++;
-	m_valueFirst = vtx;
+	m_valueFirst.set(vtx, 0);
 	m_type = t;
 	m_dim = dim;
 	x = 0;

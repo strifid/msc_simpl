@@ -17,19 +17,31 @@ BigDecimal::~BigDecimal() {
 }
 
 bool BigDecimal::operator <(const BigDecimal& b) const {
-	if(m_man == b.m_man)
+	if (m_man == b.m_man)
 		return m_exp < b.m_exp;
 	return m_man < b.m_man;
 }
 
+bool BigDecimal::operator <=(const BigDecimal& b) const {
+	if (m_man == b.m_man)
+		return m_exp <= b.m_exp;
+	return m_man < b.m_man;
+}
+
+
 bool BigDecimal::operator >(const BigDecimal& b) const {
-	if(m_man == b.m_man)
+	if (m_man == b.m_man)
 		return m_exp > b.m_exp;
+	return m_man > b.m_man;
+}
+bool BigDecimal::operator >=(const BigDecimal& b) const {
+	if (m_man == b.m_man)
+		return m_exp >= b.m_exp;
 	return m_man > b.m_man;
 }
 
 bool BigDecimal::operator ==(const BigDecimal& b) const {
-	if(m_man == b.m_man)
+	if (m_man == b.m_man)
 		return m_exp == b.m_exp;
 	return false;
 }
@@ -39,13 +51,20 @@ BigDecimal::BigDecimal(int m, uint32_t e) {
 	m_exp = e;
 }
 
-void BigDecimal::operator =(int i) {
-	m_man = i;
-
+bool BigDecimal::operator !=(const BigDecimal& b) const {
+	return !operator==(b);
 }
 
-bool BigDecimal::operator !=(const BigDecimal& b) const {
-	return ! operator==(b);
+void BigDecimal::set(int32_t m, uint32_t e) {
+	m_man = m;
+	m_exp = e;
+}
+
+void BigDecimal::operator =(const BigDecimal& b) {
+
+	m_man = b.m_man;
+	m_exp = b.m_exp;
+
 }
 
 BigDecimal& BigDecimal::operator +=(const BigDecimal& b) {
@@ -54,4 +73,9 @@ BigDecimal& BigDecimal::operator +=(const BigDecimal& b) {
 	m_exp += b.m_exp;
 	return *this;
 
+}
+
+
+BigDecimal BigDecimal::operator +(const BigDecimal& b) {
+	return BigDecimal(m_man + b.m_man, m_exp + b.m_exp);
 }

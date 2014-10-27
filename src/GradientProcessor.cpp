@@ -239,10 +239,10 @@ void GradientProcessor::drawGradientField() {
 
 	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
 
-	for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
+	/*for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
 		drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
 	}
-
+*/
 	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
 
 }

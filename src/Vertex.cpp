@@ -70,9 +70,9 @@ bool Vertex::operator <(const Vertex& vrtx) const {
 
 void Vertex::draw(Mat& img, Scalar color) {
 
-	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = value();
+	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = value().getInt();
 
-	putText(img, mt::StrUtils::intToString(value()),
+	putText(img, mt::StrUtils::intToString(value().getInt()),
 			Point(x * Image::m_enlargeFactor + Image::m_enlargeFactor, y * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7,
 			color, 1.3);
 

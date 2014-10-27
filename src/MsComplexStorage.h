@@ -108,7 +108,7 @@ public:
 		coordFile.open(path.c_str());
 		coordFile << "x\ty\tz" << std::endl;
 		for (VertexesSet::iterator it = vtxs.begin(); it != vtxs.end(); it++) {
-			coordFile << (*it)->x << "\t" << (*it)->y << "\t" << (*it)->value() << std::endl;
+			coordFile << (*it)->x << "\t" << (*it)->y << "\t" << (*it)->value().getInt() << std::endl;
 		}
 		coordFile.close();
 	}

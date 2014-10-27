@@ -28,7 +28,7 @@ void Face::addEdge(EdgePtr edge) {
 	m_vertexes.insert(edge->m_a);
 	m_vertexes.insert(edge->m_b);
 
-	m_valueThird = 0;
+	m_valueThird = BigDecimal();
 	for (VertexesSet::iterator it = m_vertexes.begin(); it != m_vertexes.end(); it++)
 		m_valueThird += (*it)->m_valueFirst;
 

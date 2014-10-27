@@ -12,7 +12,7 @@
 #include "Vertex.h"
 #include "Simplex.h"
 #include "opencv2/core/core.hpp"
-
+#include <iostream>
 class Edge: public Simplex {
 public:
 	Edge();
@@ -30,13 +30,14 @@ public:
 	VertexPtr getDifferentVertex(Edge* edge);
 	VertexPtr findCommonVertex(Edge* edge);
 
-	virtual int32_t value() {
-		if (!m_a)
-			return 0;
+	virtual BigDecimal& value() {
+		if (!m_a) {
+			std::cout << "ERROR!! value in Edge return 0" << std::endl;
+		}
 		return m_a->value();
 	}
 
-	VertexPtr maxVertex(){
+	VertexPtr maxVertex() {
 		return m_a->value() > m_b->value() ? m_a : m_b;
 	}
 protected:

@@ -58,8 +58,8 @@ void MsComplexEditor::process(MsComplex* cmplx) {
 		AscArcPtr ascArc = cmplx->m_aArcs[j];
 		if (m_processedAscArcs.find(ascArc) == m_processedAscArcs.end()) {
 			Vertexes& points = getAscArcTrace(ascArc->m_arc, cmplx->m_max->maxVertex());
-			addArcPoints(points, cmplx->m_max->maxVertex()->value(), ascArc->m_arcBegin->m_a->value());
-			m_generateField[std::make_pair(cmplx->m_max->maxVertex()->x, cmplx->m_max->maxVertex()->y)] = cmplx->m_max->maxVertex()->value();
+			addArcPoints(points, cmplx->m_max->maxVertex()->value().getInt(), ascArc->m_arcBegin->m_a->value().getInt());
+			m_generateField[std::make_pair(cmplx->m_max->maxVertex()->x, cmplx->m_max->maxVertex()->y)] = cmplx->m_max->maxVertex()->value().getInt();
 			m_processedAscArcs.insert(ascArc);
 		}
 	}
@@ -68,8 +68,8 @@ void MsComplexEditor::process(MsComplex* cmplx) {
 		DescArcPtr descArc = cmplx->m_dArcs[j];
 		if (m_processedDescArcs.find(descArc) == m_processedDescArcs.end()) {
 			Vertexes& points = getDescArcTrace(descArc->m_arc);
-			addArcPoints(points, descArc->m_arcBegin->m_a->value(), cmplx->m_min->value());
-			m_generateField[std::make_pair(cmplx->m_min->x, cmplx->m_min->y)] = cmplx->m_min->value();
+			addArcPoints(points, descArc->m_arcBegin->m_a->value().getInt(), cmplx->m_min->value().getInt());
+			m_generateField[std::make_pair(cmplx->m_min->x, cmplx->m_min->y)] = cmplx->m_min->value().getInt();
 			m_processedDescArcs.insert(descArc);
 		}
 	}
@@ -89,7 +89,7 @@ void MsComplexEditor::addArcPoints(Vertexes& points, uint32_t max, uint32_t min)
 
 	if (points.size() < 3) {
 		for (size_t i = 0; i < points.size(); ++i) {
-			m_generateField[std::make_pair(points[i]->x, points[i]->y)] = points[i]->value();
+			m_generateField[std::make_pair(points[i]->x, points[i]->y)] = points[i]->value().getInt();
 		}
 		return;
 	}

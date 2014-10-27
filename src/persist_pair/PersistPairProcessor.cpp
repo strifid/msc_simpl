@@ -69,13 +69,13 @@ void PersistPairProcessor::findPairs() {
 struct PPairComparatorByPersistence {
 public:
 	bool operator()(const std::pair<PPointPtr, PPointPtr> &aPair, const std::pair<PPointPtr, PPointPtr> &bPair) {
-		int32_t maxValA = aPair.first->value() >= aPair.second->value() ? aPair.first->value() : aPair.second->value();
-		int32_t minValA = aPair.first->value() < aPair.second->value() ? aPair.first->value() : aPair.second->value();
+		int32_t maxValA = aPair.first->value().getInt() >= aPair.second->value().getInt() ? aPair.first->value().getInt() : aPair.second->value().getInt();
+		int32_t minValA = aPair.first->value().getInt() < aPair.second->value().getInt() ? aPair.first->value().getInt() : aPair.second->value().getInt();
 
 //		std::cout << "maxValA " << maxValA << " minValA " << minValA << std::endl;
 
-		int32_t maxValB = bPair.first->value() >= bPair.second->value() ? bPair.first->value() : bPair.second->value();
-		int32_t minValB = bPair.first->value() < bPair.second->value() ? bPair.first->value() : bPair.second->value();
+		int32_t maxValB = bPair.first->value().getInt() >= bPair.second->value().getInt() ? bPair.first->value().getInt() : bPair.second->value().getInt();
+		int32_t minValB = bPair.first->value().getInt() < bPair.second->value().getInt() ? bPair.first->value().getInt() : bPair.second->value().getInt();
 
 		//	std::cout << "maxValB " << maxValB << " minValB " << minValB << std::endl;
 
@@ -108,9 +108,9 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint
 	size_t i = 0;
 	for (i = 0; i < ppairsPoint.size(); ++i) {
 		int32_t maxValA =
-				ppairsPoint[i].first->value() >= ppairsPoint[i].second->value() ? ppairsPoint[i].first->value() : ppairsPoint[i].second->value();
+				ppairsPoint[i].first->value().getInt() >= ppairsPoint[i].second->value().getInt() ? ppairsPoint[i].first->value().getInt() : ppairsPoint[i].second->value().getInt();
 		int32_t minValA =
-				ppairsPoint[i].first->value() < ppairsPoint[i].second->value() ? ppairsPoint[i].first->value() : ppairsPoint[i].second->value();
+				ppairsPoint[i].first->value().getInt() < ppairsPoint[i].second->value().getInt() ? ppairsPoint[i].first->value().getInt() : ppairsPoint[i].second->value().getInt();
 //		std::cout << "max :  " << maxValA << " min " << minValA << " pers " << persistence << std::endl;
 
 		if (maxValA - minValA > persistence)
@@ -234,12 +234,12 @@ void PersistPairProcessor::printToFile(const std::string& path) {
 
 	for (size_t i = 0; i < ppairsPoint.size(); ++i) {
 		if (processed.find(std::make_pair(ppairsPoint[i].first->x, ppairsPoint[i].first->y)) == processed.end()) {
-			coordFile << ppairsPoint[i].first->x << "\t" << ppairsPoint[i].first->y << "\t" << ppairsPoint[i].first->value() << std::endl;
+			coordFile << ppairsPoint[i].first->x << "\t" << ppairsPoint[i].first->y << "\t" << ppairsPoint[i].first->value().getInt() << std::endl;
 			processed.insert(std::make_pair(ppairsPoint[i].first->x, ppairsPoint[i].first->y));
 		}
 
 		if (processed.find(std::make_pair(ppairsPoint[i].second->x, ppairsPoint[i].second->y)) == processed.end()) {
-			coordFile << ppairsPoint[i].second->x << "\t" << ppairsPoint[i].second->y << "\t" << ppairsPoint[i].second->value() << std::endl;
+			coordFile << ppairsPoint[i].second->x << "\t" << ppairsPoint[i].second->y << "\t" << ppairsPoint[i].second->value().getInt() << std::endl;
 			processed.insert(std::make_pair(ppairsPoint[i].second->x, ppairsPoint[i].second->y));
 		}
 
@@ -251,11 +251,11 @@ void PersistPairProcessor::printToFile(const std::string& path) {
 uint32_t PersistPairProcessor::getHighest(std::vector<uint32_t>& v) {
 	MT_EXCEPTION_ASSERT(v.size(), "can't get hiegst becouse v.size = 0")
 
-	uint32_t val = m_points[v[0]]->value(), index = v[0];
+	uint32_t val = m_points[v[0]]->value().getInt(), index = v[0];
 
 	for (size_t i = 1; i < v.size(); ++i) {
-		if (m_points[v[i]]->value() > val) {
-			val = m_points[v[i]]->value();
+		if (m_points[v[i]]->value().getInt() > val) {
+			val = m_points[v[i]]->value().getInt();
 			index = v[i];
 		}
 	}

@@ -26,8 +26,8 @@ public:
 
 	uint32_t m_seqId;
 
-	int32_t value();
-	void value(int32_t i);
+	BigDecimal& value();
+	void value(int32_t i, uint32_t e);
 
 };
 

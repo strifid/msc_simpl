@@ -51,7 +51,9 @@ public:
 		for (int x = 0; x < m_img.width(); x++) {
 			for (int y = 0; y < m_img.height(); y++) {
 				VertexPtr vtx = new Vertex(x, y);
-				vtx->value(m_img.value(Pixel(x, y)));
+				vtx->value(m_img.value(Pixel(x, y)), x * m_img.width() + y);
+//				vtx->value(m_img.value(Pixel(x, y)), 0);
+
 				addVertex(vtx);
 			}
 		}

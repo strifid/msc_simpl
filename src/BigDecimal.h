@@ -19,13 +19,17 @@ public:
 	}
 
 	bool operator<(const BigDecimal& b) const;
+	bool operator<=(const BigDecimal& b) const;
+
 	bool operator>(const BigDecimal& b) const;
+	bool operator>=(const BigDecimal& b) const;
+
 	bool operator==(const BigDecimal& b) const;
 	bool operator!=(const BigDecimal& b) const;
-	void operator=(int i);
-
+	void operator=(const BigDecimal& b);
+	void set(int32_t m, uint32_t e);
 	BigDecimal& operator+=(const BigDecimal& b);
-
+	BigDecimal operator+(const BigDecimal& b);
 
 protected:
 	int32_t m_man;
