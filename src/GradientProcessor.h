@@ -81,7 +81,6 @@ protected:
 	void drawGradientField();
 
 	void drawComplexesOnOriginal();
-	void normalizeField();
 
 	void getDescendingManifold(Edges& arc, Vertexes& vtxs);
 	bool getAscendingManifold(std::vector<FacePtr>& arc);

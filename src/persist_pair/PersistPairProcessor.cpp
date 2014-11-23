@@ -30,6 +30,40 @@ PersistPairProcessor::PersistPairProcessor() {
 PersistPairProcessor::~PersistPairProcessor() {
 }
 
+
+bool PersistPairProcessor::init(AscArcStorage& ascArcs, DescArcStorage& descArcs) {
+
+
+	PPoint::pointId = 1;
+	PPoint::m_vrtx2Id.clear();
+
+	AscArcStorage::ArcsToSeddleMap &aMap = ascArcs.arcsToSeddleMap();
+
+	for (AscArcStorage::ArcsToSeddleMap::iterator it = aMap.begin(); it != aMap.end(); it++) {
+		for (size_t i = 0; i < it->second.size(); ++i) {
+			uint32_t maxPointId = PPoint::createPPoint<FacePtr>(it->second.at(i)->m_arcEnd, m_points, PPoint::NEGATIVE, 2);
+			uint32_t seddlePointId = PPoint::createPPoint<EdgePtr>(it->second.at(i)->m_arcBegin, m_points, PPoint::UNIVERSAL, 1);
+			m_relations.addPair(maxPointId, seddlePointId );
+		}
+	}
+
+	DescArcStorage::ArcsToSeddleMap &dMap = descArcs.arcsToSeddleMap();
+
+	for (DescArcStorage::ArcsToSeddleMap::iterator it = dMap.begin(); it != dMap.end(); it++) {
+		for (size_t i = 0; i < it->second.size(); ++i) {
+			uint32_t minPointId = PPoint::createPPoint<VertexPtr>(it->second.at(i)->m_arcEnd, m_points, PPoint::POSITIVE, 0);
+			uint32_t seddlePointId = PPoint::createPPoint<EdgePtr>(it->second.at(i)->m_arcBegin, m_points, PPoint::UNIVERSAL, 1);
+			m_relations.addPair(minPointId, seddlePointId );
+		}
+	}
+
+	std::cout << "point add " << PPoint::pointId << std::endl;
+
+
+	return true;
+}
+
+
 bool PersistPairProcessor::init(MsComplexesSet& msCmplxSet) {
 
 	PPoint::pointId = 1;

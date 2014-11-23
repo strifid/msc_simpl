@@ -281,6 +281,9 @@ public:
 
 	}
 
+	ArcsToSeddleMap m_arcsToSeddleMap;
+	ArcsToCriticalMap m_arcsToCriticalMap;
+
 private:
 
 	MsComplex* completeComplex(Arc<FacePtr, FacePtr> * aArc1, DescArcPtr dArc1, std::vector<Arc<FacePtr, FacePtr> *>* aArcs, DescArcs* dArcs);
@@ -294,13 +297,14 @@ private:
 							boost::multi_index::mem_fun<MultiMapElement<ArcPtr, CriticalPtr>, EdgePtr, &MultiMapElement<ArcPtr, CriticalPtr>::seddle>,
 							SimplexComparator<EdgePtr> > > > ArcsMap;
 
-	ArcsMap m_map;
+//	ArcsMap m_map;
 
-	ArcsToSeddleMap m_arcsToSeddleMap;
-	ArcsToCriticalMap m_arcsToCriticalMap;
 
 	Arc<FacePtr, FacePtr> * findAscArcMax(std::vector<Arc<FacePtr, FacePtr> *> &ascArcs);
 
 };
+
+typedef ArcStorage<AscArcPtr, FacePtr> AscArcStorage;
+typedef ArcStorage<DescArcPtr, VertexPtr> DescArcStorage;
 
 #endif /* ARCSTORAGE_H_ */

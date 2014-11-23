@@ -11,13 +11,15 @@
 #include "PPoint.h"
 #include "PPointsRelations.h"
 #include "PComponent.h"
-
+#include "ArcStorage.h"
 
 class PersistPairProcessor {
 public:
 	PersistPairProcessor();
 	virtual ~PersistPairProcessor();
 	bool init(MsComplexesSet& msCmplxSet);
+	bool init(AscArcStorage& ascArcs, DescArcStorage& descArcs);
+
 	void findPairs();
 
 	typedef std::map<uint32_t, PPointPtr> PointsMap;

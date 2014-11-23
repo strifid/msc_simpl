@@ -46,33 +46,6 @@ void GradientProcessor::findMaximums() {
 	}
 }
 
-void GradientProcessor::normalizeField() {
-	bool run;
-	uint32_t counter = 0;
-	do {
-		run = false;
-		for (int x = 0; x < m_img.width(); ++x) {
-			for (int y = 0; y < m_img.height(); ++y) {
-				Pixels pxls = m_img.getAllAround(Pixel(x, y));
-				for (size_t i = 0; i < pxls.size(); i++) {
-					if (m_img.value(pxls[i]) == m_img.value(Pixel(x, y))) {
-						m_img.setValue(Pixel(x, y), m_img.value(Pixel(x, y)) + 1);
-						run = true;
-/*
-						if (counter > 10)
-							return;
-*/
-					}
-				}
-			}
-		}
-		counter++;
-
-	} while (run);
-	std::cout << "\nnormalized by " << counter << " tries" << std::endl;
-
-}
-
 void GradientProcessor::addVertex(VertexPtr vtx) {
 
 	vtx->m_seqId = m_seqId++;
@@ -84,10 +57,6 @@ void GradientProcessor::addVertex(VertexPtr vtx) {
 
 void GradientProcessor::addEdge(EdgePtr face) {
 
-	/*
-	 if ((face->m_a->value()) == (face->m_b->value()))
-	 return;
-	 */
 	face->m_seqId = m_seqId++;
 	m_edges.push(face);
 	m_simplexRelations.push(face);
@@ -116,7 +85,7 @@ void GradientProcessor::findMinimums() {
 
 	m_vertexes.sort();
 	Vertexes &vtxs = m_vertexes.vector();
-	for (size_t i = vtxs.size() - 1; i > 0; i--) {
+	for (size_t i = 0; i < vtxs.size(); i++) {
 		//std::cout << "val: " << vtxs[i]->value() << std::endl;
 
 		EdgePtr smallestEdge = NULL;
@@ -140,8 +109,6 @@ void GradientProcessor::findMinimums() {
 		if (smallestEdge == NULL) {
 			m_minimums.insert(neibVtx);
 		} else {
-//			std::cout << "find grad pair: " << neibVtx->toString() << " edge: " << *smallestEdge << " edge seqId " << smallestEdge->m_seqId << std::endl;
-
 			m_processedSmplexes.insert(smallestEdge->m_seqId);
 			m_processedSmplexes.insert(neibVtx->m_seqId);
 			m_cofacesSimplexes.push_back((CofacePtr) new CofacedEdge(neibVtx, smallestEdge));
@@ -294,8 +261,9 @@ void GradientProcessor::getDescendingManifold(Edges& arc, Vertexes& vtxs) {
 	}
 
 	EdgePtr gradPair = getGradientPair(vtx);
-	if (gradPair == NULL)
+	if (gradPair == NULL){
 		return;
+	}
 
 	if (gradPair->m_a == NULL || gradPair->m_b == NULL) {
 		std::cout << "ERROR: grad pair vtx NULL" << std::endl;

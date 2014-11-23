@@ -27,9 +27,6 @@
 #include "Utils.h"
 using cv::Mat;
 
-typedef ArcStorage<AscArcPtr, FacePtr> AscArcStorage;
-typedef ArcStorage<DescArcPtr, VertexPtr> DescArcStorage;
-
 class GradientProcessorQuad: public GradientProcessor {
 public:
 
@@ -45,39 +42,37 @@ protected:
 	//todo remove faceptr type from template
 	template<typename ArcPtr, typename CriticalPtr, typename FacePtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
-		if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
-			std::cout << "start delete" << std::endl;
-		}
-
 		arcStorage.eraseArc(lowestPersistentPair);
 		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
+
 		if (!secondLeg || *(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
-
-			if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
-				std::cout << "no second leg" << std::endl;
-			}
 			return false;
 		}
 
-		if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
-			std::cout << "sec leg ok" << std::endl;
-		}
-
 		if (arcs != NULL) {
+			std::vector<ArcPtr> *secondLegArcs = arcStorage.seddles(secondLeg->m_arcEnd);
+			if (secondLegArcs) {
+				for (size_t i = 0; i < arcs->size(); ++i) {
+					for (size_t j = 0; j < secondLegArcs->size(); ++j) {
+						if (*(arcs->at(i)->m_arcBegin) == *(secondLegArcs->at(j)->m_arcBegin)) {
+							std::cout << "ERROR. cna't simpl. " << *(lowestPersistentPair->m_arcEnd) << " and seddle "
+									<< *(lowestPersistentPair->m_arcBegin) << std::endl;
+							arcStorage.addArc(lowestPersistentPair);
+							return false;
+						}
+					}
+				}
+
+			}
 			for (size_t i = 0; i < arcs->size(); ++i) {
 				ArcPtr arc = arcs->at(i);
 				arc->addFirstLeg(lowestPersistentPair);
 				arc->addSecondLeg(secondLeg);
 				arcStorage.registerArcByNewCritical(arc);
-
 			}
 			arcStorage.eraseArc(secondLeg);
-		} else {
-			if (lowestPersistentPair->m_arcBegin->maxVertex()->x == 25 && lowestPersistentPair->m_arcBegin->maxVertex()->y == 98) {
-				std::cout << "no arc" << std::endl;
-			}
 		}
 
 		arcStorage.erasePersistentPair(lowestPersistentPair);
