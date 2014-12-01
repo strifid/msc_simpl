@@ -20,6 +20,9 @@ using cv::imwrite;
 using cv::Scalar;
 using cv::circle;
 
+uint32_t Image::m_height = 0;
+uint32_t Image::m_width = 0;
+
 Image::Image() :
 		m_sensivity(0), m_imageName("Image") {
 	namedWindow(m_imageName.c_str());

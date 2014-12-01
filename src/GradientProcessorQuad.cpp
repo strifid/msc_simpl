@@ -1,14 +1,14 @@
 #include "GradientProcessorQuad.h"
 
 /*
-#include <mt/common/Singleton.h>
-#include <mt/common/SmartPtr.h>
-#include <mt/logger/Logger.h>
-#include <mt/logger/LoggerFactory.h>
-#include <mt/thread/AutoMutex.h>
-#include <mt/thread/Mutex.h>
-#include <mt/utils/StrUtils.h>
-*/
+ #include <mt/common/Singleton.h>
+ #include <mt/common/SmartPtr.h>
+ #include <mt/logger/Logger.h>
+ #include <mt/logger/LoggerFactory.h>
+ #include <mt/thread/AutoMutex.h>
+ #include <mt/thread/Mutex.h>
+ #include <mt/utils/StrUtils.h>
+ */
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -57,67 +57,61 @@ GradientProcessorQuad::~GradientProcessorQuad() {
 }
 
 int32_t GradientProcessorQuad::findEdges() {
-	m_vertexes.sort();
-	std::vector<VertexPtr>& vertexes = m_vertexes.vector();
-	for (size_t i = 0; i < vertexes.size(); i++) {
-		Pixels pxls = m_img.getOneConnectedAround(vertexes[i]->x, vertexes[i]->y);
 
-		if (pxls.size() > 4) {
-			std::cout << "ERROR: vtx: " << *(vertexes[i]) << " has one connected " << pxls.size() << std::endl;
-		}
-		for (size_t z = 0; z < pxls.size(); z++) {
-			VertexPtr vertexB = findVertexByPixel(pxls[z]);
-			if (vertexB == NULL)
-				continue;
+	for (int x = 0; x < m_img.width(); x++) {
+		for (int y = 0; y < m_img.height(); y++) {
 
-			EdgePtr face = new Edge(vertexes[i], vertexB);
-			if (m_edges.exist(face)) {
-				delete face;
-				continue;
-			}
+			VertexPtr a = findVertexByPixel(Pixel(x, y));
+			VertexPtr b = findVertexByPixel(Pixel(x + 1 == m_img.width() ? 0 : x + 1, y));
+			if (b == NULL)
+				std::cout << " b can't find for " << x << " " << y << std::endl;
+			VertexPtr c = findVertexByPixel(Pixel(x, y + 1 == m_img.height() ? 0 : y + 1));
+			if (c == NULL)
+				std::cout << "can't find for " << x << " " << y << std::endl;
 
+			EdgePtr face = new Edge(a, b);
 			addEdge(face);
+			face = new Edge(a, c);
+			addEdge(face);
+
 		}
 	}
-
 	return 0;
 }
 
 int32_t GradientProcessorQuad::findFaces() {
 
-	for (size_t i = 0; i < m_vertexes.vector().size(); i++) {
+	for (int x = 0; x < m_img.width(); x++) {
+		for (int y = 0; y < m_img.height(); y++) {
+			VertexPtr a = findVertexByPixel(Pixel(x, y));
+			VertexPtr b = findVertexByPixel(Pixel(x + 1 == m_img.width() ? 0 : x + 1, y));
+			VertexPtr c = findVertexByPixel(Pixel(x, y + 1 == m_img.height() ? 0 : y + 1));
+			VertexPtr d = findVertexByPixel(Pixel(x + 1 == m_img.width() ? 0 : x + 1, y + 1 == m_img.height() ? 0 : y + 1));
 
-		VertexPtr a = m_vertexes.vector()[i];
-		VertexPtr b = findVertexByPixel(Pixel(a->x + 1, a->y));
-		VertexPtr c = findVertexByPixel(Pixel(a->x, a->y + 1));
-		VertexPtr d = findVertexByPixel(Pixel(a->x + 1, a->y + 1));
+			Edge tmpEdgeAB(a, b);
+			EdgePtr edgeAB = m_edges.getSimplex(&tmpEdgeAB);
 
-		if (!b || !c || !d)
-			continue;
+			Edge tmpEdgeAC(a, c);
+			EdgePtr edgeAC = m_edges.getSimplex(&tmpEdgeAC);
 
-		Edge tmpEdgeAB(a, b);
-		EdgePtr edgeAB = m_edges.getSimplex(&tmpEdgeAB);
+			Edge tmpEdgeBD(b, d);
+			EdgePtr edgeBD = m_edges.getSimplex(&tmpEdgeBD);
 
-		Edge tmpEdgeAC(a, c);
-		EdgePtr edgeAC = m_edges.getSimplex(&tmpEdgeAC);
+			Edge tmpEdgeCD(c, d);
+			EdgePtr edgeCD = m_edges.getSimplex(&tmpEdgeCD);
+			if (edgeAB == NULL || edgeAC == NULL || edgeBD == NULL || edgeCD == NULL) {
+				std::cout << "ERROR: can't find edges" << std::endl;
+				continue;
+			}
 
-		Edge tmpEdgeBD(b, d);
-		EdgePtr edgeBD = m_edges.getSimplex(&tmpEdgeBD);
+			FacePtr face = new Face();
+			face->addEdge(edgeAB);
+			face->addEdge(edgeAC);
+			face->addEdge(edgeBD);
+			face->addEdge(edgeCD);
+			addFace(face);
 
-		Edge tmpEdgeCD(c, d);
-		EdgePtr edgeCD = m_edges.getSimplex(&tmpEdgeCD);
-		if (edgeAB == NULL || edgeAC == NULL || edgeBD == NULL || edgeCD == NULL) {
-			std::cout << "WARNING: can't find edges" << std::endl;
-			continue;
 		}
-
-		FacePtr face = new Face();
-		face->addEdge(edgeAB);
-		face->addEdge(edgeAC);
-		face->addEdge(edgeBD);
-		face->addEdge(edgeCD);
-		addFace(face);
-
 	}
 
 	return 0;
@@ -268,8 +262,9 @@ void GradientProcessorQuad::run() {
 	printInfo();
 
 	DescArcs oneConnected;
-	for (DescArcStorage::ArcsToCriticalMap::iterator it = m_descArcsStorage.m_arcsToCriticalMap.begin(); it != m_descArcsStorage.m_arcsToCriticalMap.end(); ++it) {
-		if(it->second.size() == 1){
+	for (DescArcStorage::ArcsToCriticalMap::iterator it = m_descArcsStorage.m_arcsToCriticalMap.begin();
+			it != m_descArcsStorage.m_arcsToCriticalMap.end(); ++it) {
+		if (it->second.size() == 1) {
 			oneConnected.push_back(it->second.at(0));
 			std::cout << "has onlye one arc. critical " << *(it->first) << std::endl;
 		}

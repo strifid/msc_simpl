@@ -69,27 +69,36 @@ bool Face::operator !=(const Face & tr) const {
 }
 
 void Face::draw(Mat & img, uint32_t green) {
-
 	std::vector<Point> tmp;
-	std::string coords;
 
-	for (VertexesSet::iterator it = m_vertexes.begin(); it != m_vertexes.end(); it++) {
-		if (it == m_vertexes.begin()) {
-			tmp.push_back(
-					Point((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor, (*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor));
-		} else {
+	VertexPtr leftTopCorner = getLeftTopConer();
+	VertexPtr rightBottomCorner = getRightBottomConer();
 
-			if ((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor != tmp.back().x
-					&& (*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor != tmp.back().y)
-				tmp.insert(tmp.begin(),
-						Point((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
-								(*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor));
-			else
-				tmp.push_back(
-						Point((*it)->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
-								(*it)->y * Image::m_enlargeFactor + Image::m_enlargeFactor));
-		}
+	uint32_t tlx = leftTopCorner->x;
+	uint32_t tly = leftTopCorner->y;
+
+	if (leftTopCorner->x == 0 && rightBottomCorner->x == Image::m_width - 1) {
+		tlx = rightBottomCorner->x;
+		tly = rightBottomCorner->y - 1;
 	}
+
+	else if (leftTopCorner->y == 0 && rightBottomCorner->y == Image::m_height - 1){
+		tlx = rightBottomCorner->x -1;
+		tly = rightBottomCorner->y;
+	}
+
+	tmp.push_back(
+			Point(tlx * Image::m_enlargeFactor + Image::m_enlargeFactor,
+					tly * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(
+			Point((tlx + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor,
+					tly * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(
+			Point((tlx + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor,
+					(tly + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(
+			Point(tlx * Image::m_enlargeFactor + Image::m_enlargeFactor,
+					(tly + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor));
 
 	const Point* elementPoints[] = { &tmp[0] };
 	int numberOfPoints = (int) tmp.size();
@@ -110,8 +119,20 @@ VertexPtr Face::maxVertex() {
 	return vtx;
 }
 
-VertexPtr Face::getLeftTopConer() {
+VertexPtr Face::getRightBottomConer() {
+	VertexPtr leftTopConer = NULL;
+	for (VertexesSet::iterator it = m_vertexes.begin(); it != m_vertexes.end(); ++it) {
+		if (!leftTopConer)
+			leftTopConer = *it;
 
+		if (leftTopConer->x <= (*it)->x && leftTopConer->y <= (*it)->y)
+			leftTopConer = *it;
+
+	}
+	return leftTopConer;
+}
+
+VertexPtr Face::getLeftTopConer() {
 	VertexPtr leftTopConer = NULL;
 	for (VertexesSet::iterator it = m_vertexes.begin(); it != m_vertexes.end(); ++it) {
 		if (!leftTopConer)
@@ -122,13 +143,22 @@ VertexPtr Face::getLeftTopConer() {
 
 	}
 	return leftTopConer;
-
 }
 Point Face::centralPoint() {
 
 	VertexPtr leftTopConer = getLeftTopConer();
-	Point b((leftTopConer->x * Image::m_enlargeFactor + Image::m_enlargeFactor * 1.5),
-			(leftTopConer->y * Image::m_enlargeFactor + Image::m_enlargeFactor * 1.5));
+	VertexPtr rightBottomConer = getRightBottomConer();
+
+	uint32_t centerX = leftTopConer->x * Image::m_enlargeFactor + Image::m_enlargeFactor * 1.5;
+	if (leftTopConer->x == 0 && rightBottomConer->x == Image::m_width - 1)
+		centerX = (Image::m_width - 1) * Image::m_enlargeFactor + Image::m_enlargeFactor * 1.5;
+
+	uint32_t centerY = (leftTopConer->y * Image::m_enlargeFactor + Image::m_enlargeFactor * 1.5);
+	if (leftTopConer->y == 0 && rightBottomConer->y == Image::m_height - 1) {
+		centerY = (Image::m_height - 1) * Image::m_enlargeFactor + Image::m_enlargeFactor * 1.5;
+	}
+
+	Point b(centerX, centerY);
 
 	return b;
 }

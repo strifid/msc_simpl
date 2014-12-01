@@ -10,18 +10,18 @@ void MsComplex::draw(Mat &img) {
 	for (size_t i = 0; i < m_aArcs.size(); i++) {
 
 		for (size_t z = 0; z < m_aArcs[i]->m_arc.size() - 1; z++) {
-
-//			Face
-//			m_aArcs[i]->m_arc[z]->draw(img, 200);
-			line(img, m_aArcs[i]->m_arc[z]->centralPoint(), m_aArcs[i]->m_arc[z+1]->centralPoint(), Scalar(0, 100, 255), 5, 8);
-
+			if(m_aArcs[i]->m_arc[z]->centralPoint().y > Image::m_height * Image::m_enlargeFactor){
+				std::cout << "find face " << *(m_aArcs[i]->m_arc[z]) << std::endl;
+				continue;
+			}
+			line(img, m_aArcs[i]->m_arc[z]->centralPoint(), m_aArcs[i]->m_arc[z + 1]->centralPoint(), Scalar(0, 100, 255), 5, 8);
 		}
 
 		line(img, m_aArcs[i]->m_arc.front()->centralPoint(), m_aArcs[i]->m_arcBegin->centralPoint(), Scalar(0, 100, 255), 5, 8);
 
-		m_aArcs[i]->m_arcEnd->draw(img, 200);
-
 	}
+
+	m_max->draw(img, 200);
 
 	for (size_t i = 0; i < m_dArcs.size(); i++) {
 		for (size_t z = 0; z < m_dArcs[i]->m_arc.size(); z++) {

@@ -63,6 +63,9 @@ public:
 	void resetPainting();
 	int32_t value(const Pixel&);
 
+	static uint32_t m_height;
+	static uint32_t m_width;
+
 protected:
 	void mirrorEdges(Mat&);
 	uint32_t m_sensivity;
@@ -78,8 +81,6 @@ protected:
 	Mat m_img;
 	Mat m_forChanges;
 
-	uint32_t m_height;
-	uint32_t m_width;
 
 	Point m_current;
 

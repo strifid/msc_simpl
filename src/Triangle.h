@@ -42,6 +42,7 @@ public:
 
 	virtual Point centralPoint();
 	VertexPtr getLeftTopConer();
+	VertexPtr getRightBottomConer();
 
 protected:
 

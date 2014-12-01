@@ -170,11 +170,11 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 	Mat drawField(m_img.height() * Image::m_enlargeFactor + Image::m_enlargeFactor * 2,
 			m_img.width() * Image::m_enlargeFactor + 2 * Image::m_enlargeFactor, CV_8UC3, Scalar(255, 255, 255));
 
-	for (int i = 0; i < m_img.height(); ++i) {
+	for (int i = 0; i < m_img.height() + 1; ++i) {
 		putText(drawField, Utils::intToString(i), Point(2, i * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7, Scalar(0, 0, 0),
 				1.3);
 	}
-	for (int i = 0; i < m_img.width(); ++i) {
+	for (int i = 0; i < m_img.width() + 1; ++i) {
 		putText(drawField, Utils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
 				Scalar(0, 0, 0), 1.3);
 	}
@@ -183,10 +183,20 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 	//		m_msCmplxStorage.draw(drawField);
 	Edges& edges = m_edges.vector();
 	for (size_t i = 0; i < edges.size(); i++) {
-		edges[i]->draw(drawField);
+		if ((edges[i]->m_a->x == m_img.width() - 1 || edges[i]->m_b->x == m_img.width() - 1) && (edges[i]->m_a->x == 0 || edges[i]->m_b->x == 0)) {
+			Point a((m_img.width()) * Image::m_enlargeFactor, (edges[i]->m_a->y + 1) * Image::m_enlargeFactor);
+			Point b((m_img.width() + 1) * Image::m_enlargeFactor, (edges[i]->m_b->y + 1) * Image::m_enlargeFactor);
+			line(drawField, a, b, Scalar(0, 0, 0), 1, 8);
+		} else if ((edges[i]->m_a->y == m_img.height() - 1 || edges[i]->m_b->y == m_img.height() - 1)
+				&& (edges[i]->m_a->y == 0 || edges[i]->m_b->y == 0)) {
+			Point a((edges[i]->m_a->x + 1) * Image::m_enlargeFactor, (m_img.height()) * Image::m_enlargeFactor);
+			Point b((edges[i]->m_b->x + 1) * Image::m_enlargeFactor, (m_img.height() + 1) * Image::m_enlargeFactor);
+			line(drawField, a, b, Scalar(0, 0, 0), 1, 8);
+		} else
+			edges[i]->draw(drawField);
 	}
-
 	for (int i = 0; i < m_cofacesSimplexes.size(); ++i) {
+
 		m_cofacesSimplexes[i]->draw(drawField);
 	}
 
@@ -194,10 +204,10 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 		m_vertexes.vector().at(i)->draw(drawField);
 	}
 
-	if (show) {
-		imshow(path.c_str(), drawField);
-		waitKey(0);
-	}
+//	if (show) {
+	imshow(path.c_str(), drawField);
+	waitKey(0);
+//	}
 	/*
 	 VtxDimToPPidMap::iterator it = PPoint::m_vrtx2Id.begin();
 	 while (it != PPoint::m_vrtx2Id.end()) {

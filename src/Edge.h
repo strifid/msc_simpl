@@ -37,7 +37,7 @@ public:
 		return m_a->value();
 	}
 
-	VertexPtr maxVertex() {
+	VertexPtr maxVertex() const {
 		return m_a->value() > m_b->value() ? m_a : m_b;
 	}
 protected:

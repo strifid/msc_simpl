@@ -19,7 +19,7 @@ public:
 	virtual ~CofacedEdge();
 	virtual void draw(Mat& img);
 	VertexPtr m_vertex;
-	EdgePtr m_face;
+	EdgePtr m_edge;
 };
 
 typedef CofacedEdge* CofacedEdgePtr;

@@ -58,21 +58,43 @@ bool Edge::operator !=(const Edge & face) const {
 }
 
 Point Edge::centralPoint() {
-	uint32_t x1 = m_a->x * Image::m_enlargeFactor + Image::m_enlargeFactor;
-	uint32_t y1 = m_a->y * Image::m_enlargeFactor + Image::m_enlargeFactor;
+	uint32_t w = Image::m_width, h = Image::m_height;
+	uint32_t xAvg;
+	if ((m_a->x == w - 1 || m_b->x == w - 1) && (m_a->x == 0 || m_b->x == 0)) {
+		xAvg = w * Image::m_enlargeFactor + Image::m_enlargeFactor / 2;
+	} else {
+		uint32_t x1 = m_a->x * Image::m_enlargeFactor + Image::m_enlargeFactor;
+		uint32_t x2 = m_b->x * Image::m_enlargeFactor + Image::m_enlargeFactor;
+		xAvg = (x1 + x2) / 2;
+	}
 
-	uint32_t x2 = m_b->x * Image::m_enlargeFactor + Image::m_enlargeFactor;
-	uint32_t y2 = m_b->y * Image::m_enlargeFactor + Image::m_enlargeFactor;
+	uint32_t yAvg;
+	if ((m_a->y == h - 1 || m_b->y == h - 1) && (m_a->y == 0 || m_b->y == 0)) {
+		yAvg = h * Image::m_enlargeFactor + Image::m_enlargeFactor / 2;
+	} else {
+		uint32_t y1 = m_a->y * Image::m_enlargeFactor + Image::m_enlargeFactor;
+		uint32_t y2 = m_b->y * Image::m_enlargeFactor + Image::m_enlargeFactor;
+		yAvg = (y1 + y2) / 2;
+	}
 
-	return Point((x1 + x2) / 2, (y1 + y2) / 2);
+	return Point(xAvg, yAvg);
 }
 
 void Edge::draw(Mat& img, int32_t thickness, Scalar color) const {
 
+	uint32_t w = Image::m_width, h = Image::m_height;
+	Point a, b;
 	int lineType = 8;
-	Point a((m_a->x + 1) * Image::m_enlargeFactor, (m_a->y + 1) * Image::m_enlargeFactor);
-	Point b((m_b->x + 1) * Image::m_enlargeFactor, (m_b->y + 1) * Image::m_enlargeFactor);
-
+	if ((m_a->x == w - 1 || m_b->x == w - 1) && (m_a->x == 0 || m_b->x == 0)) {
+		a = Point((maxVertex()->x + 1) * Image::m_enlargeFactor, (maxVertex()->y + 1) * Image::m_enlargeFactor);
+		b = Point((maxVertex()->x + 2) * Image::m_enlargeFactor, (maxVertex()->y + 1) * Image::m_enlargeFactor);
+	} else if ((m_a->y == h - 1 || m_b->y == h - 1) && (m_a->y == 0 || m_b->y == 0)) {
+		a = Point((maxVertex()->x + 1) * Image::m_enlargeFactor, (maxVertex()->y + 1) * Image::m_enlargeFactor);
+		b = Point((maxVertex()->x + 1) * Image::m_enlargeFactor, (maxVertex()->y + 2) * Image::m_enlargeFactor);
+	} else {
+		b = Point((m_b->x + 1) * Image::m_enlargeFactor, (m_b->y + 1) * Image::m_enlargeFactor);
+		a = Point((m_a->x + 1) * Image::m_enlargeFactor, (m_a->y + 1) * Image::m_enlargeFactor);
+	}
 	line(img, a, b, color, thickness, lineType);
 
 }
