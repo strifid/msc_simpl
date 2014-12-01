@@ -283,7 +283,6 @@ void PersistPairProcessor::printToFile(const std::string& path) {
 }
 
 uint32_t PersistPairProcessor::getHighest(std::vector<uint32_t>& v) {
-	MT_EXCEPTION_ASSERT(v.size(), "can't get hiegst becouse v.size = 0")
 
 	uint32_t val = m_points[v[0]]->value().getInt(), index = v[0];
 

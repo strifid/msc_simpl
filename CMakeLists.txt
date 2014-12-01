@@ -29,7 +29,7 @@ endif()
 
 
 include_directories(./ ${CFITSIO_PATH}/include ${CCFITS_PATH}/include ${OPENCV_PATH}/include ${MTLIB_PATH}/include /usr/include/libxml2 /usr/include/paraview /usr/include/vtk-5.8 ./src)
-link_directories(${CFITSIO_PATH}/lib ${CCFITS_PATH}/lib ${MTLIB_PATH}/lib ${OPENCV_PATH}/lib /usr/lib/paraview/ )
+link_directories(${CFITSIO_PATH}/lib ${CCFITS_PATH}/lib ${OPENCV_PATH}/lib /usr/lib/paraview/ )
 
 aux_source_directory(src/ BASE_SOURCE)
 aux_source_directory(src/persist_pair PPAIR_SOURCE)
@@ -38,7 +38,7 @@ aux_source_directory(src/main MAIN_SOURCE)
 aux_source_directory(src/tests TESTS_SOURCE)
 
 
-set(LIBS pthread xml2 mt m opencv_core opencv_highgui  vtkHybrid vtkIO vtkFiltering vtkCommon vtkGraphics vtkImaging vtkRendering CCfits) 
+set(LIBS pthread xml2 m opencv_core opencv_highgui  vtkHybrid vtkIO vtkFiltering vtkCommon vtkGraphics vtkImaging vtkRendering CCfits) 
 
 add_executable (gradient_msc ${BASE_SOURCE} ${MAIN_SOURCE} ${PPAIR_SOURCE})
 target_link_libraries(gradient_msc ${LIBS})
@@ -48,6 +48,6 @@ target_link_libraries(create_test ${LIBS})
 
 # Compile tests
 
-add_executable (tests ${BASE_SOURCE} ${TESTS_SOURCE} ${PPAIR_SOURCE})
-target_link_libraries(tests ${LIBS})
+#add_executable (tests ${BASE_SOURCE} ${TESTS_SOURCE} ${PPAIR_SOURCE})
+#target_link_libraries(tests ${LIBS})
 

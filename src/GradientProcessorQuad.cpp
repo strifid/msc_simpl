@@ -1,5 +1,6 @@
 #include "GradientProcessorQuad.h"
 
+/*
 #include <mt/common/Singleton.h>
 #include <mt/common/SmartPtr.h>
 #include <mt/logger/Logger.h>
@@ -7,6 +8,7 @@
 #include <mt/thread/AutoMutex.h>
 #include <mt/thread/Mutex.h>
 #include <mt/utils/StrUtils.h>
+*/
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/types.h>
@@ -49,7 +51,6 @@ std::ostream& operator<<(std::ostream& out, AscArcPtr a) {
 }
 
 GradientProcessorQuad::GradientProcessorQuad() {
-	MT_LOGINIT(GradientProcessorQuad)
 }
 
 GradientProcessorQuad::~GradientProcessorQuad() {

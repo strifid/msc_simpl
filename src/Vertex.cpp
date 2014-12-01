@@ -9,7 +9,7 @@
 #include "Image.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui_c.h"
-#include "mt/utils/StrUtils.h"
+#include "Utils.h"
 
 using cv::putText;
 using cv::Scalar;
@@ -72,7 +72,7 @@ void Vertex::draw(Mat& img, Scalar color) {
 
 	img.at<cv::Vec3b>(y * Image::m_enlargeFactor, x * Image::m_enlargeFactor)[0] = value().getInt();
 
-	putText(img, mt::StrUtils::intToString(value().getInt()),
+	putText(img, Utils::intToString(value().getInt()),
 			Point(x * Image::m_enlargeFactor + Image::m_enlargeFactor, y * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7,
 			color, 1.3);
 

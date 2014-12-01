@@ -38,7 +38,7 @@ public:
 };
 typedef VertexComponets* VertexComponetsPtr;
 
-class GradientProcessor: public mt::Logable {
+class GradientProcessor {
 public:
 
 	bool loadImageData(const std::string& path);
@@ -47,19 +47,7 @@ public:
 	GradientProcessor();
 	virtual ~GradientProcessor();
 
-	int32_t findVertex() {
-		for (int x = 0; x < m_img.width(); x++) {
-			for (int y = 0; y < m_img.height(); y++) {
-				VertexPtr vtx = new Vertex(x, y);
-				vtx->value(m_img.value(Pixel(x, y)), x * m_img.width() + y);
-
-				addVertex(vtx);
-			}
-		}
-
-		return 0;
-	}
-
+	int32_t findVertex();
 	virtual int32_t findEdges() = 0;
 	virtual int32_t findFaces() = 0;
 

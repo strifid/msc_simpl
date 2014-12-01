@@ -22,7 +22,6 @@ using cv::circle;
 
 Image::Image() :
 		m_sensivity(0), m_imageName("Image") {
-	MT_LOGINIT(Image);
 	namedWindow(m_imageName.c_str());
 
 }

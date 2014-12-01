@@ -51,9 +51,6 @@ int main(int argc, char* argv[]) {
 		std::cout << help << std::endl;
 		return -1;
 	}
-	std::string loggerCfg = "<logger><logfile path='./debug.log' default='true' level='TRACE' stdout='false'/></logger>";
-	mt::XmlConfigPtr cfg = new mt::XmlConfig(loggerCfg.c_str());
-	mt::LoggerFactory::instance()->init(cfg);
 //	GradientProcessorTriangle* proc = new GradientProcessorTriangle();
 	GradientProcessorQuad* proc = new GradientProcessorQuad();
 	proc->m_persistence = persistence;

@@ -55,6 +55,18 @@ void GradientProcessor::addVertex(VertexPtr vtx) {
 
 }
 
+int32_t GradientProcessor::findVertex() {
+	for (int x = 0; x < m_img.width(); x++) {
+		for (int y = 0; y < m_img.height(); y++) {
+			VertexPtr vtx = new Vertex(x, y);
+			vtx->value(m_img.value(Pixel(x, y)), x * m_img.width() + y);
+			addVertex(vtx);
+		}
+	}
+
+	return 0;
+}
+
 void GradientProcessor::addEdge(EdgePtr face) {
 
 	face->m_seqId = m_seqId++;
@@ -86,16 +98,12 @@ void GradientProcessor::findMinimums() {
 	m_vertexes.sort();
 	Vertexes &vtxs = m_vertexes.vector();
 	for (size_t i = 0; i < vtxs.size(); i++) {
-		//std::cout << "val: " << vtxs[i]->value() << std::endl;
-
 		EdgePtr smallestEdge = NULL;
 		VertexPtr neibVtx = vtxs.at(i);
 		Edges *edges = m_simplexRelations.edges(neibVtx);
 		for (size_t j = 0; j < edges->size(); ++j) {
 
 			EdgePtr neibEdge = edges->at(j);
-//			std::cout << "vtx: " << neibVtx->toString() << " edge: " << *neibEdge << " edge seqId " << neibEdge->m_seqId << std::endl;
-
 			if (m_processedSmplexes.find(neibEdge->m_seqId) == m_processedSmplexes.end()) {
 				if (neibEdge->m_valueFirst == neibVtx->m_valueFirst) {
 					if (smallestEdge == NULL)
@@ -155,17 +163,19 @@ void GradientProcessor::findSeddles() {
 	}
 }
 #include <persist_pair/PPoint.h>
+#include <Utils.h>
+
 void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool show) {
 
 	Mat drawField(m_img.height() * Image::m_enlargeFactor + Image::m_enlargeFactor * 2,
 			m_img.width() * Image::m_enlargeFactor + 2 * Image::m_enlargeFactor, CV_8UC3, Scalar(255, 255, 255));
 
 	for (int i = 0; i < m_img.height(); ++i) {
-		putText(drawField, mt::StrUtils::intToString(i), Point(2, i * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7,
-				Scalar(0, 0, 0), 1.3);
+		putText(drawField, Utils::intToString(i), Point(2, i * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7, Scalar(0, 0, 0),
+				1.3);
 	}
 	for (int i = 0; i < m_img.width(); ++i) {
-		putText(drawField, mt::StrUtils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
+		putText(drawField, Utils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
 				Scalar(0, 0, 0), 1.3);
 	}
 
@@ -207,9 +217,9 @@ void GradientProcessor::drawGradientField() {
 	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
 
 	/*for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
-		drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
-	}
-*/
+	 drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
+	 }
+	 */
 	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
 
 }
@@ -261,7 +271,7 @@ void GradientProcessor::getDescendingManifold(Edges& arc, Vertexes& vtxs) {
 	}
 
 	EdgePtr gradPair = getGradientPair(vtx);
-	if (gradPair == NULL){
+	if (gradPair == NULL) {
 		return;
 	}
 

@@ -16,3 +16,8 @@ Utils::~Utils() {
 	// TODO Auto-generated destructor stub
 }
 
+std::string Utils::intToString(int32_t i) {
+	char buf[16];
+	sprintf(buf, "%d", i);
+	return buf;
+}

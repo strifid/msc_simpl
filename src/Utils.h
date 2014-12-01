@@ -9,6 +9,9 @@
 #define MSUTILS_H_
 #include <vector>
 #include <stddef.h>
+#include <string>
+#include <stdlib.h>
+#include <stdio.h>
 
 class Utils {
 public:
@@ -23,6 +26,8 @@ public:
 		}
 		return false;
 	}
+
+	static std::string intToString(int32_t i);
 
 };
 

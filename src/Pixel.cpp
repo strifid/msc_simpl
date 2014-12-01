@@ -6,7 +6,7 @@
  */
 
 #include "Pixel.h"
-#include "mt/utils/StrUtils.h"
+#include "Utils.h"
 Pixel::Pixel() {
 }
 
@@ -20,7 +20,7 @@ Pixel::~Pixel() {
 
 std::string Pixel::toString() const {
 	std::string str;
-	str = "(x:" + mt::StrUtils::intToString(x) + " y:" + mt::StrUtils::intToString(y) + ") ";
+	str = "(x:" + Utils::intToString(x) + " y:" + Utils::intToString(y) + ") ";
 	return str;
 }
 

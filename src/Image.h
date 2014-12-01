@@ -9,10 +9,9 @@
 #define IMAGE_H_
 #include "opencv2/core/core.hpp"
 #include "Vertex.h"
-#include "mt/logger/Logable.h"
 using cv::Mat;
 
-class Image: public mt::Logable {
+class Image{
 public:
 
 	static const uint32_t m_enlargeFactor = 60;
