@@ -7,11 +7,16 @@
 
 #ifndef MSUTILS_H_
 #define MSUTILS_H_
-#include <vector>
-#include <stddef.h>
-#include <string>
-#include <stdlib.h>
+
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <string>
+#include <vector>
+
+#include "Edge.h"
+#include "SimplexStorage.h"
+#include "Vertex.h"
 
 class Utils {
 public:
@@ -29,6 +34,7 @@ public:
 
 	static std::string intToString(int32_t i);
 
+	static EdgePtr getEdgeByVertex(SimplexStorage<EdgePtr>& edges, VertexPtr a, VertexPtr b);
 };
 
 #endif /* UTILS_H_ */

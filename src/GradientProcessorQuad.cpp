@@ -58,62 +58,23 @@ GradientProcessorQuad::~GradientProcessorQuad() {
 
 int32_t GradientProcessorQuad::findEdges() {
 
-	for (int x = 0; x < m_img.width(); x++) {
-		for (int y = 0; y < m_img.height(); y++) {
-
+	uint32_t torW = m_img.width();
+	uint32_t torH = m_img.height();
+	for (int x = 0; x < torW; x++) {
+		for (int y = 0; y < torH; y++) {
 			VertexPtr a = findVertexByPixel(Pixel(x, y));
-			VertexPtr b = findVertexByPixel(Pixel(x + 1 == m_img.width() ? 0 : x + 1, y));
-			if (b == NULL)
-				std::cout << " b can't find for " << x << " " << y << std::endl;
-			VertexPtr c = findVertexByPixel(Pixel(x, y + 1 == m_img.height() ? 0 : y + 1));
-			if (c == NULL)
-				std::cout << "can't find for " << x << " " << y << std::endl;
+			VertexPtr b = findVertexByPixel(Pixel(x + 1 == torW ? 0 : x + 1, y));
+			VertexPtr c = findVertexByPixel(Pixel(x, y + 1 == torH ? 0 : y + 1));
+			VertexPtr d = findVertexByPixel(Pixel(x + 1 == torW ? 0 : x + 1, y + 1 == torH ? 0 : y + 1));
 
-			EdgePtr face = new Edge(a, b);
-			addEdge(face);
-			face = new Edge(a, c);
-			addEdge(face);
+			addEdge(a, b);
+			addEdge(a, c);
+			addEdge(d, b);
+			addEdge(d, c);
+			addFace(a, b, c, d);
 
 		}
 	}
-	return 0;
-}
-
-int32_t GradientProcessorQuad::findFaces() {
-
-	for (int x = 0; x < m_img.width(); x++) {
-		for (int y = 0; y < m_img.height(); y++) {
-			VertexPtr a = findVertexByPixel(Pixel(x, y));
-			VertexPtr b = findVertexByPixel(Pixel(x + 1 == m_img.width() ? 0 : x + 1, y));
-			VertexPtr c = findVertexByPixel(Pixel(x, y + 1 == m_img.height() ? 0 : y + 1));
-			VertexPtr d = findVertexByPixel(Pixel(x + 1 == m_img.width() ? 0 : x + 1, y + 1 == m_img.height() ? 0 : y + 1));
-
-			Edge tmpEdgeAB(a, b);
-			EdgePtr edgeAB = m_edges.getSimplex(&tmpEdgeAB);
-
-			Edge tmpEdgeAC(a, c);
-			EdgePtr edgeAC = m_edges.getSimplex(&tmpEdgeAC);
-
-			Edge tmpEdgeBD(b, d);
-			EdgePtr edgeBD = m_edges.getSimplex(&tmpEdgeBD);
-
-			Edge tmpEdgeCD(c, d);
-			EdgePtr edgeCD = m_edges.getSimplex(&tmpEdgeCD);
-			if (edgeAB == NULL || edgeAC == NULL || edgeBD == NULL || edgeCD == NULL) {
-				std::cout << "ERROR: can't find edges" << std::endl;
-				continue;
-			}
-
-			FacePtr face = new Face();
-			face->addEdge(edgeAB);
-			face->addEdge(edgeAC);
-			face->addEdge(edgeBD);
-			face->addEdge(edgeCD);
-			addFace(face);
-
-		}
-	}
-
 	return 0;
 }
 
@@ -246,11 +207,9 @@ void GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 }
 
 void GradientProcessorQuad::run() {
-//	normalizeField();
 
 	findVertex();
 	findEdges();
-	findFaces();
 
 	findMinimums();
 	findSeddles();

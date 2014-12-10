@@ -21,3 +21,10 @@ std::string Utils::intToString(int32_t i) {
 	sprintf(buf, "%d", i);
 	return buf;
 }
+
+EdgePtr Utils::getEdgeByVertex(SimplexStorage<EdgePtr>& edges, VertexPtr a, VertexPtr b) {
+	if (a == NULL || b == NULL)
+		return NULL;
+	Edge tmpEdgeAB(a, b);
+	return edges.getSimplex(&tmpEdgeAB);
+}

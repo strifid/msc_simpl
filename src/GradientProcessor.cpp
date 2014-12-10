@@ -8,6 +8,7 @@
 #include "CofacedEdge.h"
 #include "CofacedFace.h"
 #include "MsComplex.h"
+#include "Utils.h"
 
 using cv::waitKey;
 
@@ -58,8 +59,9 @@ void GradientProcessor::addVertex(VertexPtr vtx) {
 int32_t GradientProcessor::findVertex() {
 	for (int x = 0; x < m_img.width(); x++) {
 		for (int y = 0; y < m_img.height(); y++) {
+
 			VertexPtr vtx = new Vertex(x, y);
-			vtx->value(m_img.value(Pixel(x, y)), x * m_img.width() + y);
+			vtx->value(m_img.value(Pixel(x, y)), x * (m_img.width() * 2 - 2) + y);
 			addVertex(vtx);
 		}
 	}
@@ -67,17 +69,38 @@ int32_t GradientProcessor::findVertex() {
 	return 0;
 }
 
-void GradientProcessor::addEdge(EdgePtr face) {
+void GradientProcessor::addEdge(VertexPtr a, VertexPtr b) {
+	if (a == NULL || b == NULL) {
+		std::cout << "ERROR. can't create edge with NULL virtex" << std::endl;
+		return;
+	}
 
+	EdgePtr face = new Edge(a, b);
 	face->m_seqId = m_seqId++;
 	m_edges.push(face);
 	m_simplexRelations.push(face);
 }
 
-void GradientProcessor::addFace(FacePtr tr) {
-	tr->m_seqId = m_seqId++;
-	m_faces.push(tr);
-	m_simplexRelations.push(tr);
+void GradientProcessor::addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr d) {
+	EdgePtr edgeAB = Utils::getEdgeByVertex(m_edges, a, b);
+	EdgePtr edgeAC = Utils::getEdgeByVertex(m_edges, a, c);
+	EdgePtr edgeBD = Utils::getEdgeByVertex(m_edges, b, d);
+	EdgePtr edgeCD = Utils::getEdgeByVertex(m_edges, c, d);
+
+	if (edgeAB == NULL || edgeAC == NULL || edgeBD == NULL || edgeCD == NULL) {
+		std::cout << "ERROR: can't create face with NULL edge" << std::endl;
+		return;
+	}
+
+	FacePtr face = new Face();
+	face->addEdge(edgeAB);
+	face->addEdge(edgeAC);
+	face->addEdge(edgeBD);
+	face->addEdge(edgeCD);
+
+	face->m_seqId = m_seqId++;
+	m_faces.push(face);
+	m_simplexRelations.push(face);
 }
 
 bool GradientProcessor::loadFitsData(const std::string & path) {
@@ -220,6 +243,63 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 	imwrite(path.c_str(), drawField);
 }
 
+void GradientProcessor::drawCmplxOnTor(const std::string& path, Drawer* drawer, bool show) {
+
+	uint32_t torH = m_img.height();
+	uint32_t torW = m_img.width();
+
+	Mat drawField(torH * Image::m_enlargeFactor + Image::m_enlargeFactor * 2, torW * Image::m_enlargeFactor + 2 * Image::m_enlargeFactor, CV_8UC3,
+			Scalar(255, 255, 255));
+
+	for (int i = 0; i < torH + 1; ++i) {
+		putText(drawField, Utils::intToString(i), Point(2, i * Image::m_enlargeFactor + Image::m_enlargeFactor), CV_FONT_NORMAL, 0.7, Scalar(0, 0, 0),
+				1.3);
+	}
+	for (int i = 0; i < torW + 1; ++i) {
+		putText(drawField, Utils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
+				Scalar(0, 0, 0), 1.3);
+	}
+
+	drawer->draw(drawField);
+	//		m_msCmplxStorage.draw(drawField);
+	Edges& edges = m_edges.vector();
+	for (size_t i = 0; i < edges.size(); i++) {
+		if ((edges[i]->m_a->x == torW - 1 || edges[i]->m_b->x == torW - 1) && (edges[i]->m_a->x == 0 || edges[i]->m_b->x == 0)) {
+			Point a((torW) * Image::m_enlargeFactor, (edges[i]->m_a->y + 1) * Image::m_enlargeFactor);
+			Point b((torW + 1) * Image::m_enlargeFactor, (edges[i]->m_b->y + 1) * Image::m_enlargeFactor);
+			line(drawField, a, b, Scalar(0, 0, 0), 1, 8);
+		} else if ((edges[i]->m_a->y == torH - 1 || edges[i]->m_b->y == torH - 1) && (edges[i]->m_a->y == 0 || edges[i]->m_b->y == 0)) {
+			Point a((edges[i]->m_a->x + 1) * Image::m_enlargeFactor, (torH) * Image::m_enlargeFactor);
+			Point b((edges[i]->m_b->x + 1) * Image::m_enlargeFactor, (torH + 1) * Image::m_enlargeFactor);
+			line(drawField, a, b, Scalar(0, 0, 0), 1, 8);
+		} else
+			edges[i]->draw(drawField);
+	}
+	for (int i = 0; i < m_cofacesSimplexes.size(); ++i) {
+
+		m_cofacesSimplexes[i]->draw(drawField);
+	}
+
+	for (size_t i = 0; i < m_vertexes.vector().size(); i++) {
+		m_vertexes.vector().at(i)->draw(drawField);
+	}
+
+//	if (show) {
+	imshow(path.c_str(), drawField);
+	waitKey(0);
+//	}
+	/*
+	 VtxDimToPPidMap::iterator it = PPoint::m_vrtx2Id.begin();
+	 while (it != PPoint::m_vrtx2Id.end()) {
+	 putText(drawField, mt::StrUtils::intToString(it->second),
+	 Point(it->first.first->x * Image::m_enlargeFactor + Image::m_enlargeFactor, it->first.first->y * Image::m_enlargeFactor + Image::m_enlargeFactor),
+	 CV_FONT_NORMAL, 0.7, Scalar(0, 0, 0), 1.3);
+	 it++;
+	 }*/
+
+	imwrite(path.c_str(), drawField);
+}
+
 void GradientProcessor::drawGradientField() {
 	if (m_gradFieldFile.empty())
 		return;
@@ -230,7 +310,7 @@ void GradientProcessor::drawGradientField() {
 	 drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
 	 }
 	 */
-	drawCmplx(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
+	drawCmplxOnTor(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
 
 }
 

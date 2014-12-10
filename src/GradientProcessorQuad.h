@@ -54,6 +54,8 @@ protected:
 		if (arcs != NULL) {
 			std::vector<ArcPtr> *secondLegArcs = arcStorage.seddles(secondLeg->m_arcEnd);
 			if (secondLegArcs) {
+/*
+
 				for (size_t i = 0; i < arcs->size(); ++i) {
 					for (size_t j = 0; j < secondLegArcs->size(); ++j) {
 						if (*(arcs->at(i)->m_arcBegin) == *(secondLegArcs->at(j)->m_arcBegin)) {
@@ -64,15 +66,17 @@ protected:
 						}
 					}
 				}
+*/
 
+
+				for (size_t i = 0; i < arcs->size(); ++i) {
+					ArcPtr arc = arcs->at(i);
+					arc->addFirstLeg(lowestPersistentPair);
+					arc->addSecondLeg(secondLeg);
+					arcStorage.registerArcByNewCritical(arc);
+				}
+				arcStorage.eraseArc(secondLeg);
 			}
-			for (size_t i = 0; i < arcs->size(); ++i) {
-				ArcPtr arc = arcs->at(i);
-				arc->addFirstLeg(lowestPersistentPair);
-				arc->addSecondLeg(secondLeg);
-				arcStorage.registerArcByNewCritical(arc);
-			}
-			arcStorage.eraseArc(secondLeg);
 		}
 
 		arcStorage.erasePersistentPair(lowestPersistentPair);
@@ -84,7 +88,6 @@ protected:
 	typedef MsComplex* MsComplexPtr;
 
 	virtual int32_t findEdges();
-	virtual int32_t findFaces();
 
 	AscArcStorage m_ascArcsStorage;
 	DescArcStorage m_descArcsStorage;

@@ -14,7 +14,7 @@ using cv::Mat;
 class Image{
 public:
 
-	static const uint32_t m_enlargeFactor = 60;
+	static const uint32_t m_enlargeFactor = 50;
 	enum BrushColor {
 		RED, GREEN, BLUE
 	};
@@ -26,7 +26,6 @@ public:
 
 	void setValue(const Pixel & pt, int32_t val);
 
-	Pixels getAllAround(const Pixel& pxl);
 	Pixels getOneConnectedAround(int x, int y);
 
 	bool isBoundaryPixel(const Pixel& pt);

@@ -20,8 +20,8 @@ using cv::imwrite;
 using cv::Scalar;
 using cv::circle;
 
-uint32_t Image::m_height = 0;
 uint32_t Image::m_width = 0;
+uint32_t Image::m_height = 0;
 
 Image::Image() :
 		m_sensivity(0), m_imageName("Image") {
@@ -51,93 +51,33 @@ bool Image::initFits(const std::string & path) {
 
 void Image::mirrorEdges(Mat& img) {
 
-	Mat mirrorEdgesMat = Mat(img.rows + 2, img.cols + 2, img.type());
-	mirrorEdgesMat.setTo(Scalar(0, 0, 0));
+	Mat torMat = Mat(img.rows * 2 - 2, img.cols * 2 - 2, img.type());
 
-	img.copyTo(mirrorEdgesMat(cv::Rect(Point(1, 1), img.size())));
-	mirrorEdgesMat.col(2).copyTo(mirrorEdgesMat(cv::Rect(Point(0, 0), mirrorEdgesMat.col(2).size())));
-	mirrorEdgesMat.col(mirrorEdgesMat.cols - 3).copyTo(
-			mirrorEdgesMat(cv::Rect(Point(mirrorEdgesMat.cols - 1, 0), mirrorEdgesMat.col(mirrorEdgesMat.cols - 3).size())));
+	torMat.setTo(Scalar(0, 0, 0));
 
-	mirrorEdgesMat.row(2).copyTo(mirrorEdgesMat(cv::Rect(Point(0, 0), mirrorEdgesMat.row(2).size())));
-	mirrorEdgesMat.row(mirrorEdgesMat.rows - 3).copyTo(
-			mirrorEdgesMat(cv::Rect(Point(0, mirrorEdgesMat.rows - 1), mirrorEdgesMat.row(mirrorEdgesMat.rows - 3).size())));
-	img = mirrorEdgesMat;
+	for (int x = 0; x < img.rows* 2 - 2 ; x++) {
+		for (int y = 0; y < img.cols* 2 - 2; y++) {
+
+
+			int origX = (x >= img.rows) ? 2 * img.rows - x - 2 : x;
+			int origY = (y >= img.cols) ? 2 * img.cols - y - 2 : y;
+
+			torMat.at<uint8_t>(x, y) = img.at<uint8_t>(origX, origY);
+		}
+	}
+	img = torMat;
 }
 
 bool Image::init(const std::string & path) {
 	m_imagePath = path;
 
 	m_img = imread(path.c_str(), 0);
-//	mirrorEdges(m_img);
+	mirrorEdges(m_img);
 	m_forChanges = imread(path.c_str(), 1);
 	m_width = m_img.cols;
 	m_height = m_img.rows;
 
 	return false;
-}
-
-Pixels Image::getAllAround(const Pixel& pt) {
-	//todo move in members and return link
-	Pixels pts;
-
-	uint32_t x = pt.x;
-	uint32_t y = pt.y;
-
-	if (x == 0) {
-		pts.push_back(Pixel(x + 1, y));
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-		} else if (y == m_height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-		}
-	} else if (x == m_width - 1) {
-		pts.push_back(Pixel(x - 1, y));
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x - 1, y + 1));
-		} else if (y == m_height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x - 1, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x - 1, y + 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x - 1, y - 1));
-		}
-	} else {
-		pts.push_back(Pixel(x - 1, y));
-		pts.push_back(Pixel(x + 1, y));
-
-		if (y == 0) {
-			pts.push_back(Pixel(x - 1, y + 1));
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-
-		} else if (y == m_height - 1) {
-			pts.push_back(Pixel(x - 1, y - 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-		} else {
-			pts.push_back(Pixel(x - 1, y - 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-			pts.push_back(Pixel(x - 1, y + 1));
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-
-		}
-
-	}
-
-	return pts;
 }
 
 Pixels Image::getOneConnectedAround(int x, int y) {

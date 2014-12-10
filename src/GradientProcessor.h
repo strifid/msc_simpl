@@ -49,7 +49,6 @@ public:
 
 	int32_t findVertex();
 	virtual int32_t findEdges() = 0;
-	virtual int32_t findFaces() = 0;
 
 	std::string m_gradFieldFile;
 	std::string m_outputFile;
@@ -61,12 +60,14 @@ protected:
 	void findSeddles();
 	void findMinimums();
 
-	void addFace(FacePtr tr);
+	void addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr d);
 	void addVertex(VertexPtr vtx);
-	void addEdge(EdgePtr face);
+	void addEdge(VertexPtr a, VertexPtr b);
 	VertexPtr findVertexByPixel(const Pixel & pxl);
 
 	void drawGradientField();
+	void drawCmplxOnTor(const std::string& path, Drawer* drawer, bool show);
+
 
 	void drawComplexesOnOriginal();
 
