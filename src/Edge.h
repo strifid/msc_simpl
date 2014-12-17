@@ -13,6 +13,9 @@
 #include "Simplex.h"
 #include "opencv2/core/core.hpp"
 #include <iostream>
+#include <opencv/cv.h>
+using namespace cv;
+
 class Edge: public Simplex {
 public:
 	Edge();

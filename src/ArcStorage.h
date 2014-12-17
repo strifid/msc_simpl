@@ -38,7 +38,7 @@
 #include "SimplexStorage.h"
 #include "Triangle.h"
 #include "Vertex.h"
-
+class Utils;
 class MsComplex;
 
 template<typename ArcPtr, typename CriticalPtr>
@@ -82,8 +82,9 @@ public:
 		uint32_t totalArcs = 0;
 		for (typename ArcsToSeddleMap::iterator it = m_arcsToSeddleMap.begin(); it != m_arcsToSeddleMap.end(); it++) {
 			totalArcs += it->second.size();
-			if (it->second.size() > 2) {
-				std::cout << prefix << " incorrect arcs for seddle " << *(it->first) << " arcs: " << it->second.size() << std::endl;
+			if (it->second.size() != 2) {
+				std::cout << "ERROR: " << prefix << " storage incorrect arcs for seddle " << *(it->first) << " arcs: " << it->second.size()
+						<< std::endl;
 			}
 		}
 		std::cout << "total " << prefix << " arcs by seddle: " << totalArcs << std::endl;
@@ -147,6 +148,11 @@ public:
 	}
 
 	ArcPtr getArc(EdgePtr seddle, CriticalPtr crit) {
+		if (seddle == NULL || crit == NULL) {
+			std::cout << "ERROR. can't find simplex for ppair" << std::endl;
+			return NULL;
+		}
+
 		std::vector<ArcPtr>* arcs = critical(seddle);
 		if (arcs == NULL)
 			return NULL;
@@ -244,14 +250,14 @@ public:
 
 	void saveArcsInVtp(const std::string& path) {
 
-		vtkSmartPointer < vtkPoints > points = vtkSmartPointer < vtkPoints > ::New();
-		vtkSmartPointer < vtkCellArray > cells = vtkSmartPointer < vtkCellArray > ::New();
+		vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+		vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 
 		for (typename ArcsToSeddleMap::iterator it = m_arcsToSeddleMap.begin(); it != m_arcsToSeddleMap.end(); it++) {
 			std::vector<ArcPtr> &arcs = it->second;
 			for (size_t i = 0; i < arcs.size(); ++i) {
 				ArcPtr arc = arcs[i];
-				vtkSmartPointer < vtkPolyLine > polyLine = vtkSmartPointer < vtkPolyLine > ::New();
+				vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
 				polyLine->GetPointIds()->SetNumberOfIds(arc->m_arc.size() + 2);
 
 				vtkIdType id = points->InsertNextPoint(arc->m_arcBegin->maxVertex()->x, arc->m_arcBegin->maxVertex()->y, 0);
@@ -269,11 +275,11 @@ public:
 				cells->InsertNextCell(polyLine);
 			}
 		}
-		vtkSmartPointer < vtkPolyData > polyData = vtkSmartPointer < vtkPolyData > ::New();
+		vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
 		polyData->SetPoints(points);
 
 		polyData->SetLines(cells);
-		vtkSmartPointer < vtkXMLPolyDataWriter > writer = vtkSmartPointer < vtkXMLPolyDataWriter > ::New();
+		vtkSmartPointer<vtkXMLPolyDataWriter> writer = vtkSmartPointer<vtkXMLPolyDataWriter>::New();
 		writer->SetFileName(path.c_str());
 		writer->SetInput(polyData);
 		writer->SetDataModeToAscii();
@@ -281,10 +287,11 @@ public:
 
 	}
 
+
 	ArcsToSeddleMap m_arcsToSeddleMap;
 	ArcsToCriticalMap m_arcsToCriticalMap;
 
-private:
+protected:
 
 	MsComplex* completeComplex(Arc<FacePtr, FacePtr> * aArc1, DescArcPtr dArc1, std::vector<Arc<FacePtr, FacePtr> *>* aArcs, DescArcs* dArcs);
 
@@ -298,7 +305,6 @@ private:
 							SimplexComparator<EdgePtr> > > > ArcsMap;
 
 //	ArcsMap m_map;
-
 
 	Arc<FacePtr, FacePtr> * findAscArcMax(std::vector<Arc<FacePtr, FacePtr> *> &ascArcs);
 

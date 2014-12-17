@@ -35,6 +35,14 @@ inline void CofacedFace::draw(Mat& img) {
 	Point a = m_edge->centralPoint();
 	Point b = m_face->centralPoint();
 
+	if(m_edge->m_a->x == 0 && m_edge->m_b->x == 0 && b.x > Image::m_enlargeFactor*2 ){
+		a.x += Image::m_enlargeFactor*(Image::m_width) ;
+	}
+
+	if(m_edge->m_a->y == 0 && m_edge->m_b->y == 0 && b.y > Image::m_enlargeFactor*2 ){
+		a.y += Image::m_enlargeFactor*(Image::m_height) ;
+	}
+
 	drawArrow(img, a, b);
 
 }

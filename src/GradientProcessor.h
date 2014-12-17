@@ -22,13 +22,12 @@
 #include "Edge.h"
 #include "Image.h"
 #include "MsComplexStorage.h"
-#include "Pixel.h"
 #include "SimplexRelations.h"
 #include "SimplexStorage.h"
 #include "Triangle.h"
 #include "Vertex.h"
 #include "opencv2/core/core.hpp"
-
+#include "ArcStorage.h"
 using cv::Mat;
 
 class VertexComponets {
@@ -41,14 +40,14 @@ typedef VertexComponets* VertexComponetsPtr;
 class GradientProcessor {
 public:
 
-	bool loadImageData(const std::string& path);
-	bool loadFitsData(const std::string& path);
+	enum DataType{
+		FITS, IMAGE
+	};
+
+	bool loadData(const std::string& path, DataType type);
 
 	GradientProcessor();
 	virtual ~GradientProcessor();
-
-	int32_t findVertex();
-	virtual int32_t findEdges() = 0;
 
 	std::string m_gradFieldFile;
 	std::string m_outputFile;
@@ -63,13 +62,10 @@ protected:
 	void addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr d);
 	void addVertex(VertexPtr vtx);
 	void addEdge(VertexPtr a, VertexPtr b);
-	VertexPtr findVertexByPixel(const Pixel & pxl);
+	VertexPtr findVertexByPixel(uint32_t x, uint32_t y);
 
-	void drawGradientField();
-	void drawCmplxOnTor(const std::string& path, Drawer* drawer, bool show);
+	void drawCmplxOnTor(const std::string& path, AscArcStorage &aStorage, DescArcStorage &dStorage, bool show);
 
-
-	void drawComplexesOnOriginal();
 
 	void getDescendingManifold(Edges& arc, Vertexes& vtxs);
 	bool getAscendingManifold(std::vector<FacePtr>& arc);

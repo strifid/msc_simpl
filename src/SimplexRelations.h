@@ -25,8 +25,6 @@ public:
 	void push(FacePtr vtx);
 
 	Vertexes* vertexes(EdgePtr face);
-	Vertexes* vertexes(FacePtr triangle);
-
 	Edges* edges(VertexPtr face);
 
 	std::vector<FacePtr>* face(EdgePtr face);

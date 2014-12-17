@@ -31,6 +31,4 @@ public:
 
 };
 
-//std::ostream & operator <<(std::ostream & out, Simplex vt);
-
 #endif /* SIMPLEX_H_ */

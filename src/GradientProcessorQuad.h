@@ -22,7 +22,6 @@
 #include "ArcStorage.h"
 #include "MsComplex.h"
 #include "GradientProcessor.h"
-#include "Quad.h"
 #include "persist_pair/PPoint.h"
 #include "Utils.h"
 using cv::Mat;
@@ -36,11 +35,12 @@ public:
 	void run();
 
 protected:
+	void drawGradientField();
 
 	void simplify(uint32_t persistence);
 
 	//todo remove faceptr type from template
-	template<typename ArcPtr, typename CriticalPtr, typename FacePtr>
+	template<typename ArcPtr, typename CriticalPtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
 		arcStorage.eraseArc(lowestPersistentPair);
 		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
@@ -48,14 +48,16 @@ protected:
 
 		if (!secondLeg || *(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
+			std::cout << "ERROR. can't simpl. have no sec lag or " << std::endl;
 			return false;
 		}
 
 		if (arcs != NULL) {
 			std::vector<ArcPtr> *secondLegArcs = arcStorage.seddles(secondLeg->m_arcEnd);
 			if (secondLegArcs) {
-/*
 
+
+/*
 				for (size_t i = 0; i < arcs->size(); ++i) {
 					for (size_t j = 0; j < secondLegArcs->size(); ++j) {
 						if (*(arcs->at(i)->m_arcBegin) == *(secondLegArcs->at(j)->m_arcBegin)) {
@@ -85,9 +87,8 @@ protected:
 	}
 
 	typedef std::vector<MsComplex*> MsComplexes;
-	typedef MsComplex* MsComplexPtr;
 
-	virtual int32_t findEdges();
+	virtual int32_t findSimplexes();
 
 	AscArcStorage m_ascArcsStorage;
 	DescArcStorage m_descArcsStorage;
@@ -101,12 +102,13 @@ protected:
 	void addDescArc(VertexPtr vtx, EdgePtr seddle);
 
 	void createArcStorageForSimpl();
+	void drawComplexesOnOriginal();
 
 private:
 	void printInfo();
 	void findAscArcs();
 	void findDescArcs();
-	void simplifyPpairs(std::vector<std::pair<PPointPtr, PPointPtr> >& pps);
+	bool simplifyPpairs(std::vector<std::pair<PPointPtr, PPointPtr> >& pps);
 };
 
 #endif /* GRADIENTPROCESSOR_H_ */

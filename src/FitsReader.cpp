@@ -11,7 +11,6 @@
 #include <iterator>
 
 #include "opencv2/core/core.hpp"
-#include "Pixel.h"
 using cv::Scalar;
 
 using namespace CCfits;
@@ -55,14 +54,14 @@ bool FitsReader::init(const std::string& path) {
 
 	return true;
 }
-
+using cv::Point;
 void FitsReader::fillMat(cv::Mat& m) {
 
 	Mat fitsMat(m_y, m_x, CV_32S, Scalar(35555, 35555, 35555));
 
 	for (int i = 0; i < m_x; i++) {
 		for (int j = 0; j < m_y; j++) {
-			fitsMat.at<int32_t>(Pixel(i, j)) = contents[i * m_x + j];
+			fitsMat.at<int32_t>(Point(i, j)) = contents[i * m_x + j];
 		}
 	}
 	std::cout << std::endl;

@@ -7,7 +7,6 @@
 
 #ifndef PPOINT_H_
 #define PPOINT_H_
-#include "Pixel.h"
 #include "Vertex.h"
 #include "Triangle.h"
 #include "Edge.h"

@@ -3,25 +3,18 @@
 
 #include "Edge.h"
 using cv::line;
-
+#include "Utils.h"
 void MsComplex::draw(Mat &img) {
 
 //	if (m_max->maxVertex()->x == 6 && m_max->maxVertex()->y == 10 && m_min->x == 14) {
 	for (size_t i = 0; i < m_aArcs.size(); i++) {
-
-		for (size_t z = 0; z < m_aArcs[i]->m_arc.size() - 1; z++) {
-			if(m_aArcs[i]->m_arc[z]->centralPoint().y > Image::m_height * Image::m_enlargeFactor){
-				std::cout << "find face " << *(m_aArcs[i]->m_arc[z]) << std::endl;
-				continue;
-			}
-			line(img, m_aArcs[i]->m_arc[z]->centralPoint(), m_aArcs[i]->m_arc[z + 1]->centralPoint(), Scalar(0, 100, 255), 5, 8);
-		}
-
-		line(img, m_aArcs[i]->m_arc.front()->centralPoint(), m_aArcs[i]->m_arcBegin->centralPoint(), Scalar(0, 100, 255), 5, 8);
-
+		Utils::drawAscArc(img, m_aArcs[i]);
 	}
 
 	m_max->draw(img, 200);
+	circle(img,
+			Point(m_max->maxVertex()->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
+					m_max->maxVertex()->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 5, Scalar(0, 0, 255), 5);
 
 	for (size_t i = 0; i < m_dArcs.size(); i++) {
 		for (size_t z = 0; z < m_dArcs[i]->m_arc.size(); z++) {
@@ -35,9 +28,6 @@ void MsComplex::draw(Mat &img) {
 	circle(img, Point(m_min->x * Image::m_enlargeFactor + Image::m_enlargeFactor, m_min->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 5,
 			Scalar(255, 200, 0), 7);
 
-	circle(img,
-			Point(m_max->maxVertex()->x * Image::m_enlargeFactor + Image::m_enlargeFactor,
-					m_max->maxVertex()->y * Image::m_enlargeFactor + Image::m_enlargeFactor), 5, Scalar(0, 0, 255), 5);
 
 //	}
 }

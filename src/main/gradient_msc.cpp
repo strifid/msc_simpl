@@ -18,29 +18,28 @@ int main(int argc, char* argv[]) {
 	int c;
 	opterr = 0;
 
-	uint32_t persistence = 0;
+	GradientProcessorQuad* proc = new GradientProcessorQuad();
+
 	std::string inputFile;
-	std::string gradField;
-	std::string outputFile;
-	bool isFits = false;
+	GradientProcessor::DataType isFits = GradientProcessor::IMAGE;
 
 	while ((c = getopt(argc, argv, "p:f:o:i:s:")) != -1)
 		switch (c) {
 		case 'p':
-			persistence = atoi(optarg);
+			proc->m_persistence = atoi(optarg);
 			break;
 		case 'f':
-			gradField = optarg;
+			proc->m_gradFieldFile = optarg;
 			break;
 		case 'o':
-			outputFile = optarg;
+			proc->m_outputFile = optarg;
 			break;
 		case 'i':
 			inputFile = optarg;
 			break;
 		case 's':
 			inputFile = optarg;
-			isFits = true;
+			isFits = GradientProcessor::FITS;
 			break;
 		default:
 			std::cout << help << std::endl;
@@ -51,15 +50,7 @@ int main(int argc, char* argv[]) {
 		std::cout << help << std::endl;
 		return -1;
 	}
-//	GradientProcessorTriangle* proc = new GradientProcessorTriangle();
-	GradientProcessorQuad* proc = new GradientProcessorQuad();
-	proc->m_persistence = persistence;
-	proc->m_gradFieldFile = gradField;
-	proc->m_outputFile = outputFile;
-	if (isFits)
-		proc->loadFitsData(inputFile);
-	else
-		proc->loadImageData(inputFile);
+	proc->loadData(inputFile, isFits);
 	proc->run();
 
 	return 0;

@@ -24,7 +24,7 @@ uint32_t Image::m_width = 0;
 uint32_t Image::m_height = 0;
 
 Image::Image() :
-		m_sensivity(0), m_imageName("Image") {
+		m_imageName("Image") {
 	namedWindow(m_imageName.c_str());
 
 }
@@ -55,9 +55,8 @@ void Image::mirrorEdges(Mat& img) {
 
 	torMat.setTo(Scalar(0, 0, 0));
 
-	for (int x = 0; x < img.rows* 2 - 2 ; x++) {
-		for (int y = 0; y < img.cols* 2 - 2; y++) {
-
+	for (int x = 0; x < img.rows * 2 - 2; x++) {
+		for (int y = 0; y < img.cols * 2 - 2; y++) {
 
 			int origX = (x >= img.rows) ? 2 * img.rows - x - 2 : x;
 			int origY = (y >= img.cols) ? 2 * img.cols - y - 2 : y;
@@ -68,57 +67,36 @@ void Image::mirrorEdges(Mat& img) {
 	img = torMat;
 }
 
+using namespace cv;
+
 bool Image::init(const std::string & path) {
 	m_imagePath = path;
 
 	m_img = imread(path.c_str(), 0);
 	mirrorEdges(m_img);
-	m_forChanges = imread(path.c_str(), 1);
+	Mat img = imread(path.c_str(), 1);
+	{
+
+		Mat torMat = Mat(img.rows * 2 - 2, img.cols * 2 - 2, img.type());
+
+		torMat.setTo(Scalar(0, 0, 0));
+
+		for (int x = 0; x < img.rows * 2 - 2; x++) {
+			for (int y = 0; y < img.cols * 2 - 2; y++) {
+
+				int origX = (x >= img.rows) ? 2 * img.rows - x - 2 : x;
+				int origY = (y >= img.cols) ? 2 * img.cols - y - 2 : y;
+
+				torMat.at<Vec3b>(x, y) = img.at<Vec3b>(origX, origY);
+			}
+		}
+		m_forChanges = torMat;
+
+	}
 	m_width = m_img.cols;
 	m_height = m_img.rows;
 
 	return false;
-}
-
-Pixels Image::getOneConnectedAround(int x, int y) {
-	//todo move in members and return link
-	Pixels pts;
-
-	if (x == 0) {
-		pts.push_back(Pixel(x + 1, y));
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-		} else if (y == m_height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x, y - 1));
-		}
-	} else if (x == m_width - 1) {
-		pts.push_back(Pixel(x - 1, y));
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-		} else if (y == m_height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x, y - 1));
-		}
-	} else {
-		pts.push_back(Pixel(x - 1, y));
-		pts.push_back(Pixel(x + 1, y));
-
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-		} else if (y == m_height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x, y + 1));
-		}
-	}
-
-	return pts;
 }
 
 void Image::saveAs(const std::string& path, bool show) {
@@ -137,33 +115,8 @@ void Image::drawCircle(Point point, cv::Scalar color, uint32_t radius, uint32_t 
 }
 
 //TTTTTTTTTTTTTTT
-int32_t Image::value(const Pixel & pt) {
-	return m_img.at<uint8_t>(dynamic_cast<const Point&>(pt));
-}
-
-void Image::setValue(const Pixel & pt, int32_t val) {
-	m_img.at<uint8_t>(pt) = val;
-}
-
-bool Image::isBoundaryPixel(const Pixel & pt) {
-	if (pt.x == 0 || pt.x == m_width - 1)
-		return true;
-	if (pt.y == 0 || pt.y == m_height - 1)
-		return true;
-
-	return false;
-}
-
-int32_t Image::comparePixels(const Pixel& a, const Pixel& b) {
-	int res = ::abs(value(a)) - ::abs(value(b));
-
-	if (abs(res) <= m_sensivity)
-		return 0;
-
-	if (value(a) < value(b))
-		return -1;
-
-	return 1;
+int32_t Image::value(uint32_t x, uint32_t y) {
+	return m_img.at<uint8_t>(Point(x ,y));
 }
 
 void Image::resetPainting() {

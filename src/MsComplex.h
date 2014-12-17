@@ -67,6 +67,7 @@ public:
 
 };
 
+typedef MsComplex* MsComplexPtr;
 typedef std::set<MsComplex*, SimplexComparator<MsComplex*> > MsComplexesSet;
 
 #endif /* MSCOMLEX_H_ */

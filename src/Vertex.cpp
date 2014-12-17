@@ -20,41 +20,12 @@ Vertex::~Vertex() {
 Vertex::Vertex(int xx, int yy) {
 	x = xx;
 	y = yy;
-//	m_value = 0;
 }
 
 Vertex::Vertex(int xx, int yy, int val) {
 	x = xx;
 	y = yy;
-//	m_value = val;
-
 }
-
-/*
-uint32_t Vertex::locateSubset(Image& img) {
-
-	bool addPointFlag = false;
-
-
-	do {
-		addPointFlag = false;
-		Pixels pts = getContour();
-
-		for (size_t i = 0; i < pts.size(); i++) {
-			Pixels contourAroundPixels = img.getAllAround(pts[i]);
-			for (size_t j = 0; j < contourAroundPixels.size(); j++) {
-				if (!img.comparePixels(contourAroundPixels[j], center()) && !isInSubset(contourAroundPixels[j])) {
-					addPoint(contourAroundPixels[j]);
-					addPointFlag = true;
-				}
-			}
-		}
-	} while (addPointFlag);
-
-
-	return 0;
-}
-*/
 
 bool Vertex::operator ==(const Vertex& vrtx) const {
 	if (x == vrtx.x)
@@ -82,68 +53,6 @@ bool Vertex::operator !=(const Vertex& vrtx) const {
 	return !operator==(vrtx);
 }
 
-Pixels Vertex::getAllAround(const Pixel& pt, uint32_t width, uint32_t height) {
-	//todo move in members and return link
-	Pixels pts;
-
-	uint32_t x = pt.x;
-	uint32_t y = pt.y;
-
-	if (x == 0) {
-		pts.push_back(Pixel(x + 1, y));
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-		} else if (y == height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-		}
-	} else if (x == width - 1) {
-		pts.push_back(Pixel(x - 1, y));
-		if (y == 0) {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x - 1, y + 1));
-		} else if (y == height - 1) {
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x - 1, y - 1));
-		} else {
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x - 1, y + 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x - 1, y - 1));
-		}
-	} else {
-		pts.push_back(Pixel(x - 1, y));
-		pts.push_back(Pixel(x + 1, y));
-
-		if (y == 0) {
-			pts.push_back(Pixel(x - 1, y + 1));
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-
-		} else if (y == height - 1) {
-			pts.push_back(Pixel(x - 1, y - 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-		} else {
-			pts.push_back(Pixel(x - 1, y - 1));
-			pts.push_back(Pixel(x, y - 1));
-			pts.push_back(Pixel(x + 1, y - 1));
-			pts.push_back(Pixel(x - 1, y + 1));
-			pts.push_back(Pixel(x, y + 1));
-			pts.push_back(Pixel(x + 1, y + 1));
-
-		}
-
-	}
-
-	return pts;
-}
 
 std::ostream & operator <<(std::ostream & out, const Vertex& vt) {
 
@@ -151,15 +60,3 @@ std::ostream & operator <<(std::ostream & out, const Vertex& vt) {
 	return out;
 
 }
-
-/*
-void Vertex::value(int32_t i) {
-
-//	std::cout << "set vertex " << i << std::endl;
-
-	m_value = i;
-	m_valueFirst = i;
-
-}
-
-*/

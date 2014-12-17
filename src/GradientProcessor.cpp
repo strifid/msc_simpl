@@ -18,23 +18,12 @@ GradientProcessor::GradientProcessor() :
 GradientProcessor::~GradientProcessor() {
 }
 
-void GradientProcessor::drawComplexesOnOriginal() {
-
-	if (m_outputFile.empty())
-		return;
-
-	m_msCmplxStorage.drawOriginal(m_img);
-
-	m_img.saveAs(m_outputFile, true);
-	std::cout << "save file in " << m_outputFile << std::endl;
-
-}
-
-VertexPtr GradientProcessor::findVertexByPixel(const Pixel & pxl) {
-	Vertex vtx(pxl.x, pxl.y);
-	std::set<VertexPtr, PixelComparator>::iterator it = m_pix2vertex.find(&vtx);
+VertexPtr GradientProcessor::findVertexByPixel(uint32_t x, uint32_t y) {
+	Vertex vtx(x, y);
+	std::set<VertexPtr, VertexPtrComparator>::iterator it = m_pix2vertex.find(&vtx);
 	if (it != m_pix2vertex.end())
 		return *it;
+	std::cout << "ERROR: can't find vertex by pixel " << x << " " << y << std::endl;
 	return NULL;
 }
 
@@ -56,29 +45,16 @@ void GradientProcessor::addVertex(VertexPtr vtx) {
 
 }
 
-int32_t GradientProcessor::findVertex() {
-	for (int x = 0; x < m_img.width(); x++) {
-		for (int y = 0; y < m_img.height(); y++) {
-
-			VertexPtr vtx = new Vertex(x, y);
-			vtx->value(m_img.value(Pixel(x, y)), x * (m_img.width() * 2 - 2) + y);
-			addVertex(vtx);
-		}
-	}
-
-	return 0;
-}
-
 void GradientProcessor::addEdge(VertexPtr a, VertexPtr b) {
 	if (a == NULL || b == NULL) {
 		std::cout << "ERROR. can't create edge with NULL virtex" << std::endl;
 		return;
 	}
 
-	EdgePtr face = new Edge(a, b);
-	face->m_seqId = m_seqId++;
-	m_edges.push(face);
-	m_simplexRelations.push(face);
+	EdgePtr edge = new Edge(a, b);
+	edge->m_seqId = m_seqId++;
+	m_edges.push(edge);
+	m_simplexRelations.push(edge);
 }
 
 void GradientProcessor::addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr d) {
@@ -103,15 +79,16 @@ void GradientProcessor::addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr
 	m_simplexRelations.push(face);
 }
 
-bool GradientProcessor::loadFitsData(const std::string & path) {
+bool GradientProcessor::loadData(const std::string & path, DataType type) {
 
-	m_img.initFits(path);
-	std::cout << "load image: " << m_img.width() << "X" << m_img.height() << std::endl;
-	return true;
-}
-
-bool GradientProcessor::loadImageData(const std::string & path) {
-	m_img.init(path);
+	switch (type) {
+	case FITS:
+		m_img.initFits(path);
+		break;
+	case IMAGE:
+		m_img.init(path);
+		break;
+	}
 	std::cout << "load image: " << m_img.width() << "X" << m_img.height() << std::endl;
 	return true;
 }
@@ -124,6 +101,8 @@ void GradientProcessor::findMinimums() {
 		EdgePtr smallestEdge = NULL;
 		VertexPtr neibVtx = vtxs.at(i);
 		Edges *edges = m_simplexRelations.edges(neibVtx);
+		if (edges->size() != 4)
+			std::cout << "ERROR. not 4 faced edges for vertex " << *neibVtx << std::endl;
 		for (size_t j = 0; j < edges->size(); ++j) {
 
 			EdgePtr neibEdge = edges->at(j);
@@ -219,7 +198,6 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 			edges[i]->draw(drawField);
 	}
 	for (int i = 0; i < m_cofacesSimplexes.size(); ++i) {
-
 		m_cofacesSimplexes[i]->draw(drawField);
 	}
 
@@ -243,7 +221,7 @@ void GradientProcessor::drawCmplx(const std::string& path, Drawer* drawer, bool 
 	imwrite(path.c_str(), drawField);
 }
 
-void GradientProcessor::drawCmplxOnTor(const std::string& path, Drawer* drawer, bool show) {
+void GradientProcessor::drawCmplxOnTor(const std::string& path, AscArcStorage &aStorage, DescArcStorage &dStorage, bool show) {
 
 	uint32_t torH = m_img.height();
 	uint32_t torW = m_img.width();
@@ -260,7 +238,9 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, Drawer* drawer, 
 				Scalar(0, 0, 0), 1.3);
 	}
 
-	drawer->draw(drawField);
+	Utils::drawAscArcStorage(drawField, aStorage);
+	Utils::drawDescArcStorage(drawField, dStorage);
+
 	//		m_msCmplxStorage.draw(drawField);
 	Edges& edges = m_edges.vector();
 	for (size_t i = 0; i < edges.size(); i++) {
@@ -285,8 +265,8 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, Drawer* drawer, 
 	}
 
 //	if (show) {
-	imshow(path.c_str(), drawField);
-	waitKey(0);
+//	imshow(path.c_str(), drawField);
+//	waitKey(0);
 //	}
 	/*
 	 VtxDimToPPidMap::iterator it = PPoint::m_vrtx2Id.begin();
@@ -298,20 +278,6 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, Drawer* drawer, 
 	 }*/
 
 	imwrite(path.c_str(), drawField);
-}
-
-void GradientProcessor::drawGradientField() {
-	if (m_gradFieldFile.empty())
-		return;
-
-	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
-
-	/*for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
-	 drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
-	 }
-	 */
-	drawCmplxOnTor(m_gradFieldFile + "_all.jpg", &m_msCmplxStorage, false);
-
 }
 
 bool GradientProcessor::getAscendingManifold(std::vector<FacePtr>& arc) {

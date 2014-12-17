@@ -16,3 +16,4 @@ core
 /fits_test
 /matlab_test
 /bmp
+*.png

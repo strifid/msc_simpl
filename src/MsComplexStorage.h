@@ -36,19 +36,6 @@ public:
 			return true;
 		return false;
 	}
-	std::vector<MsComplex*> * find(EdgePtr edge) {
-		typename ComplexesBySaddleMap::iterator it = m_complexBySaddle.find(edge);
-		if (it != m_complexBySaddle.end())
-			return &(it->second);
-		return NULL;
-	}
-
-	std::vector<MsComplex*> * find(FacePtr face) {
-		typename ComplexesByMaxMap::iterator it = m_complexByMax.find(face);
-		if (it != m_complexByMax.end())
-			return &(it->second);
-		return NULL;
-	}
 
 	void drawComplex(MsComplex* cmplx) {
 		m_msComplexesForDrawing.push_back(cmplx);
@@ -123,33 +110,7 @@ public:
 		return m_complexesSet;
 	}
 
-
-
-	void printInfo(std::vector<FacePtr>& v ){
-
-		std::cout << "m_complexesSet size " << m_complexesSet.size() << std::endl;
-		std::cout << "m_complexByMax size " << m_complexByMax.size() << std::endl;
-		std::cout << "m_complexBySaddle size " << m_complexBySaddle.size() << std::endl;
-
-		std::set<AscArcPtr> aSet;
-		std::set<DescArcPtr> dSet;
-		SimplexStorage<FacePtr> max;
-		for(MsComplexesSet::iterator it = m_complexesSet.begin() ; it != m_complexesSet.end(); it++){
-			aSet.insert((*it)->m_aArcs[0]);
-			aSet.insert((*it)->m_aArcs[1]);
-			dSet.insert((*it)->m_dArcs[0]);
-			dSet.insert((*it)->m_dArcs[1]);
-			max.push((*it)->m_max);
-		}
-
-		for (size_t i = 0; i < v.size(); ++i) {
-			if( !max.exist(v[i]))
-				std::cout << "can't find any complex for max " << *(v[i])<< std::endl;
-
-		}
-		std::cout << "aSet " << aSet.size() << " dSet " << dSet.size() << std::endl;
-	}
-
+	void printInfo(std::vector<FacePtr>& v);
 protected:
 
 	typedef std::map<FacePtr, std::vector<MsComplex*>, SimplexComparator<FacePtr> > ComplexesByMaxMap;

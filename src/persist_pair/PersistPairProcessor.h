@@ -31,7 +31,7 @@ public:
 	std::set<uint32_t> filtered;
 	std::vector<std::pair<uint32_t, uint32_t> > ppairs;
 	std::map<uint32_t, std::vector<uint32_t>*> m_cycles;
-	std::vector<std::pair<PPointPtr, PPointPtr> > ppairsPoint;
+	std::vector<std::pair<PPointPtr, PPointPtr> > m_ppairsPoint;
 
 	void sort();
 	void printToFile(const std::string& file);

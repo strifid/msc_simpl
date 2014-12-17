@@ -52,7 +52,6 @@ void Simplex::value(int32_t i, uint32_t e) {
 
 #include <vector>
 #include "opencv2/core/core.hpp"
-#include "Pixel.h"
 #include <set>
 #include <map>
 #include "Simplex.h"
