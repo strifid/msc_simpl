@@ -161,6 +161,7 @@ public:
 			if (*(arcs->at(i)->m_arcEnd) == *(crit))
 				return arcs->at(i);
 		}
+		std::cout << "ERROR. can't find arc for points: max(min): " << *(crit->maxVertex()) << " seddle " << *seddle << std::endl;
 		return NULL;
 	}
 

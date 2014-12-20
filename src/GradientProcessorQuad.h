@@ -42,6 +42,8 @@ protected:
 	//todo remove faceptr type from template
 	template<typename ArcPtr, typename CriticalPtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
+		if(lowestPersistentPair == NULL)
+			return;
 		arcStorage.eraseArc(lowestPersistentPair);
 		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
@@ -93,15 +95,11 @@ protected:
 	AscArcStorage m_ascArcsStorage;
 	DescArcStorage m_descArcsStorage;
 
-	AscArcStorage m_ascArcsStorageForSimpl;
-	DescArcStorage m_descArcsStorageForSimpl;
-
 	void connectArcs(AscArcStorage& ascArc, DescArcStorage& descArc);
 	MsComplex* completeComplex(AscArcPtr aArc1, DescArcPtr dArc1, AscArcs *aArcs, DescArcs *dArcs);
 
 	void addDescArc(VertexPtr vtx, EdgePtr seddle);
 
-	void createArcStorageForSimpl();
 	void drawComplexesOnOriginal();
 
 private:

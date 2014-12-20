@@ -134,7 +134,6 @@ void GradientProcessorQuad::findDescArcs() {
 
 bool GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPointPtr> >& pps) {
 
-
 	for (size_t i = 0; i < pps.size(); ++i) {
 		if (pps[i].first->m_smplx == NULL || pps[i].second->m_smplx == NULL) {
 			std::cout << "ERROR: smplx in ppair is NULL" << std::endl;
@@ -146,47 +145,19 @@ bool GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 		VertexPtr vtx = NULL;
 
 		if (Utils::ppairToSimplex(pps[i], &vtx, &edge, &face)) {
-
-			/*
-			 if ((face->maxVertex()->x > (Image::m_width + 1) / 2 || face->maxVertex()->y > (Image::m_height + 1) / 2)
-			 && (edge->maxVertex()->x > (Image::m_width + 1) / 2 || edge->maxVertex()->y > (Image::m_height + 1) / 2)) {
-			 //				std::cout << "stop cancel " << *face << " and " << *edge << std::endl;
-			 continue;
-			 }
-			 */
-			AscArcPtr arc = m_ascArcsStorageForSimpl.getArc(edge, face);
-			if (arc == NULL) {
-				std::cout << "ERROR. can't find arc for ppair: max: " << *(face->maxVertex()) << " seddle " << *edge << std::endl;
-				continue;
-			}
-
-			if (removePersistentPair<AscArcPtr, FacePtr>(arc, m_ascArcsStorageForSimpl, true)) {
-				m_descArcsStorageForSimpl.erase(arc->m_arcBegin);
+			AscArcPtr arc = m_ascArcsStorage.getArc(edge, face);
+			if (removePersistentPair<AscArcPtr, FacePtr>(arc, m_ascArcsStorage, true)) {
+				m_descArcsStorage.erase(arc->m_arcBegin);
 				continue;
 			} else
-				std::cout << "can't remove: " << *(face->maxVertex()) << " seddle " << *edge << std::endl;
-
+				std::cout << "can't remove AscArc: " << *(face->maxVertex()) << " seddle " << *edge << std::endl;
 		} else {
-			/*
-			 if ((vtx->x > (Image::m_width + 1) / 2 || vtx->y > (Image::m_height + 1) / 2)
-			 && (edge->maxVertex()->x > (Image::m_width + 1) / 2 || edge->maxVertex()->y > (Image::m_height + 1) / 2)) {
-			 //				std::cout << "stop cancel " << *vtx << " and " << *edge << std::endl;
-			 continue;
-			 }
-			 */
-
-			DescArcPtr arc = m_descArcsStorageForSimpl.getArc(edge, vtx);
-			if (arc == NULL) {
-				std::cout << "ERROR. can't find arc for ppair: min: " << *(vtx) << " seddle " << *edge << std::endl;
-				continue;
-			}
-
-			if (removePersistentPair<DescArcPtr, VertexPtr>(arc, m_descArcsStorageForSimpl, false)) {
-				m_ascArcsStorageForSimpl.erase(arc->m_arcBegin);
+			DescArcPtr arc = m_descArcsStorage.getArc(edge, vtx);
+			if (removePersistentPair<DescArcPtr, VertexPtr>(arc, m_descArcsStorage, false)) {
+				m_ascArcsStorage.erase(arc->m_arcBegin);
 				continue;
 			} else
-				std::cout << "can't remove: " << *vtx << " seddle " << *edge << std::endl;
-
+				std::cout << "can't remove DescArc: " << *vtx << " seddle " << *edge << std::endl;
 		}
 	}
 	return false;
@@ -231,13 +202,7 @@ void GradientProcessorQuad::run() {
 
 		iii = ppsSize;
 		PersistPairProcessor ppProc;
-		if (m_ascArcsStorageForSimpl.m_arcsToCriticalMap.size() == 0) {
-			ppProc.init(m_ascArcsStorage, m_descArcsStorage);
-			m_ascArcsStorageForSimpl = m_ascArcsStorage;
-			m_descArcsStorageForSimpl = m_descArcsStorage;
-
-		} else
-			ppProc.init(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
+		ppProc.init(m_ascArcsStorage, m_descArcsStorage);
 
 		ppProc.findPairs();
 		std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.filter(m_persistence);
@@ -249,7 +214,7 @@ void GradientProcessorQuad::run() {
 	drawComplexesOnOriginal();
 	drawGradientField();
 
-	connectArcs(m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl);
+	connectArcs(m_ascArcsStorage, m_descArcsStorage);
 	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
 
 	BarCodeProcessor proc;
@@ -262,13 +227,7 @@ void GradientProcessorQuad::drawGradientField() {
 	if (m_gradFieldFile.empty())
 		return;
 
-//	std::vector<MsComplex*>& cmplxs = m_msCmplxStorage.getComplxesForDrawing();
-
-	/*for (size_t cmplxN = 0; cmplxN < cmplxs.size(); ++cmplxN) {
-	 drawCmplx(m_gradFieldFile + "_" + mt::StrUtils::intToString(cmplxN) + ".jpg", cmplxs[cmplxN]);
-	 }
-	 */
-	drawCmplxOnTor(m_gradFieldFile + "_all.jpg", m_ascArcsStorageForSimpl, m_descArcsStorageForSimpl, false);
+	drawCmplxOnTor(m_gradFieldFile + "_all.jpg", m_ascArcsStorage, m_descArcsStorage, false);
 
 }
 
@@ -317,29 +276,6 @@ MsComplex* GradientProcessorQuad::completeComplex(AscArcPtr aArc1, DescArcPtr dA
 	return msCompl;
 }
 
-void GradientProcessorQuad::createArcStorageForSimpl() {
-
-	MsComplexesSet &msStrg = m_msCmplxStorage.complexesSet();
-
-	for (MsComplexesSet::iterator it = msStrg.begin(); it != msStrg.end(); it++) {
-
-		MsComplexPtr msc = *it;
-		for (size_t i = 0; i < msc->m_aArcs.size(); i++) {
-			if (msc->m_aArcs.size() != 2)
-				std::cout << "ERROR. more than 2 ascArc in MSC" << std::endl;
-			if (!m_ascArcsStorageForSimpl.isInStorage(msc->m_aArcs[i]))
-				m_ascArcsStorageForSimpl.addArc(msc->m_aArcs[i]);
-		}
-
-		for (size_t i = 0; i < msc->m_dArcs.size(); i++) {
-			if (msc->m_dArcs.size() != 2)
-				std::cout << "ERROR. more than 2 ascArc in MSC" << std::endl;
-			if (!m_descArcsStorageForSimpl.isInStorage(msc->m_dArcs[i]))
-				m_descArcsStorageForSimpl.addArc(msc->m_dArcs[i]);
-		}
-	}
-}
-
 void GradientProcessorQuad::connectArcs(AscArcStorage& ascArc, DescArcStorage& descArc) {
 	m_msCmplxStorage.clear();
 	DescArcStorage::ArcsToSeddleMap &arcsToSeddleMap = descArc.arcsToSeddleMap();
@@ -384,8 +320,8 @@ void GradientProcessorQuad::drawComplexesOnOriginal() {
 	if (m_outputFile.empty())
 		return;
 
-	Utils::drawAscArcStorageOrig(m_img, m_ascArcsStorageForSimpl);
-	Utils::drawDescArcStorageOrig(m_img, m_descArcsStorageForSimpl);
+	Utils::drawAscArcStorageOrig(m_img, m_ascArcsStorage);
+	Utils::drawDescArcStorageOrig(m_img, m_descArcsStorage);
 	m_img.saveAs(m_outputFile, true);
 	std::cout << "save file in " << m_outputFile << std::endl;
 

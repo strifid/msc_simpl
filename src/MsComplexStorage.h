@@ -21,48 +21,24 @@ public:
 	virtual ~MsComplexStorage() {
 	}
 
-	void addComplex(MsComplex*cmpl) {
-		m_complexByMax[cmpl->m_max].push_back(cmpl);
-		for (size_t i = 0; i < cmpl->m_seddles.size(); i++) {
-			m_complexBySaddle[cmpl->m_seddles[i]].push_back(cmpl);
-		}
-		m_complexesSet.insert(cmpl);
-	}
-	void removeComplex(MsComplex *cmpl);
+	void addComplex(MsComplex*cmpl);
 
-	bool isExist(MsComplex* cmpl) {
-		typename MsComplexesSet::iterator it = m_complexesSet.find(cmpl);
-		if (it != m_complexesSet.end())
-			return true;
-		return false;
-	}
+	bool isExist(MsComplex* cmpl) ;
 
-	void drawComplex(MsComplex* cmplx) {
-		m_msComplexesForDrawing.push_back(cmplx);
-	}
+	void drawComplex(MsComplex* cmplx);
 
-	std::vector<MsComplex*>& getComplxesForDrawing() {
-		return m_msComplexesForDrawing;
-	}
+	std::vector<MsComplex*>& getComplxesForDrawing() ;
 	void drawAll() {
 		m_msComplexesForDrawing.insert(m_msComplexesForDrawing.begin(), m_complexesSet.begin(), m_complexesSet.end());
 	}
 
-	void drawOriginal(Image& img) {
-		for (typename MsComplexesSet::iterator it = m_complexesSet.begin(); it != m_complexesSet.end(); it++) {
-			(*it)->drawOriginal(img);
-		}
-	}
+	void drawOriginal(Image& img) ;
 
 	size_t size() {
 		return m_complexesSet.size();
 	}
 
-	void clear() {
-		m_complexByMax.clear();
-		m_complexBySaddle.clear();
-		m_complexesSet.clear();
-	}
+	void clear() ;
 
 	void saveCoords(const std::string& str) {
 		/*
@@ -80,31 +56,9 @@ public:
 
 	}
 
-	void saveCriticalPoints(const std::string& path) {
+	void saveCriticalPoints(const std::string& path);
 
-		VertexesSet vtxs;
-		for (MsComplexesSet::iterator it = m_complexesSet.begin(); it != m_complexesSet.end(); it++) {
-			vtxs.insert((*it)->m_max->maxVertex());
-			vtxs.insert((*it)->m_min);
-			for (size_t i = 0; i < (*it)->m_seddles.size(); ++i) {
-				vtxs.insert((*it)->m_seddles[i]->maxVertex());
-			}
-		}
-		std::ofstream coordFile;
-
-		coordFile.open(path.c_str());
-		coordFile << "x\ty\tz" << std::endl;
-		for (VertexesSet::iterator it = vtxs.begin(); it != vtxs.end(); it++) {
-			coordFile << (*it)->x << "\t" << (*it)->y << "\t" << (*it)->value().getInt() << std::endl;
-		}
-		coordFile.close();
-	}
-
-	virtual void draw(Mat & mat) {
-		for (size_t i = 0; i < m_msComplexesForDrawing.size(); i++) {
-			m_msComplexesForDrawing[i]->draw(mat);
-		}
-	}
+	virtual void draw(Mat & mat) ;
 
 	MsComplexesSet & complexesSet() {
 		return m_complexesSet;
