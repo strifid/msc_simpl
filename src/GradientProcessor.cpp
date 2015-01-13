@@ -256,7 +256,6 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, AscArcStorage &a
 			edges[i]->draw(drawField);
 	}
 	for (int i = 0; i < m_cofacesSimplexes.size(); ++i) {
-
 		m_cofacesSimplexes[i]->draw(drawField);
 	}
 

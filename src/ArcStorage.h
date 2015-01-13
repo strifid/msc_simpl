@@ -161,7 +161,13 @@ public:
 			if (*(arcs->at(i)->m_arcEnd) == *(crit))
 				return arcs->at(i);
 		}
-		std::cout << "ERROR. can't find arc for points: max(min): " << *(crit->maxVertex()) << " seddle " << *seddle << std::endl;
+		if (crit->maxVertex()->x == 30 && crit->maxVertex()->y == 0) {
+			std::cout << "ERROR. can't find arc for points: max(min): " << *(crit->maxVertex()) << " seddle " << *seddle << std::endl;
+			std::cout << "for seddle " << *seddle << " has " << arcs->size() << " arcs. end with " << std::endl;
+			for (size_t i = 0; i < arcs->size(); i++) {
+				std::cout << *(arcs->at(i)->m_arcEnd) << " size " << arcs->at(i)->m_arc.size() << std::endl;
+			}
+		}
 		return NULL;
 	}
 
@@ -287,7 +293,6 @@ public:
 		writer->Write();
 
 	}
-
 
 	ArcsToSeddleMap m_arcsToSeddleMap;
 	ArcsToCriticalMap m_arcsToCriticalMap;

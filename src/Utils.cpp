@@ -29,28 +29,35 @@ EdgePtr Utils::getEdgeByVertex(SimplexStorage<EdgePtr>& edges, VertexPtr a, Vert
 	return edges.getSimplex(&tmpEdgeAB);
 }
 
+void checkBound(Point&a, Point& b) {
+	if (a.x < Image::m_enlargeFactor * 2 && b.x > Image::m_enlargeFactor * 4) {
+		a.x = (Image::m_width + 1.5) * Image::m_enlargeFactor;
+	}
+	if (b.x < Image::m_enlargeFactor * 2 && a.x > Image::m_enlargeFactor * 4) {
+		b.x = (Image::m_width + 1.5) * Image::m_enlargeFactor;
+	}
+
+	if (a.y < Image::m_enlargeFactor * 2 && b.y > Image::m_enlargeFactor * 4) {
+		a.y = (Image::m_height + 1.5) * Image::m_enlargeFactor;
+	}
+	if (b.y < Image::m_enlargeFactor * 2 && a.y > Image::m_enlargeFactor * 4) {
+		b.y = (Image::m_height + 1.5) * Image::m_enlargeFactor;
+	}
+
+}
+
 void Utils::drawAscArc(Mat& img, AscArcPtr ascArc) {
 	for (size_t z = 0; z < ascArc->m_arc.size() - 1; z++) {
 		Point a = ascArc->m_arc[z]->centralPoint();
 		Point b = ascArc->m_arc[z + 1]->centralPoint();
-		if (a.x < Image::m_enlargeFactor * 2 && b.x > Image::m_enlargeFactor * 4) {
-			a.x = (Image::m_width + 1.5) * Image::m_enlargeFactor;
-		}
-		if (b.x < Image::m_enlargeFactor * 2 && a.x > Image::m_enlargeFactor * 4) {
-			b.x = (Image::m_width + 1.5) * Image::m_enlargeFactor;
-		}
-
-		if (a.y < Image::m_enlargeFactor * 2 && b.y > Image::m_enlargeFactor * 4) {
-			a.y = (Image::m_height + 1.5) * Image::m_enlargeFactor;
-		}
-		if (b.y < Image::m_enlargeFactor * 2 && a.y > Image::m_enlargeFactor * 4) {
-			b.y = (Image::m_height + 1.5) * Image::m_enlargeFactor;
-		}
-
+		checkBound(a, b);
 		line(img, a, b, Scalar(0, 100, 255), 5, 8);
 	}
 
-	line(img, ascArc->m_arc.front()->centralPoint(), ascArc->m_arcBegin->centralPoint(), Scalar(0, 100, 255), 5, 8);
+	Point a = ascArc->m_arc.front()->centralPoint();
+	Point b = ascArc->m_arcBegin->centralPoint();
+	checkBound(a, b);
+	line(img, a, b, Scalar(0, 100, 255), 5, 8);
 
 }
 
@@ -115,14 +122,11 @@ bool Utils::ppairToSimplex(std::pair<PPointPtr, PPointPtr>& ppair, Vertex** vtx,
 	return false;
 }
 
-
-
-
 void Utils::drawAscArcStorageOrig(Image& img, AscArcStorage& ascArcStorage) {
 	for (AscArcStorage::ArcsToCriticalMap::iterator it = ascArcStorage.m_arcsToCriticalMap.begin(); it != ascArcStorage.m_arcsToCriticalMap.end();
 			it++) {
 		for (size_t i = 0; i < it->second.size(); ++i) {
-			for(size_t j=0; j<it->second[i]->m_arc.size(); j++){
+			for (size_t j = 0; j < it->second[i]->m_arc.size(); j++) {
 				img.paintPixel(it->second[i]->m_arc[j]->maxVertex(), Image::BLUE);
 			}
 			img.paintPixel(it->second[i]->m_arcEnd->maxVertex(), Image::GREEN);
@@ -135,7 +139,7 @@ void Utils::drawDescArcStorageOrig(Image& img, DescArcStorage& descArcStorage) {
 	for (DescArcStorage::ArcsToCriticalMap::iterator it = descArcStorage.m_arcsToCriticalMap.begin(); it != descArcStorage.m_arcsToCriticalMap.end();
 			it++) {
 		for (size_t i = 0; i < it->second.size(); ++i) {
-			for(size_t j=0; j<it->second[i]->m_arc.size(); j++){
+			for (size_t j = 0; j < it->second[i]->m_arc.size(); j++) {
 				img.paintPixel(it->second[i]->m_arc[j]->m_a, Image::RED);
 				img.paintPixel(it->second[i]->m_arc[j]->m_b, Image::RED);
 			}

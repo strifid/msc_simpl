@@ -43,35 +43,26 @@ protected:
 	template<typename ArcPtr, typename CriticalPtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
 		if(lowestPersistentPair == NULL)
-			return;
+			return false;
 		arcStorage.eraseArc(lowestPersistentPair);
 		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
 
-		if (!secondLeg || *(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
+		if(!secondLeg){
+			std::cout << "remove single arc" << std::endl;
+			arcStorage.erasePersistentPair(lowestPersistentPair);
+			return true;
+		}
+
+		if (*(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
-			std::cout << "ERROR. can't simpl. have no sec lag or " << std::endl;
+			std::cout << "find volcano. can't simpl." << std::endl;
 			return false;
 		}
 
 		if (arcs != NULL) {
 			std::vector<ArcPtr> *secondLegArcs = arcStorage.seddles(secondLeg->m_arcEnd);
 			if (secondLegArcs) {
-
-
-/*
-				for (size_t i = 0; i < arcs->size(); ++i) {
-					for (size_t j = 0; j < secondLegArcs->size(); ++j) {
-						if (*(arcs->at(i)->m_arcBegin) == *(secondLegArcs->at(j)->m_arcBegin)) {
-							std::cout << "ERROR. cna't simpl. " << *(lowestPersistentPair->m_arcEnd) << " and seddle "
-									<< *(lowestPersistentPair->m_arcBegin) << std::endl;
-							arcStorage.addArc(lowestPersistentPair);
-							return false;
-						}
-					}
-				}
-*/
-
 
 				for (size_t i = 0; i < arcs->size(); ++i) {
 					ArcPtr arc = arcs->at(i);

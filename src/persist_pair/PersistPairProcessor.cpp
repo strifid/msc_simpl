@@ -130,6 +130,7 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::createPpair
 	}
 	std::sort(m_ppairsPoint.begin(), m_ppairsPoint.end(), PPairComparatorByPersistence());
 
+/*
 	for (size_t i = 0; i < m_ppairsPoint.size(); ++i) {
 		VertexPtr vtx;
 		EdgePtr edge;
@@ -142,6 +143,7 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::createPpair
 					<< std::endl;
 
 	}
+*/
 
 	return m_ppairsPoint;
 }
@@ -172,6 +174,7 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint
 		m_ppairsPoint.erase(m_ppairsPoint.begin() + i, m_ppairsPoint.end());
 
 	std::cout << "ppairs for remove:  " << m_ppairsPoint.size() << std::endl;
+/*
 	for (size_t i = 0; i < m_ppairsPoint.size(); ++i) {
 		VertexPtr vtx;
 		EdgePtr edge;
@@ -185,6 +188,7 @@ std::vector<std::pair<PPointPtr, PPointPtr> >& PersistPairProcessor::filter(uint
 					<< std::endl;
 
 	}
+*/
 
 	/*
 	 std::cout << "i:  " << i << std::endl;

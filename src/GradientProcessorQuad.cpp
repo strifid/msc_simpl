@@ -176,24 +176,10 @@ void GradientProcessorQuad::run() {
 
 	printInfo();
 
-	/*
-	 DescArcs oneConnected;
-	 for (DescArcStorage::ArcsToCriticalMap::iterator it = m_descArcsStorage.m_arcsToCriticalMap.begin();
-	 it != m_descArcsStorage.m_arcsToCriticalMap.end(); ++it) {
-	 if (it->second.size() == 1) {
-	 oneConnected.push_back(it->second.at(0));
-	 std::cout << "ERROR has only one arc. critical " << *(it->first) << std::endl;
-	 }
-	 }
-
-	 for (size_t i = 0; i < oneConnected.size(); ++i) {
-	 m_descArcsStorage.eraseArc(oneConnected[i]);
-	 m_ascArcsStorage.erase(oneConnected[i]->m_arcBegin);
-	 }
-	 */
-
+/*
 	connectArcs(m_ascArcsStorage, m_descArcsStorage);
 	std::cout << "cmplx: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+*/
 
 	size_t iii = 0;
 
@@ -214,8 +200,10 @@ void GradientProcessorQuad::run() {
 	drawComplexesOnOriginal();
 	drawGradientField();
 
+/*
 	connectArcs(m_ascArcsStorage, m_descArcsStorage);
 	std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+*/
 
 	BarCodeProcessor proc;
 	proc.init(m_msCmplxStorage.complexesSet());
