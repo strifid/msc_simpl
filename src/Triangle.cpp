@@ -164,7 +164,12 @@ Point Face::centralPoint() {
 }
 
 std::ostream & operator <<(std::ostream & out, Face& vt) {
-	out << "face: " << *(vt.getLeftTopConer());
+//	out << "face: " << *(vt.getLeftTopConer());
+	out <<"face: " ;
+
+	for(VertexesSet::iterator it = vt.m_vertexes.begin(); it!=vt.m_vertexes.end(); it++){
+		out << *(*it) << " ";
+	}
 	return out;
 }
 

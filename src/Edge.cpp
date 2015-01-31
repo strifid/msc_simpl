@@ -103,7 +103,7 @@ void Edge::draw(Mat& img, int32_t thickness, Scalar color) const {
 }
 
 std::ostream & operator <<(std::ostream & out, Edge & vt) {
-	out << "face: " << *vt.m_a << "-" << *vt.m_b;
+	out << "edge: " << *vt.m_a << "-" << *vt.m_b;
 	return out;
 }
 

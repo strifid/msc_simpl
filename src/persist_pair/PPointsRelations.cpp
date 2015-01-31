@@ -24,17 +24,7 @@ void PPointsRelations::addPair(uint32_t seddle, uint32_t vertex) {
 		m_relations[seddle] = std::vector<uint32_t>();
 		m_relations[seddle].push_back(vertex);
 	} else {
-/*
-		bool add = true;
-		for (size_t i = 0; i < itForA->second.size(); ++i) {
-			if (itForA->second[i] == vertex) {
-				add = false;
-				break;
-			}
-		}
-		if (add)
-*/
-			itForA->second.push_back(vertex);
+		itForA->second.push_back(vertex);
 	}
 
 	RelationsMap::iterator itForB = m_relations.find(vertex);
@@ -42,17 +32,7 @@ void PPointsRelations::addPair(uint32_t seddle, uint32_t vertex) {
 		m_relations[vertex] = std::vector<uint32_t>();
 		m_relations[vertex].push_back(seddle);
 	} else {
-/*
-		bool add = true;
-		for (size_t i = 0; i < itForB->second.size(); ++i) {
-			if (itForB->second[i] == seddle) {
-				add = false;
-				break;
-			}
-		}
-		if (add)
-*/
-			itForB->second.push_back(seddle);
+		itForB->second.push_back(seddle);
 	}
 }
 

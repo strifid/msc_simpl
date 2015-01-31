@@ -42,9 +42,10 @@ protected:
 	//todo remove faceptr type from template
 	template<typename ArcPtr, typename CriticalPtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
-		if(lowestPersistentPair == NULL)
+		if(lowestPersistentPair == NULL){
+			std::cout << "can't remove ppair becouse can't find" << std::endl;
 			return false;
-		arcStorage.eraseArc(lowestPersistentPair);
+		}arcStorage.eraseArc(lowestPersistentPair);
 		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
 
