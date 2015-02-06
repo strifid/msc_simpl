@@ -99,6 +99,8 @@ TEST_GROUP(BarCodeProcessor) {
 		proc.m_points[p->m_id] = p;
 
 	}
+
+
 };
 
 TEST(BarCodeProcessor, testBarCodeProc) {
@@ -111,3 +113,4 @@ TEST(BarCodeProcessor, testBarCodeProc) {
 //	CHECK_EQUAL(5, proc.ppairs.size());
 
 }
+

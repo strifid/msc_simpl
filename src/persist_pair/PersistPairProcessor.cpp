@@ -104,8 +104,8 @@ void PersistPairProcessor::findPairs() {
 	}
 
 	for (size_t i = 0; i < ppairs.size(); i++) {
-		if(ppairs[i].first == 44 || ppairs[i].second == 44){
-			std::cout << "find ppair " << ppairs[i].first << " " << ppairs[i].second <<std::endl;
+		if (ppairs[i].first == 44 || ppairs[i].second == 44) {
+			std::cout << "find ppair " << ppairs[i].first << " " << ppairs[i].second << std::endl;
 		}
 	}
 
@@ -121,6 +121,10 @@ void PersistPairProcessor::findPairs() {
 		if (inMap == false) {
 			std::cout << "point id " << it->first << " has no pair. " << std::endl;
 		}
+	}
+
+	for (int i = 0; i < ppairs.size(); ++i) {
+		std::cout << "ppair: " << ppairs[i].first << " and " << ppairs[i].second << std::endl;
 	}
 
 }
@@ -242,7 +246,17 @@ std::vector<uint32_t> PersistPairProcessor::getNeighbs(uint32_t point) {
 void PersistPairProcessor::cycleSearch(uint32_t point) {
 
 	PPointPtr curPp = getPoint(point);
+	bool out = false;
+	if (curPp->m_id == 21) {
+		out = true;
+		std::cout << "start " << curPp->m_id << std::endl;
+	} else
+		out = false;
+
 	std::vector<uint32_t> neighbs = getNeighbs(point);
+
+	if (out)
+		std::cout << "neigs " << neighbs[0] << " " << neighbs[1] << std::endl;
 
 	std::vector<uint32_t> *curSet = new std::vector<uint32_t>();
 	for (size_t i = 0; i < neighbs.size(); ++i) {
@@ -251,10 +265,20 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 			curSet->push_back(neighbs[i]);
 	}
 
+	if (out) {
+		std::cout << "cur set ";
+		for (int i = 0; i < curSet->size(); ++i) {
+			std::cout << curSet->at(i) << " ";
+		}
+		std::cout << std::endl;
+	}
+
 	uint32_t prev = 0;
 	while (!curSet->empty()) {
 
 		uint32_t highest = getHighest(*curSet);
+		if (out)
+			std::cout << "highest " << highest << std::endl;
 
 		if (prev == highest)
 			break;
@@ -266,7 +290,23 @@ void PersistPairProcessor::cycleSearch(uint32_t point) {
 			ppairs.push_back(std::make_pair(highest, point));
 			break;
 		} else {
+			if (out) {
+				std::cout << "add to cur set ";
+
+				for (int i = 0; i < m_cycles.find(highest)->second->size(); ++i) {
+					std::cout << m_cycles.find(highest)->second->at(i) << " ";
+				}
+				std::cout << std::endl;
+			}
 			addInCycle(curSet, m_cycles.find(highest)->second);
+			if (out) {
+				std::cout << "new cur set ";
+				for (int i = 0; i < curSet->size(); ++i) {
+					std::cout << curSet->at(i) << " ";
+				}
+				std::cout << std::endl;
+			}
+
 		}
 	}
 

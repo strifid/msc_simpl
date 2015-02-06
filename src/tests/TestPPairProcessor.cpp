@@ -99,16 +99,43 @@ TEST_GROUP(PPairProcessor) {
 		proc.m_points[p->m_id] = p;
 
 	}
+
+
+	void initRelationsVolcano(PersistPairProcessor &proc) {
+
+		proc.m_relations.addPair(1, 2);
+		proc.m_relations.addPair(1, 2);
+		proc.m_relations.addPair(2, 3);
+
+		PPointPtr p = new PPoint(1, PPoint::POSITIVE, 0);
+		proc.m_points[p->m_id] = p;
+		p = new PPoint(2, PPoint::UNIVERSAL, 1);
+		proc.m_points[p->m_id] = p;
+		p = new PPoint(2, PPoint::NEGATIVE, 2);
+		proc.m_points[p->m_id] = p;
+
+	}
+
+
+
 };
 
-TEST(PPairProcessor, testPPairProc) {
+TEST(PPairProcessor, testPPairProcNorm) {
 
 	PersistPairProcessor proc;
 	initRelations(proc);
 	proc.findPairs();
-	proc.filter(5);
 
 
 //	CHECK_EQUAL(5, proc.ppairs.size());
 
 }
+
+TEST(PPairProcessor, testPPairProcVolcano) {
+
+	PersistPairProcessor proc;
+	initRelationsVolcano(proc);
+	proc.findPairs();
+
+}
+
