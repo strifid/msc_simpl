@@ -32,8 +32,6 @@ public:
 	Vertex* maxVertex() {
 		return this;
 	}
-	int x;
-	int y;
 
 };
 

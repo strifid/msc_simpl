@@ -15,6 +15,8 @@ class Face: public Simplex {
 public:
 	Face() :
 			Simplex() {
+		m_dim = 2;
+
 	}
 	virtual ~Face() {
 	}

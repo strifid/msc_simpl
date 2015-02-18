@@ -11,14 +11,21 @@
 #include "Triangle.h"
 #include "Edge.h"
 
-struct VertexPtrDimComparator {
-	bool operator()(const std::pair<VertexPtr, uint32_t> &a, const std::pair<VertexPtr, uint32_t> &b) const {
-		if (*(a.first) == *(b.first))
-			return a.second < b.second;
-		return *(a.first) < *(b.first);
+struct SimplexPtrComparator {
+	bool operator()(Simplex* a, Simplex* b) const {
+		if (a->m_dim == b->m_dim){
+			if(a->m_dim == 0)
+				return *(static_cast<const VertexPtr>(a)) < *(static_cast<const VertexPtr>(b));
+			if(a->m_dim == 1)
+				return *(static_cast<EdgePtr>(a)) < *(static_cast<EdgePtr>(b));
+			if(a->m_dim == 2)
+				return *(static_cast<FacePtr>(a)) < *(static_cast<FacePtr>(b));
+
+		}
+		return 	a->m_dim < b->m_dim;
 	}
 };
-typedef std::map<std::pair<VertexPtr, uint32_t>, uint32_t, VertexPtrDimComparator> VtxDimToPPidMap;
+typedef std::map<Simplex*, uint32_t, SimplexPtrComparator> SmplxToPPidMap;
 
 class PPoint: public Vertex {
 public:
@@ -36,7 +43,7 @@ public:
 	Simplex* m_smplx;
 	static uint32_t pointId;
 
-	static uint32_t getId(VertexPtr vtx, uint32_t dim);
+	static uint32_t getId(Simplex* vtx, uint32_t dim);
 
 	template<typename T>
 	static uint32_t createPPoint(T smplx, std::map<uint32_t, PPoint*> &pointsMap, PPoint::Type type, uint32_t dim) {
@@ -48,11 +55,11 @@ public:
 		PPoint *ppointMin = new PPoint(*(smplx->maxVertex()), type, dim);
 		ppointMin->m_smplx = smplx;
 		pointsMap[ppointMin->m_id] = ppointMin;
-		m_vrtx2Id[std::make_pair(smplx->maxVertex(), dim)] = ppointMin->m_id;
+		m_vrtx2Id[smplx] = ppointMin->m_id;
 		return ppointMin->m_id;
 
 	}
-	static VtxDimToPPidMap m_vrtx2Id;
+	static SmplxToPPidMap m_vrtx2Id;
 
 private:
 

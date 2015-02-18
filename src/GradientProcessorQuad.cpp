@@ -80,10 +80,8 @@ void GradientProcessorQuad::addDescArc(VertexPtr vtx, EdgePtr seddle) {
 	vtxs.push_back(vtx);
 	edges.push_back(seddle);
 
-//	std::cout << "try find desc arc for " << *vtx << " begin: " << *seddle << std::endl;
 	getDescendingManifold(edges, vtxs);
 
-//	std::cout << "vertexes: " << vtxs.size() << " edges " << edges.size() << " last vtx: " << *(vtxs.back()) << " seddle " << *(seddle)<< std::endl ;
 	VertexesSet::iterator it = m_minimums.find(vtxs.back());
 	if (it == m_minimums.end()) {
 		std::cout << "ERROR. can't find desc manyfold for " << *(vtxs.back()) << std::endl;
@@ -105,7 +103,7 @@ void GradientProcessorQuad::printInfo() {
 void GradientProcessorQuad::findAscArcs() {
 	for (size_t i = 0; i < m_seddles.size(); i++) {
 		Faces *tr = m_simplexRelations.face(m_seddles[i]);
-		if (tr == NULL || tr->size() !=2) {
+		if (tr == NULL || tr->size() != 2) {
 			std::cout << "ERROR. have no any cofaced faces to seddle" << std::endl;
 			continue;
 		}
@@ -181,56 +179,41 @@ void GradientProcessorQuad::run() {
 	 std::cout << "cmplx: " << m_msCmplxStorage.complexesSet().size() << std::endl;
 	 */
 
-	Edge edge(findVertexByPixel(0, 28), findVertexByPixel(0, 27));
-	std::vector<AscArcPtr> *ret = m_ascArcsStorage.critical(&edge);
-	std::cout << "has " << ret->size() << std::endl;
+	/*
+	 Edge edge(findVertexByPixel(0, 28), findVertexByPixel(0, 27));
+	 std::vector<AscArcPtr> *ret = m_ascArcsStorage.critical(&edge);
+	 std::cout << "has " << ret->size() << std::endl;
 
-	for (size_t i = 0; i < ret->size(); i++) {
-		std::cout << "size " << ret->at(i)->m_arc.size() << ". start " << *(ret->at(i)->m_arcBegin) << " end with " << *(ret->at(i)->m_arcEnd)
-				<< std::endl;
-	}
-
+	 for (size_t i = 0; i < ret->size(); i++) {
+	 std::cout << "size " << ret->at(i)->m_arc.size() << ". start " << *(ret->at(i)->m_arcBegin) << " end with " << *(ret->at(i)->m_arcEnd)
+	 << std::endl;
+	 }
+	 */
 
 	size_t iii = 0;
 
 	uint32_t ppsSize = 0;
-//	do {
+	do {
 
-	iii = ppsSize;
-	PersistPairProcessor ppProc;
-	ppProc.init(m_ascArcsStorage, m_descArcsStorage);
+		iii = ppsSize;
+		PersistPairProcessor ppProc;
+		ppProc.init(m_ascArcsStorage, m_descArcsStorage);
 
-	ppProc.findPairs();
-	std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.filter(m_persistence);
-	ppsSize = pps.size();
-	simplifyPpairs(pps);
+		ppProc.findPairs();
+		std::vector<std::pair<PPointPtr, PPointPtr> >& pps = ppProc.filter(m_persistence);
+		ppsSize = pps.size();
+		simplifyPpairs(pps);
 
-//	} while (iii != ppsSize);
+	} while (iii != ppsSize);
 
 	drawComplexesOnOriginal();
 	drawGradientField();
 
-	{
-		Edge edge(findVertexByPixel(0, 28), findVertexByPixel(0, 27));
-		std::vector<AscArcPtr> *ret = m_ascArcsStorage.critical(&edge);
-		std::cout << "has " << ret->size() << std::endl;
-
-		for (size_t i = 0; i < ret->size(); i++) {
-			std::cout << "size " << ret->at(i)->m_arc.size() << ". start " << *(ret->at(i)->m_arcBegin) << " end with " << *(ret->at(i)->m_arcEnd)
-					<< std::endl;
-		}
-
-	}
-
-
 	/*
-	 connectArcs(m_ascArcsStorage, m_descArcsStorage);
-	 std::cout << "mscs: " << m_msCmplxStorage.complexesSet().size() << std::endl;
+	 BarCodeProcessor proc;
+	 proc.init(m_ascArcsStorage, m_descArcsStorage);
+	 proc.computeBarCodes(m_gradFieldFile);
 	 */
-
-	BarCodeProcessor proc;
-	proc.init(m_ascArcsStorage, m_descArcsStorage);
-	proc.computeBarCodes(m_gradFieldFile);
 
 }
 

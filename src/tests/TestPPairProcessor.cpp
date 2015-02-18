@@ -138,4 +138,31 @@ TEST(PPairProcessor, testPPairProcVolcano) {
 	proc.findPairs();
 
 }
+TEST(PPairProcessor, testAddInCycle) {
+	PersistPairProcessor proc;
+	std::vector<uint32_t> a;
+	a.push_back(1);
+	a.push_back(2);
+	a.push_back(3);
 
+	std::vector<uint32_t> b;
+	b.push_back(2);
+	b.push_back(3);
+	b.push_back(4);
+
+	proc.addInCycle(&a, &b);
+	CHECK_EQUAL(2, a.size())
+}
+
+TEST(PPairProcessor, testAddInCycle1) {
+	PersistPairProcessor proc;
+	std::vector<uint32_t> a;
+	a.push_back(1);
+	a.push_back(1);
+
+	std::vector<uint32_t> b;
+	b.push_back(2);
+
+	proc.addInCycle(&a, &b);
+	CHECK_EQUAL(1, a.size())
+}

@@ -13,12 +13,15 @@ using cv::Scalar;
 using cv::line;
 
 Edge::Edge() {
+	m_dim = 1;
 }
 
 Edge::~Edge() {
 }
 
 Edge::Edge(VertexPtr a, VertexPtr b) {
+
+	m_dim = 1;
 
 	if (*a < *b) {
 		m_a = b;

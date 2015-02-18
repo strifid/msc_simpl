@@ -8,7 +8,7 @@
 #include "PPoint.h"
 
 uint32_t PPoint::pointId = 1;
-VtxDimToPPidMap PPoint::m_vrtx2Id;
+SmplxToPPidMap PPoint::m_vrtx2Id;
 
 PPoint::PPoint(Vertex &vtx, Type t, uint32_t dim) :
 		Vertex(0, 0) {
@@ -38,8 +38,8 @@ PPoint::PPoint(int vtx, Type t, uint32_t dim) :
 PPoint::~PPoint() {
 }
 
-uint32_t PPoint::getId(VertexPtr vtx, uint32_t dim) {
-	VtxDimToPPidMap::iterator it = m_vrtx2Id.find(std::make_pair(vtx, dim));
+uint32_t PPoint::getId(Simplex* vtx, uint32_t dim) {
+	SmplxToPPidMap::iterator it = m_vrtx2Id.find(vtx);
 	if (it == m_vrtx2Id.end())
 		return 0;
 	return it->second;

@@ -25,9 +25,12 @@ public:
 	BigDecimal m_valueThird;
 
 	uint32_t m_seqId;
+	uint32_t m_dim;
 
 	BigDecimal& value();
 	void value(int32_t i, uint32_t e);
+	int x;
+	int y;
 
 };
 

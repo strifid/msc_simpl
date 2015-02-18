@@ -263,10 +263,10 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, AscArcStorage &a
 		m_vertexes.vector().at(i)->draw(drawField);
 	}
 
-//	if (show) {
-//	imshow(path.c_str(), drawField);
-//	waitKey(0);
-//	}
+	if (show) {
+		imshow(path.c_str(), drawField);
+		waitKey(0);
+	}
 	/*
 	 VtxDimToPPidMap::iterator it = PPoint::m_vrtx2Id.begin();
 	 while (it != PPoint::m_vrtx2Id.end()) {

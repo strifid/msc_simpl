@@ -33,11 +33,12 @@ public:
 	std::map<uint32_t, std::vector<uint32_t>*> m_cycles;
 	std::vector<std::pair<PPointPtr, PPointPtr> > m_ppairsPoint;
 
-	void sort();
 	void printToFile(const std::string& file);
 	std::vector<std::pair<PPointPtr, PPointPtr> >& filter(uint32_t persistence);
 
 	std::vector<std::pair<PPointPtr, PPointPtr> >& createPpairVector();
+
+	void addInCycle(std::vector<uint32_t>* a, std::vector<uint32_t>* b);
 
 protected:
 
@@ -45,7 +46,6 @@ protected:
 	std::vector<uint32_t> getNeighbs(uint32_t point);
 	PPointPtr getPoint(uint32_t id);
 
-	void addInCycle(std::vector<uint32_t>* a, std::vector<uint32_t>* b);
 	void cycleSearch(uint32_t point);
 
 	uint32_t getHighest(std::vector<uint32_t>& v);
