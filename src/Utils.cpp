@@ -75,16 +75,58 @@ void Utils::drawAscArcStorage(Mat& img, AscArcStorage& ascArcStorage) {
 	}
 }
 
+bool tt = true;
+
+void removeDuplicate(std::vector<EdgePtr>& orig, std::vector<EdgePtr>& ret){
+
+	if(orig.size() < 3 ){
+		ret = orig;
+		return;
+	}
+
+	if(tt){
+		tt = false;
+		std::map<EdgePtr, uint32_t, EdgesComparator> edges;
+		int z = 0;
+		for (int i = 0; i < orig.size(); ++i) {
+			edges[orig[i]] = z++;
+		}
+
+		std::cout << "one arc: size " <<  orig.size() << ": ";
+		for (int i = 0; i < orig.size(); ++i) {
+			std::cout << edges.find(orig[i])->second << " ";
+		}
+		std::cout << std::endl;
+
+
+	}
+
+	ret.push_back(orig[0]);
+
+	for(int i=2; i<orig.size(); i++){
+		if(*(ret.back()) == *(orig[i])){
+			ret.pop_back();
+		}else
+			ret.push_back(orig[i-1]);
+	}
+	ret.push_back(orig.back());
+
+}
+
 void Utils::drawDescArcStorage(Mat& img, DescArcStorage& descArcStorage) {
 
 	for (DescArcStorage::ArcsToCriticalMap::iterator it = descArcStorage.m_arcsToCriticalMap.begin(); it != descArcStorage.m_arcsToCriticalMap.end();
 			it++) {
 		for (size_t i = 0; i < it->second.size(); ++i) {
-			for (size_t z = 0; z < it->second[i]->m_arc.size(); z++) {
-				it->second[i]->m_arc[z]->draw(img, 5, Scalar(200, 255, 0));
-				it->second[i]->m_arcBegin->draw(img, 8, Scalar(200, 100, 0));
 
+			std::vector<EdgePtr> arc;
+			removeDuplicate(it->second[i]->m_arc, arc);
+
+			for (size_t z = 0; z < arc.size(); z++) {
+				arc[z]->draw(img, 5, Scalar(200, 255, 0));
 			}
+			it->second[i]->m_arcBegin->draw(img, 8, Scalar(200, 100, 0));
+
 		}
 		circle(img,
 				Point(it->first->x * Image::m_enlargeFactor + Image::m_enlargeFactor, it->first->y * Image::m_enlargeFactor + Image::m_enlargeFactor),
@@ -122,10 +164,15 @@ bool Utils::ppairToSimplex(std::pair<PPointPtr, PPointPtr>& ppair, Vertex** vtx,
 	return false;
 }
 
+#include <stack>
+
+
 void Utils::drawAscArcStorageOrig(Image& img, AscArcStorage& ascArcStorage) {
 	for (AscArcStorage::ArcsToCriticalMap::iterator it = ascArcStorage.m_arcsToCriticalMap.begin(); it != ascArcStorage.m_arcsToCriticalMap.end();
 			it++) {
 		for (size_t i = 0; i < it->second.size(); ++i) {
+
+
 			for (size_t j = 0; j < it->second[i]->m_arc.size(); j++) {
 				img.paintPixel(it->second[i]->m_arc[j]->maxVertex(), Image::BLUE);
 			}
@@ -138,7 +185,9 @@ void Utils::drawDescArcStorageOrig(Image& img, DescArcStorage& descArcStorage) {
 
 	for (DescArcStorage::ArcsToCriticalMap::iterator it = descArcStorage.m_arcsToCriticalMap.begin(); it != descArcStorage.m_arcsToCriticalMap.end();
 			it++) {
+
 		for (size_t i = 0; i < it->second.size(); ++i) {
+
 			for (size_t j = 0; j < it->second[i]->m_arc.size(); j++) {
 				img.paintPixel(it->second[i]->m_arc[j]->m_a, Image::RED);
 				img.paintPixel(it->second[i]->m_arc[j]->m_b, Image::RED);

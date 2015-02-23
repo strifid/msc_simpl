@@ -263,6 +263,7 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, AscArcStorage &a
 		m_vertexes.vector().at(i)->draw(drawField);
 	}
 
+	show = true;
 	if (show) {
 		imshow(path.c_str(), drawField);
 		waitKey(0);

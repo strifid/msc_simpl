@@ -41,7 +41,7 @@ public:
 	}
 
 	void addSecondLeg(Arc<SimplesAPtr, SimplesBPtr>* arc) {
-		m_arc.insert(m_arc.end(), arc->m_arc.begin(), arc->m_arc.end());
+		m_arc.insert(m_arc.end(), arc->m_arc.begin() + 1, arc->m_arc.end());
 		m_arcEnd = arc->m_arcEnd;
 	}
 

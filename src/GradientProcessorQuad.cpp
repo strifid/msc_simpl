@@ -206,6 +206,7 @@ void GradientProcessorQuad::run() {
 
 	} while (iii != ppsSize);
 
+
 	drawComplexesOnOriginal();
 	drawGradientField();
 
