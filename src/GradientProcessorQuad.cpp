@@ -68,6 +68,7 @@ int32_t GradientProcessorQuad::findSimplexes() {
 			VertexPtr c = findVertexByPixel(x, y + 1 == torH ? 0 : y + 1);
 			VertexPtr d = findVertexByPixel(x + 1 == torW ? 0 : x + 1, y + 1 == torH ? 0 : y + 1);
 			addFace(a, b, c, d);
+
 		}
 	}
 
@@ -112,6 +113,7 @@ void GradientProcessorQuad::findAscArcs() {
 			arc.push_back(tr->at(z));
 			if (getAscendingManifold(arc)) {
 				AscArcPtr ascArc = new Arc<FacePtr, FacePtr>(m_seddles[i], arc, arc.back());
+				ascArc->m_isAsc = true;
 				m_ascArcsStorage.addArc(ascArc);
 			} else
 				std::cout << "WARNING can't find asc manifold for " << *(tr->at(z)) << std::endl;
@@ -143,20 +145,27 @@ bool GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 		VertexPtr vtx = NULL;
 
 		if (Utils::ppairToSimplex(pps[i], &vtx, &edge, &face)) {
+			if (m_img.isOut(edge->maxVertex()) && m_img.isOut(face->maxVertex()))
+				continue;
 			AscArcPtr arc = m_ascArcsStorage.getArc(edge, face);
 			if (removePersistentPair<AscArcPtr, FacePtr>(arc, m_ascArcsStorage, true)) {
 				m_descArcsStorage.erase(arc->m_arcBegin);
 				continue;
-			} else
-				std::cout << "can't remove AscArc: " << *(face) << " seddle " << *edge << std::endl;
+			}// else
+				//std::cout << "can't remove AscArc: " << *(face) << " seddle " << *edge << std::endl;
 		} else {
+			if (m_img.isOut(edge->maxVertex()) && m_img.isOut(vtx))
+				continue;
+
 			DescArcPtr arc = m_descArcsStorage.getArc(edge, vtx);
 			if (removePersistentPair<DescArcPtr, VertexPtr>(arc, m_descArcsStorage, false)) {
 				m_ascArcsStorage.erase(arc->m_arcBegin);
 				continue;
-			} else
-				std::cout << "can't remove DescArc: " << *vtx << " seddle " << *edge << std::endl;
+			} //else
+				//std::cout << "can't remove DescArc: " << *vtx << " seddle " << *edge << std::endl;
 		}
+
+
 	}
 	return false;
 }
@@ -205,7 +214,6 @@ void GradientProcessorQuad::run() {
 		simplifyPpairs(pps);
 
 	} while (iii != ppsSize);
-
 
 	drawComplexesOnOriginal();
 	drawGradientField();

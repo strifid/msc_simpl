@@ -27,7 +27,7 @@ public:
 
 	void saveAs(const std::string& path, bool show = false);
 
-	void drawCircle(Point point, cv::Scalar color, uint32_t radius = 1, uint32_t thickness = 1);
+	void drawCircle(VertexPtr vtx, cv::Scalar color, uint32_t radius = 1, uint32_t thickness = 1);
 	void paintPixel(Vertex* pxl, BrushColor color = RED);
 
 	uint32_t width() {
@@ -42,6 +42,7 @@ public:
 
 	static uint32_t m_height;
 	static uint32_t m_width;
+	bool isOut(VertexPtr vtx);
 
 protected:
 	void mirrorEdges(Mat&);

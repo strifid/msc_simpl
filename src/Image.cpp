@@ -102,21 +102,26 @@ bool Image::init(const std::string & path) {
 void Image::saveAs(const std::string& path, bool show) {
 
 	paint(m_forChanges);
+
+	cv::Rect roi(0, 0, (m_forChanges.cols + 2) / 2, (m_forChanges.rows + 2) / 2);
+	cv::Mat orig;
+	cv::Mat(m_forChanges, roi).copyTo(orig);
+
 	if (show) {
-		imshow(path.c_str(), m_forChanges);
+		imshow(path.c_str(), orig);
 		waitKey(0);
 	}
 
-	imwrite(path.c_str(), m_forChanges);
+	imwrite(path.c_str(), orig);
 }
 
-void Image::drawCircle(Point point, cv::Scalar color, uint32_t radius, uint32_t thickness) {
-	circle(m_forChanges, point, radius, color, thickness);
+void Image::drawCircle(VertexPtr vtx, cv::Scalar color, uint32_t radius, uint32_t thickness) {
+	circle(m_forChanges, Point(vtx->x, vtx->y), radius, color, thickness);
 }
 
 //TTTTTTTTTTTTTTT
 int32_t Image::value(uint32_t x, uint32_t y) {
-	return m_img.at<uint8_t>(Point(x ,y));
+	return m_img.at<uint8_t>(Point(x, y));
 }
 
 void Image::resetPainting() {
@@ -171,3 +176,10 @@ void Image::paintPixel(Vertex *pxl, BrushColor color) {
 	}
 }
 
+bool Image::isOut(VertexPtr vtx) {
+
+	if ((vtx->x > m_width * 0.65 && vtx->x < m_width * 0.85) || (vtx->y > m_height * 0.65 && vtx->y < m_height * 0.85))
+		return true;
+
+	return false;
+}

@@ -212,7 +212,7 @@ public:
 		if (toMaxMapIt != m_arcsToCriticalMap.end()) {
 
 			for (typename std::vector<ArcPtr>::iterator arcIt = toMaxMapIt->second.begin(); arcIt != toMaxMapIt->second.end(); ++arcIt) {
-				if (*(arc->m_arcBegin) == *((*arcIt)->m_arcBegin)) {
+				if (*arc == *(*arcIt)) {
 					toMaxMapIt->second.erase(arcIt);
 					break;
 				}
@@ -222,7 +222,7 @@ public:
 		typename ArcsToSeddleMap::iterator toSaddleMapIt = m_arcsToSeddleMap.find(arc->m_arcBegin);
 		if (toSaddleMapIt != m_arcsToSeddleMap.end()) {
 			for (typename std::vector<ArcPtr>::iterator arcIt = toSaddleMapIt->second.begin(); arcIt != toSaddleMapIt->second.end(); ++arcIt) {
-				if (*(arc->m_arcEnd) == *((*arcIt)->m_arcEnd)) {
+				if (*arc == *(*arcIt)) {
 					toSaddleMapIt->second.erase(arcIt);
 					break;
 				}

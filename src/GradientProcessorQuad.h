@@ -39,41 +39,41 @@ protected:
 
 	void simplify(uint32_t persistence);
 
-	//todo remove faceptr type from template
 	template<typename ArcPtr, typename CriticalPtr>
 	bool removePersistentPair(ArcPtr lowestPersistentPair, ArcStorage<ArcPtr, CriticalPtr> &arcStorage, bool asc) {
 		if (lowestPersistentPair == NULL) {
-			std::cout << "can't remove ppair becouse can't find" << std::endl;
+//			std::cout << "can't remove ppair becouse can't find" << std::endl;
 			return false;
 		}
+
 		arcStorage.eraseArc(lowestPersistentPair);
-		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		ArcPtr secondLeg = arcStorage.getSecondLeg(lowestPersistentPair->m_arcBegin);
 
 		if (!secondLeg) {
-			std::cout << "remove single arc" << std::endl;
+//			std::cout << "remove single arc" << std::endl;
 			arcStorage.erasePersistentPair(lowestPersistentPair);
 			return true;
 		}
 
 		if (*(secondLeg->m_arcEnd) == *(lowestPersistentPair->m_arcEnd)) {
 			arcStorage.addArc(lowestPersistentPair);
-			std::cout << "find volcano. can't simpl." << std::endl;
+//			std::cout << "find volcano. can't simpl." << std::endl;
 			return false;
 		}
 
+		std::vector<ArcPtr> *arcs = arcStorage.seddles(lowestPersistentPair->m_arcEnd);
 		if (arcs != NULL) {
-			std::vector<ArcPtr> *secondLegArcs = arcStorage.seddles(secondLeg->m_arcEnd);
-			if (secondLegArcs) {
+//			std::vector<ArcPtr> *secondLegArcs = arcStorage.seddles(secondLeg->m_arcEnd);
+//			if (secondLegArcs) {
 
-				for (size_t i = 0; i < arcs->size(); ++i) {
-					ArcPtr arc = arcs->at(i);
-					arc->addFirstLeg(lowestPersistentPair);
-					arc->addSecondLeg(secondLeg);
-					arcStorage.registerArcByNewCritical(arc);
-				}
-				arcStorage.eraseArc(secondLeg);
+			for (size_t i = 0; i < arcs->size(); ++i) {
+				ArcPtr arc = arcs->at(i);
+				arc->addFirstLeg(lowestPersistentPair);
+				arc->addSecondLeg(secondLeg);
+				arcStorage.registerArcByNewCritical(arc);
 			}
+			arcStorage.eraseArc(secondLeg);
+//			}
 		}
 
 		arcStorage.erasePersistentPair(lowestPersistentPair);

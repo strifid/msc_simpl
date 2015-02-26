@@ -16,9 +16,11 @@ public:
 	Simplex();
 	virtual ~Simplex();
 
-	bool operator==(const Simplex& vrtx) const;
-	bool operator<(const Simplex& vrtx) const;
-	bool operator>(const Simplex& vrtx) const;
+/*
+	virtual bool operator==(const Simplex& vrtx) const = 0;
+	virtual bool operator<(const Simplex& vrtx) const;
+	virtual bool operator>(const Simplex& vrtx) const;
+*/
 
 	BigDecimal m_valueFirst;
 	BigDecimal m_valueSecond;

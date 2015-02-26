@@ -32,7 +32,7 @@ public:
 	Vertex* maxVertex() {
 		return this;
 	}
-
+	uint32_t m_faceId;
 };
 
 typedef Vertex* VertexPtr;

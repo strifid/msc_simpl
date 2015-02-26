@@ -18,6 +18,7 @@ using namespace cv;
 
 class Edge: public Simplex {
 public:
+	uint32_t m_faceId;
 	Edge();
 	Edge(VertexPtr a, VertexPtr b);
 	virtual ~Edge();

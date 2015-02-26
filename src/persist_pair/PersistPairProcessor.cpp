@@ -112,11 +112,7 @@ void PersistPairProcessor::findPairs() {
 			cycleSearch(point);
 	}
 
-	for (size_t i = 0; i < ppairs.size(); i++) {
-		if (ppairs[i].first == 44 || ppairs[i].second == 44) {
-			std::cout << "find ppair " << ppairs[i].first << " " << ppairs[i].second << std::endl;
-		}
-	}
+/*
 
 	for (PointsMap::iterator it = m_points.begin(); it != m_points.end(); it++) {
 		bool inMap = false;
@@ -132,6 +128,7 @@ void PersistPairProcessor::findPairs() {
 			std::cout << "can't find pair for " << p << std::endl;
 		}
 	}
+*/
 }
 
 struct PPairComparatorByPersistence {

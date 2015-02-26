@@ -15,6 +15,7 @@ Simplex::Simplex() :
 Simplex::~Simplex() {
 }
 
+/*
 bool Simplex::operator ==(const Simplex & vrtx) const {
 	if (m_valueFirst == vrtx.m_valueFirst && m_valueSecond == vrtx.m_valueSecond && m_valueThird == vrtx.m_valueThird)
 		return true;
@@ -40,6 +41,7 @@ bool Simplex::operator >(const Simplex & vrtx) const {
 	return m_valueThird > vrtx.m_valueThird;
 
 }
+*/
 
 BigDecimal& Simplex::value() {
 	return m_valueFirst;

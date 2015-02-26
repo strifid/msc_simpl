@@ -46,15 +46,45 @@ void checkBound(Point&a, Point& b) {
 
 }
 
+bool tt = false;
+
+void removeDuplicate(std::vector<FacePtr>& orig, std::vector<FacePtr>& ret) {
+
+	if (orig.size() < 3) {
+		ret = orig;
+		return;
+	}
+
+	ret.push_back(orig[0]);
+	FacePtr lastRemoved = NULL;
+	for (int i = 2; i < orig.size(); i++) {
+		if (!ret.empty() && (*(ret.back()) == *(orig[i]))) {
+			lastRemoved = ret.back();
+			ret.pop_back();
+		} else {
+			if (lastRemoved != NULL) {
+				ret.push_back(lastRemoved);
+				lastRemoved = NULL;
+			}
+			ret.push_back(orig[i - 1]);
+		}
+	}
+
+}
+
 void Utils::drawAscArc(Mat& img, AscArcPtr ascArc) {
-	for (size_t z = 0; z < ascArc->m_arc.size() - 1; z++) {
-		Point a = ascArc->m_arc[z]->centralPoint();
-		Point b = ascArc->m_arc[z + 1]->centralPoint();
+
+	std::vector<FacePtr> arc;
+	removeDuplicate(ascArc->m_arc, arc);
+
+	for (size_t z = 0; z < arc.size() - 1; z++) {
+		Point a = arc[z]->centralPoint();
+		Point b = arc[z + 1]->centralPoint();
 		checkBound(a, b);
 		line(img, a, b, Scalar(0, 100, 255), 5, 8);
 	}
 
-	Point a = ascArc->m_arc.front()->centralPoint();
+	Point a = arc.front()->centralPoint();
 	Point b = ascArc->m_arcBegin->centralPoint();
 	checkBound(a, b);
 	line(img, a, b, Scalar(0, 100, 255), 5, 8);
@@ -64,6 +94,19 @@ void Utils::drawAscArc(Mat& img, AscArcPtr ascArc) {
 void Utils::drawAscArcStorage(Mat& img, AscArcStorage& ascArcStorage) {
 	for (AscArcStorage::ArcsToCriticalMap::iterator it = ascArcStorage.m_arcsToCriticalMap.begin(); it != ascArcStorage.m_arcsToCriticalMap.end();
 			it++) {
+
+		if (tt) {
+
+			for (int i = 0; i < it->second.size(); i++) {
+				std::cout << "one arc: size " << it->second[i]->m_arc.size() << ": ";
+				for (int j = 0; j < it->second[i]->m_arc.size(); ++j) {
+					std::cout << it->second[i]->m_arc[j]->m_faceId << " ";
+				}
+				std::cout << std::endl;
+			}
+
+		}
+
 		for (size_t i = 0; i < it->second.size(); ++i) {
 			drawAscArc(img, it->second[i]);
 		}
@@ -75,41 +118,21 @@ void Utils::drawAscArcStorage(Mat& img, AscArcStorage& ascArcStorage) {
 	}
 }
 
-bool tt = true;
+void removeDuplicate(std::vector<EdgePtr>& orig, std::vector<EdgePtr>& ret) {
 
-void removeDuplicate(std::vector<EdgePtr>& orig, std::vector<EdgePtr>& ret){
-
-	if(orig.size() < 3 ){
+	if (orig.size() < 2) {
 		ret = orig;
 		return;
 	}
 
-	if(tt){
-		tt = false;
-		std::map<EdgePtr, uint32_t, EdgesComparator> edges;
-		int z = 0;
-		for (int i = 0; i < orig.size(); ++i) {
-			edges[orig[i]] = z++;
-		}
-
-		std::cout << "one arc: size " <<  orig.size() << ": ";
-		for (int i = 0; i < orig.size(); ++i) {
-			std::cout << edges.find(orig[i])->second << " ";
-		}
-		std::cout << std::endl;
-
-
-	}
-
 	ret.push_back(orig[0]);
 
-	for(int i=2; i<orig.size(); i++){
-		if(*(ret.back()) == *(orig[i])){
+	for (int i = 1; i < orig.size(); i++) {
+		if (!ret.empty() && (*(ret.back()) == *(orig[i]))) {
 			ret.pop_back();
-		}else
-			ret.push_back(orig[i-1]);
+		} else
+			ret.push_back(orig[i]);
 	}
-	ret.push_back(orig.back());
 
 }
 
@@ -164,19 +187,17 @@ bool Utils::ppairToSimplex(std::pair<PPointPtr, PPointPtr>& ppair, Vertex** vtx,
 	return false;
 }
 
-#include <stack>
-
-
 void Utils::drawAscArcStorageOrig(Image& img, AscArcStorage& ascArcStorage) {
 	for (AscArcStorage::ArcsToCriticalMap::iterator it = ascArcStorage.m_arcsToCriticalMap.begin(); it != ascArcStorage.m_arcsToCriticalMap.end();
 			it++) {
 		for (size_t i = 0; i < it->second.size(); ++i) {
+			std::vector<FacePtr> arc;
+			removeDuplicate(it->second[i]->m_arc, arc);
 
-
-			for (size_t j = 0; j < it->second[i]->m_arc.size(); j++) {
-				img.paintPixel(it->second[i]->m_arc[j]->maxVertex(), Image::BLUE);
+			for (size_t j = 0; j < arc.size(); j++) {
+				img.paintPixel(arc[j]->maxVertex(), Image::BLUE);
 			}
-			img.paintPixel(it->second[i]->m_arcEnd->maxVertex(), Image::GREEN);
+			img.drawCircle((it->second[i]->m_arcEnd->maxVertex()), Scalar(0, 100, 255), 2, 2);
 		}
 	}
 }
@@ -187,12 +208,18 @@ void Utils::drawDescArcStorageOrig(Image& img, DescArcStorage& descArcStorage) {
 			it++) {
 
 		for (size_t i = 0; i < it->second.size(); ++i) {
+			std::vector<EdgePtr> arc;
+			removeDuplicate(it->second[i]->m_arc, arc);
 
-			for (size_t j = 0; j < it->second[i]->m_arc.size(); j++) {
-				img.paintPixel(it->second[i]->m_arc[j]->m_a, Image::RED);
-				img.paintPixel(it->second[i]->m_arc[j]->m_b, Image::RED);
+			for (size_t j = 0; j < arc.size(); j++) {
+				img.paintPixel(arc[j]->m_a, Image::RED);
+				img.paintPixel(arc[j]->m_b, Image::RED);
 			}
-			img.paintPixel(it->second[i]->m_arcEnd->maxVertex(), Image::GREEN);
+			img.drawCircle((it->second[i]->m_arcEnd->maxVertex()), Scalar(255, 150, 0), 2, 2);
+
+			img.drawCircle((it->second[i]->m_arcBegin->maxVertex()), Scalar(0, 255, 0), 2, 2);
+
+//			img.paintPixel(it->second[i]->m_arcEnd->maxVertex(), Image::GREEN);
 		}
 	}
 }

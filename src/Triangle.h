@@ -13,16 +13,18 @@
 
 class Face: public Simplex {
 public:
+	uint32_t m_faceId;
 	Face() :
 			Simplex() {
 		m_dim = 2;
-
+		m_faceId = 0;
 	}
 	virtual ~Face() {
 	}
 
 	bool operator<(const Face& tr) const;
 	bool operator!=(const Face& tr) const;
+	bool operator==(const Face& tr) const;
 
 	void addEdge(EdgePtr edge);
 	VertexesSet m_vertexes;

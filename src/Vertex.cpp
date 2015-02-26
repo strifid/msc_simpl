@@ -21,12 +21,14 @@ Vertex::Vertex(int xx, int yy) {
 	x = xx;
 	y = yy;
 	m_dim = 0;
+	m_faceId = 0;
 }
 
 Vertex::Vertex(int xx, int yy, int val) {
 	x = xx;
 	y = yy;
 	m_dim = 0;
+	m_faceId = 0;
 }
 
 bool Vertex::operator ==(const Vertex& vrtx) const {

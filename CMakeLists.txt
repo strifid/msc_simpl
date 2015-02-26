@@ -9,7 +9,7 @@ if(QUAD)
 endif()
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wno-deprecated")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wno-deprecated" )
 
 if(NOT MTLIB_PATH)
     set(MTLIB_PATH "/prjcts/mtlib/install")

@@ -14,13 +14,14 @@ using cv::line;
 
 Edge::Edge() {
 	m_dim = 1;
+	m_faceId = 0;
 }
 
 Edge::~Edge() {
 }
 
 Edge::Edge(VertexPtr a, VertexPtr b) {
-
+	m_faceId = 0;
 	m_dim = 1;
 
 	if (*a < *b) {

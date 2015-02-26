@@ -20,9 +20,18 @@ template<typename SimplexPtr> struct SimplexComparator {
 
 template<typename SimplexPtr> struct SimplexValueComparator {
 	bool operator()(const SimplexPtr a, const SimplexPtr b) const {
-		return *(dynamic_cast<Simplex*>(a)) < *(dynamic_cast<Simplex*>(b));
+		if (a->m_valueFirst == b->m_valueFirst) {
+			if (a->m_valueSecond == b->m_valueSecond) {
+				return a->m_valueThird < b->m_valueThird;
+			} else {
+				return a->m_valueSecond < b->m_valueSecond;
+			}
+		} else {
+			return a->m_valueFirst < b->m_valueFirst;
+		}
 	}
-};
+}
+;
 
 template<class SimplexPtr>
 class SimplexStorage {
@@ -42,9 +51,9 @@ public:
 		return m_simplexes;
 	}
 
-	void sort(){
+	void sort() {
 		struct SimplexValueComparator<SimplexPtr> myobj;
-		std::sort (m_simplexes.begin(), m_simplexes.end(), myobj);
+		std::sort(m_simplexes.begin(), m_simplexes.end(), myobj);
 
 	}
 
@@ -56,7 +65,7 @@ public:
 	}
 
 	SimplexPtr getSimplex(const SimplexPtr simplex) {
-		typename  std::set<SimplexPtr, SimplexComparator<SimplexPtr> >::iterator it = m_simplexesSet.find(simplex);
+		typename std::set<SimplexPtr, SimplexComparator<SimplexPtr> >::iterator it = m_simplexesSet.find(simplex);
 		if (it != m_simplexesSet.end())
 			return *it;
 		return NULL;

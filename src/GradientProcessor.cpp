@@ -57,6 +57,7 @@ void GradientProcessor::addEdge(VertexPtr a, VertexPtr b) {
 	m_simplexRelations.push(edge);
 }
 
+uint32_t faceId = 0;
 void GradientProcessor::addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr d) {
 	EdgePtr edgeAB = Utils::getEdgeByVertex(m_edges, a, b);
 	EdgePtr edgeAC = Utils::getEdgeByVertex(m_edges, a, c);
@@ -75,6 +76,7 @@ void GradientProcessor::addFace(VertexPtr a, VertexPtr b, VertexPtr c, VertexPtr
 	face->addEdge(edgeCD);
 
 	face->m_seqId = m_seqId++;
+	face->m_faceId = faceId++;
 	m_faces.push(face);
 	m_simplexRelations.push(face);
 }
@@ -236,6 +238,10 @@ void GradientProcessor::drawCmplxOnTor(const std::string& path, AscArcStorage &a
 	for (int i = 0; i < torW + 1; ++i) {
 		putText(drawField, Utils::intToString(i), Point(i * Image::m_enlargeFactor + Image::m_enlargeFactor, 20), CV_FONT_NORMAL, 0.7,
 				Scalar(0, 0, 0), 1.3);
+	}
+	for (int i = 0; i < m_faces.vector().size(); ++i) {
+
+		putText(drawField, Utils::intToString(m_faces.vector().at(i)->m_faceId), m_faces.vector().at(i)->centralPoint(), CV_FONT_NORMAL, 0.4, Scalar(0, 0, 0), 1.3);
 	}
 
 	Utils::drawAscArcStorage(drawField, aStorage);

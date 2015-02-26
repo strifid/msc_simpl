@@ -60,11 +60,19 @@ bool Face::operator <(const Face & tr) const {
 
 }
 
+bool Face::operator ==(const Face & tr) const {
+	return m_faceId == tr.m_faceId;
+}
+
 bool Face::operator !=(const Face & tr) const {
 
+	return m_faceId != tr.m_faceId;
+
+/*
 	if (m_edges.size() != tr.m_edges.size())
 		return false;
 	return !std::equal(m_edges.begin(), m_edges.end(), tr.m_edges.begin());
+*/
 
 }
 
@@ -82,23 +90,15 @@ void Face::draw(Mat & img, uint32_t green) {
 		tly = rightBottomCorner->y - 1;
 	}
 
-	else if (leftTopCorner->y == 0 && rightBottomCorner->y == Image::m_height - 1){
-		tlx = rightBottomCorner->x -1;
+	else if (leftTopCorner->y == 0 && rightBottomCorner->y == Image::m_height - 1) {
+		tlx = rightBottomCorner->x - 1;
 		tly = rightBottomCorner->y;
 	}
 
-	tmp.push_back(
-			Point(tlx * Image::m_enlargeFactor + Image::m_enlargeFactor,
-					tly * Image::m_enlargeFactor + Image::m_enlargeFactor));
-	tmp.push_back(
-			Point((tlx + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor,
-					tly * Image::m_enlargeFactor + Image::m_enlargeFactor));
-	tmp.push_back(
-			Point((tlx + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor,
-					(tly + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor));
-	tmp.push_back(
-			Point(tlx * Image::m_enlargeFactor + Image::m_enlargeFactor,
-					(tly + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(Point(tlx * Image::m_enlargeFactor + Image::m_enlargeFactor, tly * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(Point((tlx + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor, tly * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(Point((tlx + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor, (tly + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor));
+	tmp.push_back(Point(tlx * Image::m_enlargeFactor + Image::m_enlargeFactor, (tly + 1) * Image::m_enlargeFactor + Image::m_enlargeFactor));
 
 	const Point* elementPoints[] = { &tmp[0] };
 	int numberOfPoints = (int) tmp.size();
@@ -165,9 +165,9 @@ Point Face::centralPoint() {
 
 std::ostream & operator <<(std::ostream & out, Face& vt) {
 //	out << "face: " << *(vt.getLeftTopConer());
-	out <<"face: " ;
+	out << "face: ";
 
-	for(VertexesSet::iterator it = vt.m_vertexes.begin(); it!=vt.m_vertexes.end(); it++){
+	for (VertexesSet::iterator it = vt.m_vertexes.begin(); it != vt.m_vertexes.end(); it++) {
 		out << *(*it) << " ";
 	}
 	return out;
