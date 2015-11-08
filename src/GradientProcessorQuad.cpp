@@ -114,7 +114,19 @@ void GradientProcessorQuad::findAscArcs() {
 			if (getAscendingManifold(arc)) {
 				AscArcPtr ascArc = new Arc<FacePtr, FacePtr>(m_seddles[i], arc, arc.back());
 				ascArc->m_isAsc = true;
+//				std::cout << "add asc arc " << *(ascArc->m_arcEnd)<< *(ascArc->m_arcBegin) << std::endl;
+
 				m_ascArcsStorage.addArc(ascArc);
+				if(ascArc->m_arcBegin->m_a->x == 15 && ascArc->m_arcBegin->m_a->y == 33) {
+					std::cout << "add asc arc " << *(ascArc->m_arcEnd)<< *(ascArc->m_arcBegin) << " arc size is: " << ascArc->m_arc.size() << std::endl;
+
+					if ( m_ascArcsStorage.critical(ascArc->m_arcBegin) == NULL) {
+						std::cout << "can't find just saved arc" << std::endl;
+					} else {
+						std::cout << "all fine " << std::endl;
+					}
+				}
+
 			} else
 				std::cout << "WARNING can't find asc manifold for " << *(tr->at(z)) << std::endl;
 		}
@@ -151,8 +163,7 @@ bool GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 			if (removePersistentPair<AscArcPtr, FacePtr>(arc, m_ascArcsStorage, true)) {
 				m_descArcsStorage.erase(arc->m_arcBegin);
 				continue;
-			}// else
-				//std::cout << "can't remove AscArc: " << *(face) << " seddle " << *edge << std::endl;
+			}
 		} else {
 			if (m_img.isOut(edge->maxVertex()) && m_img.isOut(vtx))
 				continue;
@@ -161,8 +172,8 @@ bool GradientProcessorQuad::simplifyPpairs(std::vector<std::pair<PPointPtr, PPoi
 			if (removePersistentPair<DescArcPtr, VertexPtr>(arc, m_descArcsStorage, false)) {
 				m_ascArcsStorage.erase(arc->m_arcBegin);
 				continue;
-			} //else
-				//std::cout << "can't remove DescArc: " << *vtx << " seddle " << *edge << std::endl;
+			}else
+				std::cout << "can't remove DescArc: " << *vtx << " seddle " << *edge << std::endl;
 		}
 
 
@@ -215,6 +226,11 @@ void GradientProcessorQuad::run() {
 
 	} while (iii != ppsSize);
 
+	if(!m_outputFile.empty()){
+		std::stringstream os;
+		os << m_outputFile << "_p" << m_persistence << ".jpg";
+		m_outputFile.assign(os.str());
+	}
 	drawComplexesOnOriginal();
 	drawGradientField();
 

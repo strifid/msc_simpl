@@ -46,6 +46,7 @@ EdgePtr Face::findCommonEdge(Face* quad) {
 
 bool Face::operator <(const Face & tr) const {
 
+/*
 	if (tr.m_edges.size() != m_edges.size())
 		return tr.m_edges.size() < m_edges.size();
 
@@ -57,16 +58,18 @@ bool Face::operator <(const Face & tr) const {
 	}
 
 	return *m_edges.rbegin() < *tr.m_edges.rbegin();
+*/
 
+	return m_seqId < tr.m_seqId;
 }
 
 bool Face::operator ==(const Face & tr) const {
-	return m_faceId == tr.m_faceId;
+	return m_seqId == tr.m_seqId;
 }
 
 bool Face::operator !=(const Face & tr) const {
 
-	return m_faceId != tr.m_faceId;
+	return m_seqId != tr.m_seqId;
 
 /*
 	if (m_edges.size() != tr.m_edges.size())

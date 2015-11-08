@@ -124,7 +124,6 @@ public:
 	void addArc(ArcPtr arc) {
 		m_arcsToCriticalMap[arc->m_arcEnd].push_back(arc);
 		m_arcsToSeddleMap[arc->m_arcBegin].push_back(arc);
-
 	}
 
 	std::vector<ArcPtr>* seddles(CriticalPtr tr) {
@@ -154,20 +153,17 @@ public:
 		}
 
 		std::vector<ArcPtr>* arcs = critical(seddle);
-		if (arcs == NULL)
+		if (arcs == NULL){
+//			std::cout << "ERROR. can't find arcs for seddle " << *seddle << std::endl;
 			return NULL;
+		}
 
 		for (size_t i = 0; i < arcs->size(); i++) {
 			if (*(arcs->at(i)->m_arcEnd) == *(crit))
 				return arcs->at(i);
 		}
-		if (crit->maxVertex()->x == 30 && crit->maxVertex()->y == 0) {
-			std::cout << "ERROR. can't find arc for points: max(min): " << *(crit->maxVertex()) << " seddle " << *seddle << std::endl;
-			std::cout << "for seddle " << *seddle << " has " << arcs->size() << " arcs. end with " << std::endl;
-			for (size_t i = 0; i < arcs->size(); i++) {
-				std::cout << *(arcs->at(i)->m_arcEnd) << " size " << arcs->at(i)->m_arc.size() << std::endl;
-			}
-		}
+		std::cout << "ERROR. can't find arc by critical " << *crit  << std::endl;
+
 		return NULL;
 	}
 
@@ -209,11 +205,12 @@ public:
 	void eraseArc(ArcPtr arc) {
 		typename ArcsToCriticalMap::iterator toMaxMapIt = m_arcsToCriticalMap.find(arc->m_arcEnd);
 
+		bool removeSmth = false;
 		if (toMaxMapIt != m_arcsToCriticalMap.end()) {
-
 			for (typename std::vector<ArcPtr>::iterator arcIt = toMaxMapIt->second.begin(); arcIt != toMaxMapIt->second.end(); ++arcIt) {
 				if (*arc == *(*arcIt)) {
 					toMaxMapIt->second.erase(arcIt);
+					removeSmth = true;
 					break;
 				}
 			}
@@ -224,9 +221,14 @@ public:
 			for (typename std::vector<ArcPtr>::iterator arcIt = toSaddleMapIt->second.begin(); arcIt != toSaddleMapIt->second.end(); ++arcIt) {
 				if (*arc == *(*arcIt)) {
 					toSaddleMapIt->second.erase(arcIt);
+					removeSmth = true;
 					break;
 				}
 			}
+		}
+
+		if(!removeSmth){
+			std::cout << "WARNING: can't remove arc " << std::endl;
 		}
 
 	}
@@ -248,13 +250,14 @@ public:
 
 	}
 
-	typedef std::map<EdgePtr, std::vector<ArcPtr>, SimplexComparator<EdgePtr> > ArcsToSeddleMap;
+	typedef std::map<EdgePtr, std::vector<ArcPtr>, EdgesComparator> ArcsToSeddleMap;
 	typedef std::map<CriticalPtr, std::vector<ArcPtr>, SimplexComparator<CriticalPtr> > ArcsToCriticalMap;
 
 	ArcsToSeddleMap& arcsToSeddleMap() {
 		return m_arcsToSeddleMap;
 	}
 
+/*
 	void saveArcsInVtp(const std::string& path) {
 
 		vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
@@ -293,6 +296,7 @@ public:
 		writer->Write();
 
 	}
+*/
 
 	ArcsToSeddleMap m_arcsToSeddleMap;
 	ArcsToCriticalMap m_arcsToCriticalMap;

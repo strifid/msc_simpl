@@ -32,15 +32,20 @@ Vertex::Vertex(int xx, int yy, int val) {
 }
 
 bool Vertex::operator ==(const Vertex& vrtx) const {
+//	return m_seqId == vrtx.m_seqId;
 	if (x == vrtx.x)
 		return y == vrtx.y;
 	return false;
 }
 
 bool Vertex::operator <(const Vertex& vrtx) const {
+
+//	std::cout << "vertex less " << vrtx << " vs " << *this << std::endl;
 	if (x == vrtx.x)
 		return y < vrtx.y;
+
 	return x < vrtx.x;
+//	return m_seqId < vrtx.m_seqId;
 }
 
 void Vertex::draw(Mat& img, Scalar color) {
