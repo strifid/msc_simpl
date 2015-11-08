@@ -197,7 +197,7 @@ void Utils::drawAscArcStorageOrig(Image& img, AscArcStorage& ascArcStorage) {
 			for (size_t j = 0; j < arc.size(); j++) {
 				img.paintPixel(arc[j]->maxVertex(), Image::BLUE);
 			}
-			img.drawCircle((it->second[i]->m_arcEnd->maxVertex()), Scalar(0, 100, 255), 2, 2);
+			img.drawCircle((it->second[i]->m_arcEnd->maxVertex()), Scalar(0, 100, 255), 1, 2);
 		}
 	}
 }
@@ -215,9 +215,9 @@ void Utils::drawDescArcStorageOrig(Image& img, DescArcStorage& descArcStorage) {
 				img.paintPixel(arc[j]->m_a, Image::RED);
 				img.paintPixel(arc[j]->m_b, Image::RED);
 			}
-			img.drawCircle((it->second[i]->m_arcEnd->maxVertex()), Scalar(255, 150, 0), 2, 2);
+			img.drawCircle((it->second[i]->m_arcEnd->maxVertex()), Scalar(255, 150, 0), 1, 2);
 
-			img.drawCircle((it->second[i]->m_arcBegin->maxVertex()), Scalar(0, 255, 0), 2, 2);
+			img.drawCircle((it->second[i]->m_arcBegin->maxVertex()), Scalar(0, 255, 0), 1, 2);
 
 //			img.paintPixel(it->second[i]->m_arcEnd->maxVertex(), Image::GREEN);
 		}

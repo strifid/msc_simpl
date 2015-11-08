@@ -12,6 +12,20 @@
 using cv::Scalar;
 using cv::line;
 
+
+bool EdgesComparator::operator()(const EdgePtr a, const EdgePtr b) const {
+	bool ret = *a < *b;
+
+/*
+	if (a->m_a->x == 15 || a->m_b->x == 15) {
+		std::cout << "compare " << *a << " vs " << *b << " return ret " << ret << std::endl;
+	}
+*/
+
+	return ret;
+}
+
+
 Edge::Edge() {
 	m_dim = 1;
 	m_faceId = 0;
@@ -27,38 +41,51 @@ Edge::Edge(VertexPtr a, VertexPtr b) {
 	if (*a < *b) {
 		m_a = b;
 		m_b = a;
-
 	} else {
 		m_a = a;
 		m_b = b;
-
 	}
 
-	if (m_a->value() > m_b->value()) {
-		m_valueFirst = m_a->value();
-		m_valueSecond = m_a->value() + m_b->value();
-	} else {
-		m_valueFirst = m_b->value();
-		m_valueSecond = m_a->value() + m_b->value();
-	}
+	m_valueFirst = (m_a->value() > m_b->value()) ? m_a->value() : m_b->value();
+	m_valueSecond = m_a->value() + m_b->value();
 }
 
-bool Edge::operator <(const Edge& face) const {
+bool Edge::operator <(const Edge& edge) const {
 
-	if (*m_a == *face.m_a) {
-		return *m_b < *face.m_b;
-	}
-	return *m_a < *face.m_a;
+	bool ret = false;
+	if (*m_a == *edge.m_a) {
+		ret = *m_b < *edge.m_b;
+	} else
+		ret = (*m_a < *edge.m_a);
+
+/*
+	if (m_a->x == 15 || m_b->x == 15)
+		std::cout << "edge less " << edge << " vs " << *this << " return ret " << ret << std::endl;
+*/
+/*
+
+
+	return m_seqId < edge.m_seqId;
+*/
+	return ret;
 }
 
-bool Edge::operator ==(const Edge & face) const {
-	if (*m_a == *(face.m_a))
-		return *m_b == *(face.m_b);
-	return false;
+bool Edge::operator ==(const Edge & edge) const {
+//	return m_seqId == edge.m_seqId;
+
+	bool ret = false;
+	if (*m_a == *(edge.m_a))
+		ret = (*m_b == *(edge.m_b));
+
+/*
+	if (m_a->x == 15 || m_b->x == 15)
+		std::cout << "edge equal " << edge << " vs " << *this << " return ret " << ret << std::endl;
+*/
+	return ret;
 }
 
-bool Edge::operator !=(const Edge & face) const {
-	return !operator==(face);
+bool Edge::operator !=(const Edge & edge) const {
+	return !operator==(edge);
 }
 
 Point Edge::centralPoint() {
@@ -106,7 +133,7 @@ void Edge::draw(Mat& img, int32_t thickness, Scalar color) const {
 
 }
 
-std::ostream & operator <<(std::ostream & out, Edge & vt) {
+std::ostream & operator <<(std::ostream & out, const Edge & vt) {
 	out << "edge: " << *vt.m_a << "-" << *vt.m_b;
 	return out;
 }

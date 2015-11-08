@@ -25,7 +25,7 @@ struct SimplexPtrComparator {
 		return 	a->m_dim < b->m_dim;
 	}
 };
-typedef std::map<Simplex*, uint32_t, SimplexPtrComparator> SmplxToPPidMap;
+typedef std::map<uint32_t, uint32_t> SmplxToPPidMap;
 
 class PPoint: public Vertex {
 public:
@@ -55,7 +55,7 @@ public:
 		PPoint *ppointMin = new PPoint(*(smplx->maxVertex()), type, dim);
 		ppointMin->m_smplx = smplx;
 		pointsMap[ppointMin->m_id] = ppointMin;
-		m_vrtx2Id[smplx] = ppointMin->m_id;
+		m_vrtx2Id[smplx->m_seqId] = ppointMin->m_id;
 		return ppointMin->m_id;
 
 	}

@@ -50,12 +50,10 @@ protected:
 typedef Edge* EdgePtr;
 
 struct EdgesComparator {
-	bool operator()(const EdgePtr a, const EdgePtr b) const {
-		return *a < *b;
-	}
+	bool operator()(const EdgePtr a, const EdgePtr b) const ;
 };
 
-std::ostream& operator<<(std::ostream& out, Edge &vt);
+std::ostream& operator<<(std::ostream& out, const Edge &vt);
 
 typedef std::vector<EdgePtr> Edges;
 typedef std::set<EdgePtr, EdgesComparator> EdgesSet;

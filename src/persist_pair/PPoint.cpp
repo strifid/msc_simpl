@@ -39,7 +39,7 @@ PPoint::~PPoint() {
 }
 
 uint32_t PPoint::getId(Simplex* vtx, uint32_t dim) {
-	SmplxToPPidMap::iterator it = m_vrtx2Id.find(vtx);
+	SmplxToPPidMap::iterator it = m_vrtx2Id.find(vtx->m_seqId);
 	if (it == m_vrtx2Id.end())
 		return 0;
 	return it->second;
