@@ -187,6 +187,30 @@ bool Utils::ppairToSimplex(std::pair<PPointPtr, PPointPtr>& ppair, Vertex** vtx,
 	return false;
 }
 
+uint32_t Utils::countMax(Image& img, AscArcStorage &ascArcStorage) {
+	AscArcStorage::ArcsToCriticalMap::iterator it = ascArcStorage.m_arcsToCriticalMap.begin(), itEnd = ascArcStorage.m_arcsToCriticalMap.end();
+	uint32_t max = 0;
+	for (; it != itEnd; ++it){
+		VertexPtr maxVtx = it->first->maxVertex();
+		if(maxVtx->x < img.m_originalWidth && maxVtx->y < img.m_originalHeight ) {
+			++max;
+		}
+	}
+	return max;
+}
+uint32_t Utils::countMin(Image& img, DescArcStorage &descArcStorage) {
+
+	DescArcStorage::ArcsToCriticalMap::iterator it = descArcStorage.m_arcsToCriticalMap.begin(), itEnd = descArcStorage.m_arcsToCriticalMap.end();
+	uint32_t min = 0;
+	for (; it != itEnd; ++it){
+		if(it->first->x < img.m_originalWidth && it->first->y < img.m_originalHeight ) {
+			++min;
+		}
+	}
+	return min;
+
+}
+
 void Utils::drawAscArcStorageOrig(Image& img, AscArcStorage& ascArcStorage) {
 	for (AscArcStorage::ArcsToCriticalMap::iterator it = ascArcStorage.m_arcsToCriticalMap.begin(); it != ascArcStorage.m_arcsToCriticalMap.end();
 			it++) {

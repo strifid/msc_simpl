@@ -23,6 +23,9 @@ using cv::circle;
 uint32_t Image::m_width = 0;
 uint32_t Image::m_height = 0;
 
+uint32_t Image::m_originalWidth = 0;
+uint32_t Image::m_originalHeight = 0;
+
 Image::Image() :
 		m_imageName("Image") {
 	namedWindow(m_imageName.c_str());
@@ -73,6 +76,9 @@ bool Image::init(const std::string & path) {
 	m_imagePath = path;
 
 	m_img = imread(path.c_str(), 0);
+	m_originalWidth = m_img.cols;
+	m_originalHeight = m_img.rows;
+
 	mirrorEdges(m_img);
 	Mat img = imread(path.c_str(), 1);
 	{

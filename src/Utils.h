@@ -50,6 +50,21 @@ public:
 	static void drawAscArcStorageOrig(Image& img, AscArcStorage &ascArcStorage);
 	static void drawDescArcStorageOrig(Image& img, DescArcStorage &descArcStorage);
 
+	static uint32_t countMax(Image& img, AscArcStorage &ascArcStorage);
+	static uint32_t  countMin(Image& img, DescArcStorage &descArcStorage);
+	template <typename ArcStorageType>
+	static uint32_t countSeddls(Image& img, ArcStorageType &arcStorage) {
+		typename ArcStorageType::ArcsToSeddleMap::iterator it = arcStorage.m_arcsToSeddleMap.begin(), itEnd = arcStorage.m_arcsToSeddleMap.end();
+		uint32_t seddle = 0;
+		for (; it != itEnd; ++it){
+			VertexPtr maxVtx = it->first->maxVertex();
+			if(maxVtx->x < img.m_originalWidth && maxVtx->y < img.m_originalHeight ) {
+				++seddle;
+			}
+		}
+		return seddle;
+	}
+
 };
 
 #endif /* UTILS_H_ */

@@ -42,6 +42,10 @@ public:
 
 	static uint32_t m_height;
 	static uint32_t m_width;
+
+	static uint32_t m_originalWidth;
+	static uint32_t m_originalHeight;
+
 	bool isOut(VertexPtr vtx);
 
 protected:

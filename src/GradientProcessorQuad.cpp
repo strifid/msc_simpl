@@ -201,6 +201,13 @@ void GradientProcessorQuad::run() {
 
 	size_t iii = 0;
 
+	std::cout << "max before siplificaton: " << Utils::countMax(m_img, m_ascArcsStorage) << std::endl;
+	std::cout << "min before siplificaton: " << Utils::countMin(m_img, m_descArcsStorage) << std::endl;
+
+	std::cout << "before(asc) after siplificaton: " << Utils::countSeddls(m_img, m_ascArcsStorage) << std::endl;
+	std::cout << "before(desc) after siplificaton: " << Utils::countSeddls(m_img, m_descArcsStorage) << std::endl;
+
+
 	uint32_t ppsSize = 0;
 	do {
 
@@ -217,6 +224,13 @@ void GradientProcessorQuad::run() {
 
 	drawComplexesOnOriginal();
 	drawGradientField();
+
+
+	std::cout << "max after siplificaton: " << Utils::countMax(m_img, m_ascArcsStorage) << std::endl;
+	std::cout << "min after siplificaton: " << Utils::countMin(m_img, m_descArcsStorage) << std::endl;
+
+	std::cout << "seddles(asc) after siplificaton: " << Utils::countSeddls(m_img, m_ascArcsStorage) << std::endl;
+	std::cout << "seddles(desc) after siplificaton: " << Utils::countSeddls(m_img, m_descArcsStorage) << std::endl;
 
 	/*
 	 BarCodeProcessor proc;
@@ -325,7 +339,9 @@ void GradientProcessorQuad::drawComplexesOnOriginal() {
 
 	Utils::drawAscArcStorageOrig(m_img, m_ascArcsStorage);
 	Utils::drawDescArcStorageOrig(m_img, m_descArcsStorage);
-	m_img.saveAs(m_outputFile, true);
-	std::cout << "save file in " << m_outputFile << std::endl;
+	std::stringstream str;
+	str << m_outputFile << "_p"<< m_persistence << ".jpg";
+	m_img.saveAs(str.str(), true);
+	std::cout << "save file in " << str.str() << std::endl;
 
 }
