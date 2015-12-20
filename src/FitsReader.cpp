@@ -37,6 +37,9 @@ bool FitsReader::init(const std::string& path) {
 	 m_x = image.axis(0);
 	 m_y = image.axis(1);
 
+	 std::cout << "x: " << m_x << std::endl;
+	 std::cout << "y: " << m_y << std::endl;
+	 std::cout << "content length: " <<  contents.size() << std::endl;
 //	exit(0);
 	/*
 	 PHDU& image = m_fits->pHDU();
@@ -61,7 +64,7 @@ void FitsReader::fillMat(cv::Mat& m) {
 
 	for (int i = 0; i < m_x; i++) {
 		for (int j = 0; j < m_y; j++) {
-			fitsMat.at<int32_t>(Point(i, j)) = contents[i * m_x + j];
+			fitsMat.at<int32_t>(Point(i, j)) = contents[((i-1) * m_y) + j];
 		}
 	}
 	std::cout << std::endl;
